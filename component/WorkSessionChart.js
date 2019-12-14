@@ -65,12 +65,14 @@ const WorkSessionChart = () => {
     return `Error! ${error}`;
   }
   const convertedData = workSessionDataHelper(data, startDate, endDate);
+  console.log(convertedData, data);
 
   const line = {
     id: 1,
     labels: convertedData.labels,
     datasets: convertedData.dataset,
   };
+  const monthName = [...convertedData.months].join(' / ');
 
   const handleback = () => {
     const newReferenceDate = new Date(referenceDate.getTime());
@@ -89,7 +91,7 @@ const WorkSessionChart = () => {
         data={line}
         width={width} // from react-native
         height={250}
-        yAxisLabel={'h'}
+        yAxisSuffix={' h'}
         chartConfig={{
           backgroundColor: '#DCDCDC',
           backgroundGradientFrom: '#E6E6FA',
@@ -99,11 +101,15 @@ const WorkSessionChart = () => {
           style: {
             borderRadius: 16,
           },
+          // propsForLabels: {
+          //   fontSize: 9,
+          //   fill: 'red',
+          // },
         }}
         bezier
         style={{
           marginVertical: 8,
-          borderRadius: 16,
+          borderRadius: 5,
         }}
       />
       <ButtonsRow>
@@ -122,12 +128,15 @@ const WorkSessionChart = () => {
                 stroke-width="3"
               />
             </Svg>
-            <Text>Previous Day</Text>
+            <Text>Previous days</Text>
           </ButtonContainer>
         </TouchableOpacity>
+        <MonthNameContainer>
+          <Text>{monthName}</Text>
+        </MonthNameContainer>
         <TouchableOpacity onPress={handleForward}>
           <ButtonContainer>
-            <Text>Next day</Text>
+            <Text>Next days</Text>
             <Svg
               width="35"
               height="35"
@@ -164,17 +173,13 @@ const ButtonContainer = styled.View`
   align-items: center;
 `;
 
-const Button = styled.Text`
-  padding-top: 15px;
-  margin: 10px;
-  height: 50px;
-  width: 150px;
-  color: white;
-  border-radius: 5px;
-  background-color: blue;
-  text-align: center;
+const Text = styled.Text`
+  line-height: 35px;
 `;
 
-const Text = styled.Text``;
+const MonthNameContainer = styled.View`
+  height: 35px
+  align-items: center;
+`;
 
 export default WorkSessionChart;

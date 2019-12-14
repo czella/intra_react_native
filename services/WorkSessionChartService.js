@@ -1,16 +1,21 @@
-import {find} from 'lodash';
+import {find, isEmpty} from 'lodash';
 
 export const workSessionDataHelper = (data, startDate, endDate) => {
   const users = {};
 
   const selectedLines = [];
   const labels = [];
+  const months = new Set([]);
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   for (
     const currentDate = new Date(startDate.getTime());
     currentDate < endDate;
     currentDate.setDate(currentDate.getDate() + 1)
   ) {
     const day = currentDate.getDate();
+    const month = currentDate.getMonth();
+    months.add(monthNames[month]);
     labels.push(day);
   }
   for (const entry of data.allStatsDailyUserWorkSessions) {
@@ -23,6 +28,7 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
       email: entry.userEmail,
     };
   }
+  console.log(labels, 'these are the labels');
 
   const selectedLine = selectedLines.length > 1 ? null : selectedLines[0];
 
@@ -98,5 +104,13 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
     }
     dataset.push(userData);
   }
-  return {dataset: dataset, labels: labels};
+  if (isEmpty(dataset)) {
+    const userData = {
+      strokeWidth: 2, // optional
+      color: (opacity = 1) => `rgba(${colors[0]}, ${opacity})`,
+      data: labels.map(() => 0),
+    };
+    dataset.push(userData);
+  }
+  return {dataset: dataset, labels: labels, months: months};
 };
