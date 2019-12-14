@@ -35,18 +35,18 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
   };
 
   const colors = [
+    '138,43,226',
     '255,192,203',
     '0,191,255',
     '50,205,50',
     '255,165,0',
     '128,128,0',
-    '138,43,226',
     '64,224,208',
     '255,215,0',
     '0,255,255',
     '230,230,250',
   ];
-  let lastColorIndex = 3;
+  let lastColorIndex = null;
 
   const getColor = () => {
     lastColorIndex =
