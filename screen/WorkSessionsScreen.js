@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import MenuBar from '../component/MenuBar';
+import PropTypes from 'prop-types';
 
 const WorksSessionsScreen = props => {
   const {navigation} = props;
@@ -10,6 +11,14 @@ const WorksSessionsScreen = props => {
       <Text> Work sessions</Text>
     </Container>
   );
+};
+
+WorksSessionsScreen.proptypes = {
+  navigation: PropTypes.object,
+};
+
+WorksSessionsScreen.defaultProps = {
+  navigation: {},
 };
 
 const Container = styled.View``;

@@ -13,6 +13,4 @@ const Home = props => {
 
 const Container = styled.View``;
 
-const Text = styled.Text``;
-
 export default Home;

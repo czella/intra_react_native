@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import { StatusBar, TouchableOpacity } from 'react-native';
+import {StatusBar, TouchableOpacity} from 'react-native';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
+import PropTypes from 'prop-types';
 
 const query = gql`
   mutation Login($email: String!, $password: String!) {
@@ -45,10 +46,20 @@ const Login = props => {
   );
 };
 
+Login.proptypes = {
+  login: PropTypes.func,
+  setToken: PropTypes.func,
+};
+
+Login.defaultProps = {
+  login: () => {},
+  setToken: () => {},
+};
+
 const Container = styled.View`
   padding-top: 50px;
   align-items: center;
-  background-color: #651FFF;
+  background-color: #651fff;
   height: 100%;
 `;
 

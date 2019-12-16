@@ -13,7 +13,6 @@ import {connect, Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from 'react-apollo';
-import StackNavigator from './navigator/StackNavigator';
 import DrawerNavigator from './navigator/DrawerNavigator';
 
 const mapStateToProps = state => ({
@@ -44,7 +43,6 @@ const App: () => React$Node = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ApiWrapperWithState>
-          {/*<MainScreen />*/}
           <DrawerNavigator />
         </ApiWrapperWithState>
       </PersistGate>

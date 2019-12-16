@@ -1,10 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 import {setToken} from '../store/actions';
 import Home from '../component/Home';
 import Login from '../component/Login';
 import MenuBar from '../component/MenuBar';
+
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -15,7 +17,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const MainScreen = props => {
-  const {token} = props;
+  const {token, setToken} = props;
 
   return (
     <Container>
@@ -30,9 +32,19 @@ const MainScreen = props => {
   );
 };
 
+MainScreen.proptypes = {
+  token: PropTypes.string,
+  setToken: PropTypes.func,
+};
+
+MainScreen.defaultProps = {
+  token: '',
+  setToken: () => {},
+};
+
+const Container = styled.View``;
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
 )(MainScreen);
-
-const Container = styled.View``;

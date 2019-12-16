@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {StatusBar, TouchableOpacity} from 'react-native';
-import { HamburgerMenuIcon } from '../svg/Icons';
+import {HamburgerMenuIcon} from '../svg/Icons';
 
 const MenuBar = props => {
   const {navigation, title} = props;
@@ -38,7 +38,7 @@ MenuBar.defaultProps = {
 
 const Container = styled.View`
   height: 50px;
-  background-color: #651FFF;
+  background-color: #651fff;
   display: flex;
   align-items: center;
   flex-direction: row;
