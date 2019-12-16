@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {TouchableOpacity} from 'react-native';
+import { StatusBar, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 
@@ -21,6 +21,7 @@ const Login = props => {
 
   return (
     <Container>
+      <StatusBar backgroundColor="#651FFF" />
       <TextInput
         onChangeText={email => setEmail(email)}
         placeholder="Email"
@@ -47,7 +48,7 @@ const Login = props => {
 const Container = styled.View`
   padding-top: 50px;
   align-items: center;
-  background-color: #500bc6;
+  background-color: #651FFF;
   height: 100%;
 `;
 

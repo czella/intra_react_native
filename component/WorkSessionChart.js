@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
-import {Dimensions, TouchableOpacity} from 'react-native';
+import {Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
-import {Svg, Path, G} from 'react-native-svg';
+import { LeftArrowIcon, RightArrowIcon } from '../svg/Icons';
 
 const query = gql`
   query allStatsDailyUserWorkSessions($startDate: String!, $endDate: String!) {
@@ -22,7 +22,6 @@ const query = gql`
 `;
 
 const dateToMysqlString = date => {
-  console.log(date, 'mydata-----------------------------');
   const compensateUTCConversion = new Date(
     date.getTime() + date.getTimezoneOffset() * 60000,
   );
@@ -47,6 +46,7 @@ const WorkSessionChart = () => {
   const [referenceDate, setReferenceDate] = useState(new Date());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
 
+
   const {loading, error, data} = useQuery(query, {
     variables: {
       startDate: dateToMysqlString(startDate),
@@ -56,9 +56,9 @@ const WorkSessionChart = () => {
 
   if (loading) {
     return (
-      <Container>
-        <Text>Loading</Text>
-      </Container>
+      <LoaderContainer>
+        <ActivityIndicator size="large" color="#7423B5" />
+      </LoaderContainer>
     );
   }
   if (error) {
@@ -72,7 +72,8 @@ const WorkSessionChart = () => {
     labels: convertedData.labels,
     datasets: convertedData.dataset,
   };
-  const monthName = [...convertedData.months].join(' / ');
+  const monthLabel = [...convertedData.months].join(' / ');
+  const yearLabel = [...convertedData.years].join(' / ');
 
   const handleback = () => {
     const newReferenceDate = new Date(referenceDate.getTime());
@@ -101,10 +102,6 @@ const WorkSessionChart = () => {
           style: {
             borderRadius: 16,
           },
-          // propsForLabels: {
-          //   fontSize: 9,
-          //   fill: 'red',
-          // },
         }}
         bezier
         style={{
@@ -115,41 +112,18 @@ const WorkSessionChart = () => {
       <ButtonsRow>
         <TouchableOpacity onPress={handleback}>
           <ButtonContainer>
-            <Svg
-              width="35"
-              height="35"
-              viewBox="0 0 105 188"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <Path
-                d="M103 4C99.3333 7.66667 3 94 3 94L103 184V144L43 94L103 44V4Z"
-                fill="#7423B5"
-                stroke="#7423B5"
-                stroke-width="3"
-              />
-            </Svg>
+            <LeftArrowIcon />
             <Text>Previous days</Text>
           </ButtonContainer>
         </TouchableOpacity>
-        <MonthNameContainer>
-          <Text>{monthName}</Text>
-        </MonthNameContainer>
+        <MonthLabelContainer>
+          <Text>{yearLabel}</Text>
+          <Text>{monthLabel}</Text>
+        </MonthLabelContainer>
         <TouchableOpacity onPress={handleForward}>
           <ButtonContainer>
             <Text>Next days</Text>
-            <Svg
-              width="35"
-              height="35"
-              viewBox="0 0 105 188"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <Path
-                d="M2 4C5.66667 7.66667 102 94 102 94L2 184V144L62 94L2 44V4Z"
-                fill="#7423B5"
-                stroke="#7423B5"
-                stroke-width="3"
-              />
-            </Svg>
+            <RightArrowIcon />
           </ButtonContainer>
         </TouchableOpacity>
       </ButtonsRow>
@@ -161,11 +135,19 @@ const Container = styled.View`
   padding: 10px;
 `;
 
+const LoaderContainer = styled.View`
+  margin: 10px;
+  padding-top: 120px;
+  width: ${width};
+  height: 250;
+`;
+
 const ButtonsRow = styled.View`
   display: flex;
   flex-direction: row;
   width: ${width};
   justify-content: space-between;
+  height: 40px;
 `;
 
 const ButtonContainer = styled.View`
@@ -173,13 +155,12 @@ const ButtonContainer = styled.View`
   align-items: center;
 `;
 
-const Text = styled.Text`
-  line-height: 35px;
-`;
+const Text = styled.Text``;
 
-const MonthNameContainer = styled.View`
+const MonthLabelContainer = styled.View`
   height: 35px
   align-items: center;
+  flex-direction: column;
 `;
 
 export default WorkSessionChart;
