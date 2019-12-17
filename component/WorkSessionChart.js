@@ -65,7 +65,6 @@ const WorkSessionChart = () => {
     return `Error! ${error}`;
   }
   const convertedData = workSessionDataHelper(data, startDate, endDate);
-  console.log(convertedData, data);
 
   const line = {
     id: 1,

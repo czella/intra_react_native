@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity, ScrollView, Dimensions} from 'react-native';
 import {connect} from 'react-redux';
@@ -10,17 +10,28 @@ const mapDispatchToProps = dispatch => ({
   setToken: token => dispatch(setToken(token)),
 });
 
-const {height} = Dimensions.get('window');
+var deviceHeight = Dimensions.get('window').height;
 
 const SideMenu = props => {
   const {navigation, setToken} = props;
+  // const [height, setHeight] = useState(Dimensions.get('window').height);
+  const onLayout = () => {
+    console.log('bello----------');
+    deviceHeight = Dimensions.get('window').height;
+    const {width, height} = Dimensions.get('window');
+    console.log(width, height, '-------------------------------------------------------------');
+  };
   const handleLogout = () => {
     setToken(null);
     navigation.closeDrawer();
   };
 
   return (
-    <Container>
+    <Container
+      style={{
+        height: deviceHeight - 20,
+      }}
+      onLayout={onLayout}>
       <ScrollView>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <MenuElement>
@@ -59,7 +70,6 @@ SideMenu.defaultProps = {
 };
 
 const Container = styled.View`
-  height: ${height - 20};
   padding-top: 20px;
   padding-left: 10px;
   padding-right: 10px;

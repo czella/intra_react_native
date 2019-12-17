@@ -14,6 +14,8 @@ import {PersistGate} from 'redux-persist/integration/react';
 import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from 'react-apollo';
 import DrawerNavigator from './navigator/DrawerNavigator';
+import {Dimensions} from 'react-native';
+import styled from 'styled-components';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -25,13 +27,22 @@ const ApiWrapper = props => {
   if (token) {
     headers.authorization = 'Bearer ' + token;
   }
+  const onLayout = () =>  {
+    const {width, height} = Dimensions.get('window');
+    console.log(width, height, '-------------------------------------------------------------');
+  };
   const client = new ApolloClient({
-    uri: `https://intra.modolit.com/api`,
+    uri: 'https://intra.modolit.com/api',
     headers: headers,
   });
-  console.log(client, 'pine--');
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+  return (
+    <ApolloProvider client={client}>
+      <Container style={{height: 300}} onLayout={onLayout}>{children}</Container>
+    </ApolloProvider>
+  );
 };
+
+const Container = styled.View``;
 
 const ApiWrapperWithState = connect(
   mapStateToProps,

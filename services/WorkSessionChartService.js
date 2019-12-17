@@ -31,7 +31,6 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
       email: entry.userEmail,
     };
   }
-  console.log(labels, 'these are the labels');
 
   const selectedLine = selectedLines.length > 1 ? null : selectedLines[0];
 
@@ -62,7 +61,6 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
       lastColorIndex === null || lastColorIndex >= colors.length
         ? 0
         : lastColorIndex + 1;
-    console.log(lastColorIndex);
 
     return colors[lastColorIndex];
   };
