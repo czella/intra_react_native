@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
 import {Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
 import WorkSession from './WorkSession';
+import {connect} from 'react-redux';
 
 const query = gql`
   query allWorkSessions(
@@ -40,9 +41,12 @@ const query = gql`
   }
 `;
 
-const width = Dimensions.get('window').width - 20;
+const mapStateToProps = state => ({
+  deviceWidth: state.nonCachedReducer.deviceWidth,
+});
 
-const WorkSessions = () => {
+const WorkSessions = props => {
+  const {deviceWidth} = props;
   const {loading, error, data} = useQuery(query, {
     variables: {
       page: 0,
@@ -53,11 +57,11 @@ const WorkSessions = () => {
     },
   });
 
-  const width = Dimensions.get('window').width;
-
   if (loading) {
     return (
-      <LoaderContainer>
+      <LoaderContainer style={{
+        width: deviceWidth - 20,
+      }}>
         <ActivityIndicator size="large" color="#7423B5" />
       </LoaderContainer>
     );
@@ -70,9 +74,12 @@ const WorkSessions = () => {
     <Container>
       <TableHeader>
         <Date>Date</Date>
-        <Title style={{
-          width: width - 120,
-        }}>Title</Title>
+        <Title
+          style={{
+            width: deviceWidth - 120,
+          }}>
+          Title
+        </Title>
       </TableHeader>
       {data.items.map((item, index) => (
         <WorkSession key={index} title={item.title} date={item.date} />
@@ -105,10 +112,12 @@ const Title = styled.Text`
 const LoaderContainer = styled.View`
   margin: 10px;
   padding-top: 120px;
-  width: ${width};
   height: 250;
 `;
 
 const Text = styled.Text``;
 
-export default WorkSessions;
+export default connect(
+  mapStateToProps,
+  null,
+)(WorkSessions);

@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
-import {Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import {TouchableOpacity, ActivityIndicator} from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon} from '../svg/Icons';
+import {connect} from 'react-redux';
 
 const query = gql`
   query allStatsDailyUserWorkSessions($startDate: String!, $endDate: String!) {
@@ -41,9 +43,12 @@ const getStartAndEndDate = referenceDate => {
   return {startDate: startDate, endDate: endDate};
 };
 
-const width = Dimensions.get('window').width - 20;
+const mapStateToProps = state => ({
+  deviceWidth: state.nonCachedReducer.deviceWidth,
+});
 
-const WorkSessionChart = () => {
+const WorkSessionChart = props => {
+  const {deviceWidth} = props;
   const [referenceDate, setReferenceDate] = useState(new Date());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
 
@@ -56,7 +61,10 @@ const WorkSessionChart = () => {
 
   if (loading) {
     return (
-      <LoaderContainer>
+      <LoaderContainer
+        style={{
+          width: deviceWidth - 20,
+        }}>
         <ActivityIndicator size="large" color="#7423B5" />
       </LoaderContainer>
     );
@@ -98,7 +106,7 @@ const WorkSessionChart = () => {
         config={swipeConfig}>
         <LineChart
           data={line}
-          width={width} // from react-native
+          width={deviceWidth - 20} // from react-native
           height={250}
           yAxisSuffix={' h'}
           chartConfig={{
@@ -118,7 +126,10 @@ const WorkSessionChart = () => {
           }}
         />
       </GestureRecognizer>
-      <ButtonsRow>
+      <ButtonsRow
+        style={{
+          width: deviceWidth - 20,
+        }}>
         <TouchableOpacity onPress={handleBack}>
           <ButtonContainer>
             <LeftArrowIcon />
@@ -140,6 +151,14 @@ const WorkSessionChart = () => {
   );
 };
 
+WorkSessionChart.propTypes = {
+  deviceWidth: PropTypes.number,
+};
+
+WorkSessionChart.defaultProps = {
+  deviceWidth: 0,
+};
+
 const Container = styled.View`
   padding: 10px;
 `;
@@ -147,14 +166,12 @@ const Container = styled.View`
 const LoaderContainer = styled.View`
   margin: 10px;
   padding-top: 120px;
-  width: ${width};
   height: 250;
 `;
 
 const ButtonsRow = styled.View`
   display: flex;
   flex-direction: row;
-  width: ${width};
   justify-content: space-between;
   height: 40px;
 `;
@@ -172,4 +189,7 @@ const MonthLabelContainer = styled.View`
   flex-direction: column;
 `;
 
-export default WorkSessionChart;
+export default connect(
+  mapStateToProps,
+  null,
+)(WorkSessionChart);

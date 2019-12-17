@@ -4,8 +4,6 @@ import MenuBar from '../component/MenuBar';
 import PropTypes from 'prop-types';
 import WorkSessions from '../component/WorkSessions';
 
-
-
 const WorksSessionsScreen = props => {
   const {navigation} = props;
   return (

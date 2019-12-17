@@ -6,7 +6,6 @@ import {setToken} from '../store/actions';
 import Login from '../component/Login';
 import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/WorkSessionChart';
-import { Dimensions } from 'react-native';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -18,13 +17,8 @@ const mapDispatchToProps = dispatch => ({
 
 const MainScreen = props => {
   const {token, setToken} = props;
-  const onLayout = () =>  {
-    // const {width, height} = Dimensions.get('window');
-    // console.log(width, height, '-------------------------------------------------------------');
-  };
-
   return (
-    <Container onLayout={onLayout}>
+    <Container>
       {token && (
         <Container>
           <MenuBar navigation={props.navigation} title="Dashboard" />

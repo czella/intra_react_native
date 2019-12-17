@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import {TouchableOpacity, ScrollView, Dimensions} from 'react-native';
-
-const {height} = Dimensions.get('window');
 
 const WorkSession = props => {
   const {title, date} = props;

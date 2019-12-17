@@ -16,28 +16,45 @@ import {ApolloProvider} from 'react-apollo';
 import DrawerNavigator from './navigator/DrawerNavigator';
 import {Dimensions} from 'react-native';
 import styled from 'styled-components';
+import {setDeviceHeight, setDeviceWidth, setToken} from './store/actions';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
+  deviceHeight: state.nonCachedReducer.deviceHeight,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setDeviceHeight: height => dispatch(setDeviceHeight(height)),
+  setDeviceWidth: width => dispatch(setDeviceWidth(width)),
 });
 
 const ApiWrapper = props => {
-  const {children, token} = props;
+  const {
+    children,
+    token,
+    deviceHeight,
+    setDeviceHeight,
+    setDeviceWidth,
+  } = props;
   const headers = {};
   if (token) {
     headers.authorization = 'Bearer ' + token;
   }
-  const onLayout = () =>  {
+  const onLayout = () => {
     const {width, height} = Dimensions.get('window');
-    console.log(width, height, '-------------------------------------------------------------');
+    setDeviceWidth(width);
+    setDeviceHeight(height);
   };
   const client = new ApolloClient({
     uri: 'https://intra.modolit.com/api',
     headers: headers,
   });
+
   return (
     <ApolloProvider client={client}>
-      <Container style={{height: 300}} onLayout={onLayout}>{children}</Container>
+      <Container style={{height: deviceHeight}} onLayout={onLayout}>
+        {children}
+      </Container>
     </ApolloProvider>
   );
 };
@@ -46,7 +63,7 @@ const Container = styled.View``;
 
 const ApiWrapperWithState = connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(ApiWrapper);
 
 const App: () => React$Node = () => {
