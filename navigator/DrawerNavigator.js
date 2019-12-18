@@ -6,6 +6,9 @@ import SideMenu from '../component/SideMenu';
 import {createAppContainer} from 'react-navigation';
 import MainScreen from '../screen/MainScreen';
 import WorksSessionsScreen from '../screen/WorkSessionsScreen';
+import WorkSessionExpanded from '../component/WorkSessionExpanded';
+import {createStackNavigator} from 'react-navigation-stack';
+import NewWorkSession from '../component/NewWorkSession';
 
 const DrawerNavigator = createDrawerNavigator(
   {
@@ -13,8 +16,15 @@ const DrawerNavigator = createDrawerNavigator(
       screen: MainScreen,
     },
     WorkSessions: {
+      // screen: WorksSessionsScreen,
       screen: WorksSessionsScreen,
     },
+    WorkSessionExpanded: {
+      screen: WorkSessionExpanded,
+    },
+    NewWorkSession: {
+      screen: NewWorkSession,
+    }
   },
   {
     contentComponent: SideMenu,

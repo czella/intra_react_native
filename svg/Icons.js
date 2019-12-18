@@ -1,5 +1,5 @@
 import React from 'react';
-import {G, Path, Rect, Svg} from 'react-native-svg';
+import {Circle, G, Path, Rect, Svg} from 'react-native-svg';
 
 export const WorkSessionsIcon = () => (
   <Svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="false">
@@ -67,5 +67,58 @@ export const DashboardIcon = () => (
     <G>
       <Path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
     </G>
+  </Svg>
+);
+
+export const SmallRightArrowIcon = () => (
+  <Svg
+    width="15"
+    height="15"
+    viewBox="0 0 105 188"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Path
+      d="M2 4C5.66667 7.66667 102 94 102 94L2 184V144L62 94L2 44V4Z"
+      fill="#E3DCE8"
+      stroke="#E3DCE8"
+      stroke-width="3"
+    />
+  </Svg>
+);
+
+export const BackArrowIcon = () => (
+  <Svg
+    width="35"
+    height="35"
+    viewBox="0 0 225 188"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Path
+      d="M103 184C99.3333 180.333 3 94 3 94L103 4L103 44L43 94L103 144V184Z"
+      fill="#EEEEEE"
+      stroke="#EEEEEE"
+      stroke-width="3"
+    />
+    <Rect x="45" y="74" width="180" height="40" fill="#EEEEEE" />
+  </Svg>
+);
+
+export const AddButtonIcon = () => (
+  <Svg
+    width="50"
+    height="50"
+    viewBox="0 0 30 30"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Circle cx="15" cy="15" r="14.5" fill="#651FFF" stroke="#651FFF" />
+    <Rect x="14" y="6" width="2" height="18" fill="#EEEEEE" />
+    <Rect
+      x="6"
+      y="16"
+      width="2"
+      height="18"
+      transform="rotate(-90 6 16)"
+      fill="#EEEEEE"
+    />
   </Svg>
 );

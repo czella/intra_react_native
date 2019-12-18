@@ -16,12 +16,12 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const MainScreen = props => {
-  const {token, setToken} = props;
+  const {token, setToken, navigation} = props;
   return (
     <Container>
       {token && (
         <Container>
-          <MenuBar navigation={props.navigation} title="Dashboard" />
+          <MenuBar navigation={navigation} title="Dashboard" />
           <WorkSessionChart />
         </Container>
       )}
@@ -33,11 +33,13 @@ const MainScreen = props => {
 MainScreen.proptypes = {
   token: PropTypes.string,
   setToken: PropTypes.func,
+  navigation: PropTypes.object,
 };
 
 MainScreen.defaultProps = {
   token: '',
   setToken: () => {},
+  navigation: {},
 };
 
 const Container = styled.View``;

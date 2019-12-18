@@ -1,25 +1,44 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
+import {TouchableOpacity} from 'react-native';
+import {SmallRightArrowIcon} from '../svg/Icons';
 
 const WorkSession = props => {
-  const {title, date} = props;
+  const {title, date, deviceWidth, showLog, index} = props;
   return (
-    <Container>
-      <Date>{date}</Date>
-      <Title>{title} hello</Title>
-    </Container>
+    <TouchableOpacity onPress={() => showLog(index)}>
+      <Container>
+        <Date>{date}</Date>
+        <Title
+          style={{
+            width: deviceWidth - 140,
+          }}
+          numberOfLines={1}>
+          {title}
+        </Title>
+        <IconContainer>
+          <SmallRightArrowIcon />
+        </IconContainer>
+      </Container>
+    </TouchableOpacity>
   );
 };
 
 WorkSession.propTypes = {
   title: PropTypes.string,
   date: PropTypes.string,
+  deviceWidth: PropTypes.number,
+  showLog: PropTypes.func,
+  index: PropTypes.number,
 };
 
 WorkSession.defaultProps = {
   title: '',
   date: '',
+  deviceWidth: 0,
+  showLog: () => {},
+  index: 0,
 };
 
 const Container = styled.View`
@@ -29,6 +48,13 @@ const Container = styled.View`
   margin: 0;
   display: flex;
   flex-direction: row;
+  z-index: 10;  
+`;
+
+const IconContainer = styled.View`
+  height: 60px;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const Title = styled.Text`
@@ -37,8 +63,7 @@ const Title = styled.Text`
 
 const Date = styled.Text`
   line-height: 60px;
-   width: 80px;
-  background: red;
+  width: 80px;
   margin-right: 20px;
 `;
 

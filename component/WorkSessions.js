@@ -1,10 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
-import {Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {
+  Dimensions,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+import {AddButtonIcon} from '../svg/Icons';
 
 const query = gql`
   query allWorkSessions(
@@ -43,25 +52,37 @@ const query = gql`
 
 const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,
+  deviceHeight: state.nonCachedReducer.deviceHeight,
 });
 
+const logs = [];
+
 const WorkSessions = props => {
-  const {deviceWidth} = props;
+  const {deviceWidth, deviceHeight, navigation} = props;
+  const [page, setPage] = useState(0);
   const {loading, error, data} = useQuery(query, {
     variables: {
-      page: 0,
+      page: page,
       filter: {},
-      perPage: 10,
+      perPage: 20,
       sortField: 'id',
       sortOrder: 'DESC',
     },
   });
-
+  const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+    const paddingToBottom = 20;
+    console.log('cehcking');
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
   if (loading) {
     return (
-      <LoaderContainer style={{
-        width: deviceWidth - 20,
-      }}>
+      <LoaderContainer
+        style={{
+          width: deviceWidth - 20,
+        }}>
         <ActivityIndicator size="large" color="#7423B5" />
       </LoaderContainer>
     );
@@ -69,7 +90,12 @@ const WorkSessions = props => {
   if (error) {
     return `Error! ${error}`;
   }
-  console.log(data);
+  logs.push(...data.items);
+  console.log(navigation, 'navc');
+  const showLog = index => {
+    console.log('showingLog', index);
+    navigation.navigate('WorkSessionExpanded', {workSession: logs[index]});
+  };
   return (
     <Container>
       <TableHeader>
@@ -81,32 +107,73 @@ const WorkSessions = props => {
           Title
         </Title>
       </TableHeader>
-      {data.items.map((item, index) => (
-        <WorkSession key={index} title={item.title} date={item.date} />
-      ))}
+      <SafeAreaView
+        style={{
+          height: deviceHeight - 120,
+          zIndex: 1,
+        }}>
+        <ScrollView
+          onScroll={({nativeEvent}) => {
+            if (isCloseToBottom(nativeEvent)) {
+              console.log('close to bottom');
+              setPage(page + 1);
+            }
+          }}
+          scrollEventThrottle={400}
+          >
+          {logs.map((item, index) => (
+            <WorkSession
+              key={index}
+              title={item.title}
+              date={item.date}
+              deviceWidth={deviceWidth}
+              showLog={showLog}
+              index={index}
+            />
+          ))}
+        </ScrollView>
+      </SafeAreaView>
     </Container>
   );
+};
+
+WorkSessions.propTypes = {
+  deviceHeight: PropTypes.number,
+  deviceWidth: PropTypes.number,
+  navigation: PropTypes.object,
+};
+
+WorkSessions.defaultProps = {
+  deviceHeight: 0,
+  deviceWidth: 0,
+  navigation: {},
 };
 
 const Container = styled.View`
   padding: 10px;
 `;
 
+
 const TableHeader = styled.View`
   display: flex;
   flex-direction: row;
   border-bottom-width: 1px;
   border-bottom-color: grey;
+  height: 40px;
 `;
 
 const Date = styled.Text`
   width: 80px;
   margin-right: 20px;
   font-size: 18px;
+  color: grey;
+  line-height: 40px;
 `;
 
 const Title = styled.Text`
   font-size: 18px;
+  color: grey;
+  line-height: 40px;
 `;
 
 const LoaderContainer = styled.View`
