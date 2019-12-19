@@ -46,23 +46,25 @@ const Container = styled.View`
   display: flex;
   flex-direction: row;
   z-index: 10;
+  width: 100%;
 `;
 
 const IconContainer = styled.View`
   height: 60px;
   flex-direction: row;
   align-items: center;
+  width: 5%;
 `;
 
 const Title = styled.Text`
   line-height: 60px;
-  width: 80%;
+  width: 75%;
+  padding-left: 20px;
 `;
 
 const Date = styled.Text`
   line-height: 60px;
   width: 20%;
-  margin-right: 20px;
 `;
 
 export default WorkSession;

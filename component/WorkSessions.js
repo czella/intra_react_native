@@ -163,8 +163,7 @@ const TableHeader = styled.View`
 `;
 
 const Date = styled.Text`
-  width: 80px;
-  margin-right: 20px;
+  width: 20%;
   font-size: 18px;
   color: grey;
   line-height: 40px;
@@ -174,6 +173,7 @@ const Title = styled.Text`
   font-size: 18px;
   color: grey;
   line-height: 40px;
+  padding-left: 20px;
 `;
 
 const LoaderContainer = styled.View`
