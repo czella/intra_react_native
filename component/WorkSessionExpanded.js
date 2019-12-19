@@ -1,14 +1,35 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
 import {BackArrowIcon, SaveIcon} from '../svg/Icons';
+import InputElement from './InputElement';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const dateToString = date => {
+  const compensateUTCConversion = new Date(
+    date.getTime() + date.getTimezoneOffset() * 60000,
+  );
+
+  return compensateUTCConversion.toISOString().split('T')[0];
+};
 
 const WorkSessionExpanded = props => {
   const {navigation} = props;
-  const workSession = navigation.getParam('workSession', {title: 'teyxt'});
+  const workSession = navigation.getParam('workSession', {});
+  const [title, setTitle] = useState(workSession.title);
+  const [description, setDescription] = useState(workSession.description);
+  const [url, setUrl] = useState(workSession.url);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date(workSession.date));
   const handleSave = () => {
     navigation.navigate('WorkSessions');
+  };
+  const handleDate = date => {
+    setShowDatePicker(false);
+    if (date) {
+      setDate(date);
+    }
   };
   return (
     <Container>
@@ -16,17 +37,71 @@ const WorkSessionExpanded = props => {
         <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
           <BackArrowIcon />
         </TouchableOpacity>
+        <TitleBar>Edit Session</TitleBar>
         <TouchableOpacity onPress={handleSave}>
           <SaveIcon />
         </TouchableOpacity>
       </NavigationButtonsContainer>
-      <InputContainer style={{
-        borderBottomWidth: '1px',
-        borderBottomColor: 'lightgrey',
-      }}>
-        <InputLabel>Title</InputLabel>
-        <TextInput  placeholder={workSession.title} />
-      </InputContainer >
+      <Form>
+        <InputElement
+          editable={false}
+          placeholder={workSession.id}
+          label="Id"
+          onChange={() => {}}
+        />
+        <InputElement
+          placeholder={workSession.title}
+          label="Title"
+          onChange={() => {}}
+        />
+        <InputElement
+          placeholder={workSession.description}
+          label="Description"
+          onChange={() => {}}
+        />
+        <InputElement
+          placeholder={workSession.url}
+          label="Url"
+          onChange={() => {}}
+        />
+        <InputContainer
+          style={{
+            borderBottomWidth: 1,
+            borderRadius: 1,
+            borderBottomColor: 'lightgrey',
+            color: 'lightgrey',
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              console.log('this runs');
+              setShowDatePicker(true);
+            }}>
+            <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+            <TextInput
+              editable={false}
+              onChange={() => {}}
+              placeholder={dateToString(date)}
+            />
+          </TouchableOpacity>
+        </InputContainer>
+      </Form>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          is24Hour={true}
+          display="default"
+          onChange={(event, date) => {
+            handleDate(date);
+          }}
+        />
+      )}
+      <TouchableOpacity onPress={() => {console.log('hide kexboard')}}>
+
+        <Test/>
+      </TouchableOpacity>
+
+      {console.log(date, 'this is the date')}
+      {console.log(showDatePicker, 'this is the bool')}
     </Container>
   );
 };
@@ -40,10 +115,20 @@ WorkSessionExpanded.defaultProps = {
 };
 
 const Container = styled.View``;
+const Test = styled.View`
+  height: 100%;
+  background: red;
+`;
 
-const InputContainer = styled.View``;
+const TitleBar = styled.Text`
+  font-size: 25px;
+  color: white;
+  line-height: 50px;
+`;
 
-const InputLabel = styled.Text``;
+const Form = styled.View`
+  padding: 10px;
+`;
 
 const NavigationButtonsContainer = styled.View`
   height: 50px;
@@ -54,20 +139,14 @@ const NavigationButtonsContainer = styled.View`
   justify-content: space-between;
 `;
 
-const IconContainer = styled.View`
-  height: 60px;
-  flex-direction: row;
-  align-items: center;
+const InputContainer = styled.View`
+  margin-bottom: 10px;
 `;
+
+const InputLabel = styled.Text``;
 
 const TextInput = styled.TextInput`
   line-height: 60px;
-`;
-
-const Date = styled.Text`
-  line-height: 60px;
-  width: 80px;
-  margin-right: 20px;
 `;
 
 export default WorkSessionExpanded;

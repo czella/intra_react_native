@@ -91,9 +91,7 @@ const WorkSessions = props => {
     return `Error! ${error}`;
   }
   logs.push(...data.items);
-  console.log(navigation, 'navc');
   const showLog = index => {
-    console.log('showingLog', index);
     navigation.navigate('WorkSessionExpanded', {workSession: logs[index]});
   };
   return (
@@ -115,7 +113,6 @@ const WorkSessions = props => {
         <ScrollView
           onScroll={({nativeEvent}) => {
             if (isCloseToBottom(nativeEvent)) {
-              console.log('close to bottom');
               setPage(page + 1);
             }
           }}
