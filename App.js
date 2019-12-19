@@ -7,44 +7,29 @@
  */
 
 import React from 'react';
-import MainScreen from './screen/MainScreen';
 import {persistor, store} from './store/store';
 import {connect, Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from 'react-apollo';
 import DrawerNavigator from './navigator/DrawerNavigator';
-import {Dimensions} from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
-import {setDeviceHeight, setDeviceWidth, setToken} from './store/actions';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
   deviceHeight: state.nonCachedReducer.deviceHeight,
 });
 
-const mapDispatchToProps = dispatch => ({
-  setDeviceHeight: height => dispatch(setDeviceHeight(height)),
-  setDeviceWidth: width => dispatch(setDeviceWidth(width)),
-});
-
 const ApiWrapper = props => {
   const {
     children,
     token,
-    deviceHeight,
-    setDeviceHeight,
-    setDeviceWidth,
   } = props;
   const headers = {};
   if (token) {
     headers.authorization = 'Bearer ' + token;
   }
-  const onLayout = () => {
-    const {width, height} = Dimensions.get('window');
-    setDeviceWidth(width);
-    setDeviceHeight(height);
-  };
   const client = new ApolloClient({
     uri: 'https://intra.modolit.com/api',
     headers: headers,
@@ -52,18 +37,21 @@ const ApiWrapper = props => {
 
   return (
     <ApolloProvider client={client}>
-      <Container style={{height: deviceHeight}} onLayout={onLayout}>
+      <StatusBar backgroundColor="#651FFF" />
+      <Container>
         {children}
       </Container>
     </ApolloProvider>
   );
 };
 
-const Container = styled.View``;
+const Container = styled.View`
+  flex: 1;
+`;
 
 const ApiWrapperWithState = connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(ApiWrapper);
 
 const App: () => React$Node = () => {

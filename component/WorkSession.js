@@ -11,9 +11,6 @@ const WorkSession = props => {
       <Container>
         <Date>{date}</Date>
         <Title
-          style={{
-            width: deviceWidth - 140,
-          }}
           numberOfLines={1}>
           {title}
         </Title>
@@ -48,7 +45,7 @@ const Container = styled.View`
   margin: 0;
   display: flex;
   flex-direction: row;
-  z-index: 10;  
+  z-index: 10;
 `;
 
 const IconContainer = styled.View`
@@ -59,11 +56,12 @@ const IconContainer = styled.View`
 
 const Title = styled.Text`
   line-height: 60px;
+  width: 80%;
 `;
 
 const Date = styled.Text`
   line-height: 60px;
-  width: 80px;
+  width: 20%;
   margin-right: 20px;
 `;
 

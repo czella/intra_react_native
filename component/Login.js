@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {StatusBar, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import PropTypes from 'prop-types';
@@ -22,7 +22,6 @@ const Login = props => {
 
   return (
     <Container>
-      <StatusBar backgroundColor="#651FFF" />
       <TextInput
         onChangeText={email => setEmail(email)}
         placeholder="Email"

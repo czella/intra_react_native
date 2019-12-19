@@ -14,10 +14,7 @@ const mapStateToProps = state => ({
 const WorksSessionsScreen = props => {
   const {navigation, deviceHeight} = props;
   return (
-    <Container
-      style={{
-        height: deviceHeight,
-      }}>
+    <Container>
       <MenuBar title="Works Sessions" navigation={navigation} />
       <WorkSessions navigation={navigation} />
       <ButtonContainer>
@@ -39,13 +36,15 @@ WorksSessionsScreen.defaultProps = {
   deviceHeight: 0,
 };
 
-const Container = styled.View``;
+const Container = styled.View`
+  height: 100%;
+`;
 
 const Text = styled.Text``;
 
 const ButtonContainer = styled.View`
   position: absolute;
-  bottom: 50px;
+  bottom: 30px;
   right: 30px;
   z-index: 1000;
 `;

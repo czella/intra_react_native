@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {StatusBar, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import {HamburgerMenuIcon} from '../svg/Icons';
 
 const MenuBar = props => {
   const {navigation, title} = props;
   return (
     <Container>
-      <StatusBar backgroundColor="#651FFF" />
       <HamburgerContainer>
         <TouchableOpacity onPress={navigation.openDrawer}>
           <HamburgerMenuIcon />

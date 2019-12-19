@@ -42,7 +42,15 @@ MainScreen.defaultProps = {
   navigation: {},
 };
 
-const Container = styled.View``;
+const Container = styled.View`
+  height: 100%;
+`;
+
+const Text = styled.Text`
+  position: absolute;
+  bottom: 0px;
+  font-size: 15px;
+`;
 
 export default connect(
   mapStateToProps,
