@@ -44,6 +44,7 @@ MainScreen.defaultProps = {
 
 const Container = styled.View`
   height: 100%;
+  width: 100%;
 `;
 
 const Text = styled.Text`

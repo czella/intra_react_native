@@ -5,7 +5,7 @@ import {TouchableOpacity} from 'react-native';
 import {SmallRightArrowIcon} from '../svg/Icons';
 
 const WorkSession = props => {
-  const {title, date, deviceWidth, showLog, index} = props;
+  const {title, date, showLog, index} = props;
   return (
     <TouchableOpacity onPress={() => showLog(index)}>
       <Container>
@@ -25,7 +25,6 @@ const WorkSession = props => {
 WorkSession.propTypes = {
   title: PropTypes.string,
   date: PropTypes.string,
-  deviceWidth: PropTypes.number,
   showLog: PropTypes.func,
   index: PropTypes.number,
 };
@@ -33,7 +32,6 @@ WorkSession.propTypes = {
 WorkSession.defaultProps = {
   title: '',
   date: '',
-  deviceWidth: 0,
   showLog: () => {},
   index: 0,
 };

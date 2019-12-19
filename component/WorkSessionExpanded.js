@@ -2,19 +2,31 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
-import {BackArrowIcon} from '../svg/Icons';
+import {BackArrowIcon, SaveIcon} from '../svg/Icons';
 
 const WorkSessionExpanded = props => {
   const {navigation} = props;
   const workSession = navigation.getParam('workSession', {title: 'teyxt'});
+  const handleSave = () => {
+    navigation.navigate('WorkSessions');
+  };
   return (
     <Container>
-      <BackButtonContainer>
+      <NavigationButtonsContainer>
         <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
           <BackArrowIcon />
         </TouchableOpacity>
-      </BackButtonContainer>
-      <Title>{workSession.title}</Title>
+        <TouchableOpacity onPress={handleSave}>
+          <SaveIcon />
+        </TouchableOpacity>
+      </NavigationButtonsContainer>
+      <InputContainer style={{
+        borderBottomWidth: '1px',
+        borderBottomColor: 'lightgrey',
+      }}>
+        <InputLabel>Title</InputLabel>
+        <TextInput  placeholder={workSession.title} />
+      </InputContainer >
     </Container>
   );
 };
@@ -29,12 +41,17 @@ WorkSessionExpanded.defaultProps = {
 
 const Container = styled.View``;
 
-const BackButtonContainer = styled.View`
+const InputContainer = styled.View``;
+
+const InputLabel = styled.Text``;
+
+const NavigationButtonsContainer = styled.View`
   height: 50px;
   background: #651fff;
   flex-direction: row;
   align-items: center;
   padding-left: 10px;
+  justify-content: space-between;
 `;
 
 const IconContainer = styled.View`
@@ -43,7 +60,7 @@ const IconContainer = styled.View`
   align-items: center;
 `;
 
-const Title = styled.Text`
+const TextInput = styled.TextInput`
   line-height: 60px;
 `;
 

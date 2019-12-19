@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
@@ -51,6 +51,7 @@ const WorkSessionChart = props => {
   const {deviceWidth} = props;
   const [referenceDate, setReferenceDate] = useState(new Date());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
+  const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 
   const {loading, error, data} = useQuery(query, {
     variables: {
@@ -100,36 +101,40 @@ const WorkSessionChart = props => {
   };
   return (
     <Container>
-      <GestureRecognizer
-        onSwipeLeft={handleForward}
-        onSwipeRight={handleBack}
-        config={swipeConfig}>
-        <LineChart
-          data={line}
-          width={deviceWidth - 20} // from react-native
-          height={250}
-          yAxisSuffix={' h'}
-          chartConfig={{
-            backgroundColor: '#DCDCDC',
-            backgroundGradientFrom: '#E6E6FA',
-            backgroundGradientTo: '#D8BFD8',
-            decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            style: {
-              borderRadius: 16,
-            },
-          }}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 5,
-          }}
-        />
-      </GestureRecognizer>
-      <ButtonsRow
-        style={{
-          width: deviceWidth - 20,
-        }}>
+      <ChartContainer
+        onLayout={event =>
+          setChartDimensions({
+            height: event.nativeEvent.layout.height,
+            width: event.nativeEvent.layout.width,
+          })
+        }>
+        <GestureRecognizer
+          onSwipeLeft={handleForward}
+          onSwipeRight={handleBack}
+          config={swipeConfig}>
+          <LineChart
+            data={line}
+            width={chartDimensions.width} // from react-native
+            height={chartDimensions.height}
+            yAxisSuffix={' h'}
+            chartConfig={{
+              backgroundColor: '#DCDCDC',
+              backgroundGradientFrom: '#E6E6FA',
+              backgroundGradientTo: '#D8BFD8',
+              decimalPlaces: 2, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            bezier
+            style={{
+              borderRadius: 5,
+            }}
+          />
+        </GestureRecognizer>
+      </ChartContainer>
+      <ButtonsRow>
         <TouchableOpacity onPress={handleBack}>
           <ButtonContainer>
             <LeftArrowIcon />
@@ -161,6 +166,13 @@ WorkSessionChart.defaultProps = {
 
 const Container = styled.View`
   padding: 10px;
+  width: 100%;
+`;
+
+const ChartContainer = styled.View`
+  width: 100%;
+  height: 80%;
+  max-height: 250px;
 `;
 
 const LoaderContainer = styled.View`
@@ -173,7 +185,9 @@ const ButtonsRow = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 40px;
+  max-height: 60px;
+  height: 20%;
+  padding-top: 20px;
 `;
 
 const ButtonContainer = styled.View`
