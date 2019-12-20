@@ -1,40 +1,50 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import {TouchableOpacity} from 'react-native';
+import {
+  TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Picker,
+} from 'react-native';
 import {BackArrowIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {connect} from 'react-redux';
 
 const dateToString = date => {
-  const compensateUTCConversion = new Date(
-    date.getTime() + date.getTimezoneOffset() * 60000,
-  );
-
-  return compensateUTCConversion.toISOString().split('T')[0];
+  return date.toISOString().split('T')[0];
 };
 
+const mapStateToProps = state => ({
+  workSession: state.nonCachedReducer.selectedWorkSession,
+});
+
 const WorkSessionExpanded = props => {
-  const {navigation} = props;
-  const workSession = navigation.getParam('workSession', {});
+  const {workSession, closeWorkSession} = props;
   const [title, setTitle] = useState(workSession.title);
   const [description, setDescription] = useState(workSession.description);
   const [url, setUrl] = useState(workSession.url);
+  const [contract, setContract] = useState('js');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [date, setDate] = useState(new Date(workSession.date));
-  const handleSave = () => {
-    navigation.navigate('WorkSessions');
-  };
+  console.log(workSession);
+  const [date, setDate] = useState(
+    workSession.date ? new Date(workSession.date) : new Date(),
+  );
+  const handleSave = () => {};
   const handleDate = date => {
     setShowDatePicker(false);
     if (date) {
       setDate(date);
     }
   };
+  useEffect(() => {
+    setDate(new Date(workSession.date ? workSession.date : null));
+  }, [workSession]);
   return (
     <Container>
       <NavigationButtonsContainer>
-        <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
+        <TouchableOpacity onPress={closeWorkSession}>
           <BackArrowIcon />
         </TouchableOpacity>
         <TitleBar>Edit Session</TitleBar>
@@ -73,7 +83,6 @@ const WorkSessionExpanded = props => {
           }}>
           <TouchableOpacity
             onPress={() => {
-              console.log('this runs');
               setShowDatePicker(true);
             }}>
             <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
@@ -83,6 +92,22 @@ const WorkSessionExpanded = props => {
               placeholder={dateToString(date)}
             />
           </TouchableOpacity>
+          <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
+          <Picker
+            selectedValue={contract}
+            style={{height: 40, width: '100%'}}
+            onValueChange={(itemValue, itemIndex) => {
+              setContract(itemValue);
+            }}>
+            {workSession.contracts.map(contract => (
+              <Picker.Item
+                label={`${contract.Project.name} - ${contract.position} - ${
+                  contract.User.username
+                }`}
+                value={contract.id}
+              />
+            ))}
+          </Picker>
         </InputContainer>
       </Form>
       {showDatePicker && (
@@ -95,29 +120,30 @@ const WorkSessionExpanded = props => {
           }}
         />
       )}
-      <TouchableOpacity onPress={() => {console.log('hide kexboard')}}>
-
-        <Test/>
-      </TouchableOpacity>
-
-      {console.log(date, 'this is the date')}
-      {console.log(showDatePicker, 'this is the bool')}
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <Background />
+      </TouchableWithoutFeedback>
     </Container>
   );
 };
 
 WorkSessionExpanded.propTypes = {
-  navigation: PropTypes.object,
+  workSession: PropTypes.object,
+  closeWorkSession: PropTypes.func,
 };
 
 WorkSessionExpanded.defaultProps = {
-  navigation: {},
+  workSession: {},
+  closeWorkSession: () => {},
 };
 
-const Container = styled.View``;
-const Test = styled.View`
+const Container = styled.View`
+  width: 100%;
   height: 100%;
-  background: red;
+`;
+
+const Background = styled.View`
+  height: 100%;
 `;
 
 const TitleBar = styled.Text`
@@ -149,4 +175,7 @@ const TextInput = styled.TextInput`
   line-height: 60px;
 `;
 
-export default WorkSessionExpanded;
+export default connect(
+  mapStateToProps,
+  null,
+)(WorkSessionExpanded);

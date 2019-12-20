@@ -1,19 +1,12 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
-import {
-  Dimensions,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  ActivityIndicator,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
+import {ActivityIndicator, SafeAreaView, ScrollView} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {AddButtonIcon} from '../svg/Icons';
+import {setSelectedWorkSession} from '../store/actions';
 
 const query = gql`
   query allWorkSessions(
@@ -47,6 +40,16 @@ const query = gql`
       count
       __typename
     }
+    contracts: allContracts {
+      id
+      position
+      Project {
+        name
+      }
+      User {
+        username
+      }
+    }
   }
 `;
 
@@ -55,11 +58,18 @@ const mapStateToProps = state => ({
   deviceHeight: state.nonCachedReducer.deviceHeight,
 });
 
-const logs = [];
+const mapDispatchToProps = dispatch => ({
+  setSelectedWorkSession: workSession =>
+    dispatch(setSelectedWorkSession(workSession)),
+});
+
+const workSessions = [];
+let contracts = [];
 
 const WorkSessions = props => {
-  const {deviceWidth, deviceHeight, navigation} = props;
+  const {deviceWidth, setSelectedWorkSession, onExpandWorkSession} = props;
   const [page, setPage] = useState(0);
+
   const {loading, error, data} = useQuery(query, {
     variables: {
       page: page,
@@ -71,7 +81,6 @@ const WorkSessions = props => {
   });
   const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
     const paddingToBottom = 20;
-    console.log('cehcking');
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
@@ -90,9 +99,12 @@ const WorkSessions = props => {
   if (error) {
     return `Error! ${error}`;
   }
-  logs.push(...data.items);
+  workSessions.push(...data.items);
+  contracts = data.contracts;
+  console.log(contracts);
   const showLog = index => {
-    navigation.navigate('WorkSessionExpanded', {workSession: logs[index]});
+    setSelectedWorkSession({...workSessions[index], contracts});
+    onExpandWorkSession();
   };
   return (
     <Container>
@@ -116,9 +128,8 @@ const WorkSessions = props => {
               setPage(page + 1);
             }
           }}
-          scrollEventThrottle={400}
-          >
-          {logs.map((item, index) => (
+          scrollEventThrottle={400}>
+          {workSessions.map((item, index) => (
             <WorkSession
               key={index}
               title={item.title}
@@ -126,6 +137,7 @@ const WorkSessions = props => {
               deviceWidth={deviceWidth}
               showLog={showLog}
               index={index}
+              contracts={contracts}
             />
           ))}
         </ScrollView>
@@ -137,19 +149,19 @@ const WorkSessions = props => {
 WorkSessions.propTypes = {
   deviceHeight: PropTypes.number,
   deviceWidth: PropTypes.number,
-  navigation: PropTypes.object,
+  setSelectedWorkSession: PropTypes.func,
 };
 
 WorkSessions.defaultProps = {
   deviceHeight: 0,
   deviceWidth: 0,
-  navigation: {},
+  setSelectedWorkSession: () => {},
 };
 
 const Container = styled.View`
   padding: 10px 10px 0px 10px;
+  height: 100%;
 `;
-
 
 const TableHeader = styled.View`
   display: flex;
@@ -179,9 +191,7 @@ const LoaderContainer = styled.View`
   height: 250;
 `;
 
-const Text = styled.Text``;
-
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(WorkSessions);

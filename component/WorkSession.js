@@ -10,10 +10,7 @@ const WorkSession = props => {
     <TouchableOpacity onPress={() => showLog(index)}>
       <Container>
         <Date>{date}</Date>
-        <Title
-          numberOfLines={1}>
-          {title}
-        </Title>
+        <Title numberOfLines={1}>{title}</Title>
         <IconContainer>
           <SmallRightArrowIcon />
         </IconContainer>

@@ -12,3 +12,8 @@ export const setDeviceWidth = width => ({
   type: 'SET_DEVICE_WIDTH',
   width,
 });
+
+export const setSelectedWorkSession = workSession => ({
+  type: 'SET_SELECTED_WORK_SESSION',
+  workSession,
+})
