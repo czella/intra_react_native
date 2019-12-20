@@ -13,7 +13,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 
 const dateToString = date => {
-  return date.toISOString().split('T')[0];
+  console.log(date, 'converting date...........................................................');
+  if (date) {
+
+    return date.toISOString().split('T')[0];
+  }
+  return '';
 };
 
 const mapStateToProps = state => ({
@@ -22,14 +27,14 @@ const mapStateToProps = state => ({
 
 const WorkSessionExpanded = props => {
   const {workSession, closeWorkSession} = props;
-  const [title, setTitle] = useState(workSession.title);
-  const [description, setDescription] = useState(workSession.description);
-  const [url, setUrl] = useState(workSession.url);
+  const [title, setTitle] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [url, setUrl] = useState(null);
   const [contract, setContract] = useState('js');
   const [showDatePicker, setShowDatePicker] = useState(false);
   console.log(workSession);
   const [date, setDate] = useState(
-    workSession.date ? new Date(workSession.date) : new Date(),
+    null
   );
   const handleSave = () => {};
   const handleDate = date => {
@@ -39,8 +44,15 @@ const WorkSessionExpanded = props => {
     }
   };
   useEffect(() => {
-    setDate(new Date(workSession.date ? workSession.date : null));
+    if (workSession) {
+
+      setDate(new Date(workSession.date ? workSession.date : null));
+    }
   }, [workSession]);
+
+  if (!workSession) {
+    return null;
+  }
   return (
     <Container>
       <NavigationButtonsContainer>
@@ -109,6 +121,11 @@ const WorkSessionExpanded = props => {
             ))}
           </Picker>
         </InputContainer>
+        <InputElement
+          placeholder={`${workSession.minutes}`}
+          label="Minutes"
+          onChange={() => {}}
+        />
       </Form>
       {showDatePicker && (
         <DateTimePicker
@@ -133,7 +150,7 @@ WorkSessionExpanded.propTypes = {
 };
 
 WorkSessionExpanded.defaultProps = {
-  workSession: {},
+  workSession: null,
   closeWorkSession: () => {},
 };
 

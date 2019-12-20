@@ -1,7 +1,7 @@
 const initialState = {
   deviceHeight: 0,
   deviceWidth: 0,
-  selectedWorkSession: {},
+  selectedWorkSession: null,
 };
 
 const nonCachedReducer = (state = initialState, action) => {
