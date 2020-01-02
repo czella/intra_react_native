@@ -1,61 +1,13 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
-import {useQuery} from '@apollo/react-hooks';
-import {ActivityIndicator, SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView, ScrollView} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {setSelectedWorkSession} from '../store/actions';
 
-const query = gql`
-  query allWorkSessions(
-    $page: Int
-    $perPage: Int
-    $sortField: String
-    $sortOrder: String
-    $filter: WorkSessionFilter
-  ) {
-    items: allWorkSessions(
-      page: $page
-      perPage: $perPage
-      sortField: $sortField
-      sortOrder: $sortOrder
-      filter: $filter
-    ) {
-      id
-      title
-      description
-      url
-      date
-      minutes
-      ContractId
-      __typename
-    }
-    total: _allWorkSessionsMeta(
-      page: $page
-      perPage: $perPage
-      filter: $filter
-    ) {
-      count
-      __typename
-    }
-    contracts: allContracts {
-      id
-      position
-      Project {
-        name
-      }
-      User {
-        username
-      }
-    }
-  }
-`;
-
 const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,
-  deviceHeight: state.nonCachedReducer.deviceHeight,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -63,22 +15,15 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setSelectedWorkSession(workSession)),
 });
 
-const workSessions = [];
-let contracts = [];
-
 const WorkSessions = props => {
-  const {deviceWidth, setSelectedWorkSession, onExpandWorkSession} = props;
+  const {
+    deviceWidth,
+    setSelectedWorkSession,
+    onExpandWorkSession,
+    workSessions,
+    contracts,
+  } = props;
   const [page, setPage] = useState(0);
-
-  const {loading, error, data} = useQuery(query, {
-    variables: {
-      page: page,
-      filter: {},
-      perPage: 20,
-      sortField: 'id',
-      sortOrder: 'DESC',
-    },
-  });
   const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
     const paddingToBottom = 20;
     return (
@@ -86,21 +31,6 @@ const WorkSessions = props => {
       contentSize.height - paddingToBottom
     );
   };
-  if (loading) {
-    return (
-      <LoaderContainer
-        style={{
-          width: deviceWidth - 20,
-        }}>
-        <ActivityIndicator size="large" color="#7423B5" />
-      </LoaderContainer>
-    );
-  }
-  if (error) {
-    return `Error! ${error}`;
-  }
-  workSessions.push(...data.items);
-  contracts = data.contracts;
   const showLog = index => {
     setSelectedWorkSession({...workSessions[index], contracts});
     onExpandWorkSession();
@@ -149,12 +79,16 @@ WorkSessions.propTypes = {
   deviceHeight: PropTypes.number,
   deviceWidth: PropTypes.number,
   setSelectedWorkSession: PropTypes.func,
+  workSessions: PropTypes.array,
+  contracts: PropTypes.array,
 };
 
 WorkSessions.defaultProps = {
   deviceHeight: 0,
   deviceWidth: 0,
   setSelectedWorkSession: () => {},
+  workSessions: [],
+  contracts: [],
 };
 
 const Container = styled.View`
@@ -182,12 +116,6 @@ const Title = styled.Text`
   color: grey;
   line-height: 40px;
   padding-left: 20px;
-`;
-
-const LoaderContainer = styled.View`
-  margin: 10px;
-  padding-top: 120px;
-  height: 250;
 `;
 
 export default connect(

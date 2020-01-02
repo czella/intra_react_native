@@ -5,7 +5,9 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Picker, SafeAreaView, ScrollView,
+  Picker,
+  SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import {BackArrowIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
@@ -57,7 +59,7 @@ const query = gql`
 `;
 
 const WorkSessionExpanded = props => {
-  const {workSession, closeWorkSession, saveWorkSession} = props;
+  const {workSession, closeWorkSession, saveWorkSession, onSave} = props;
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -67,7 +69,6 @@ const WorkSessionExpanded = props => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     Keyboard.dismiss();
-    console.log(workSession.id, title, description, url, dateToString(date), Number(minutes), contract);
     saveWorkSession(
       workSession.id,
       title,
@@ -77,6 +78,8 @@ const WorkSessionExpanded = props => {
       Number(minutes),
       contract,
     );
+    onSave();
+    closeWorkSession();
   };
   const handleDate = date => {
     setShowDatePicker(false);
@@ -202,7 +205,6 @@ const WorkSessionExpanded = props => {
           </TouchableWithoutFeedback>
         </ScrollView>
       </SafeAreaView>
-
     </Container>
   );
 };
@@ -211,12 +213,14 @@ WorkSessionExpanded.propTypes = {
   workSession: PropTypes.object,
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
+  onSave: PropTypes.func,
 };
 
 WorkSessionExpanded.defaultProps = {
   workSession: null,
   closeWorkSession: () => {},
   saveWorkSession: () => {},
+  onSave: () => {},
 };
 
 const Container = styled.View`
