@@ -101,7 +101,6 @@ const WorkSessions = props => {
   }
   workSessions.push(...data.items);
   contracts = data.contracts;
-  console.log(contracts);
   const showLog = index => {
     setSelectedWorkSession({...workSessions[index], contracts});
     onExpandWorkSession();

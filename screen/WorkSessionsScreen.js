@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import {Animated, TouchableOpacity, Dimensions} from 'react-native';
+import { Animated, TouchableOpacity, Dimensions, Keyboard } from 'react-native';
 import MenuBar from '../component/MenuBar';
 import WorkSessions from '../component/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
@@ -24,6 +24,7 @@ const WorksSessionsScreen = props => {
     Animated.timing(translateY, {toValue: 0, duration: 0}).start();
   };
   const closeWorkSession = () => {
+    Keyboard.dismiss();
     setTimeout(() => {
       Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
       Animated.spring(scale, {toValue: 1.3}).start();

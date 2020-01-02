@@ -5,18 +5,16 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Picker,
+  Picker, SafeAreaView, ScrollView,
 } from 'react-native';
 import {BackArrowIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
+import gql from 'graphql-tag';
+import {graphql} from 'react-apollo';
 
 const dateToString = date => {
-  console.log(
-    date,
-    'converting date...........................................................',
-  );
   if (date) {
     return date.toISOString().split('T')[0];
   }
@@ -27,26 +25,81 @@ const mapStateToProps = state => ({
   workSession: state.nonCachedReducer.selectedWorkSession,
 });
 
+const query = gql`
+  mutation updateWorkSession(
+    $id: ID!
+    $title: String!
+    $description: String!
+    $url: String!
+    $date: String!
+    $minutes: Int!
+    $ContractId: ID!
+  ) {
+    data: updateWorkSession(
+      id: $id
+      title: $title
+      description: $description
+      url: $url
+      date: $date
+      minutes: $minutes
+      ContractId: $ContractId
+    ) {
+      id
+      title
+      description
+      url
+      date
+      minutes
+      ContractId
+      __typename
+    }
+  }
+`;
+
 const WorkSessionExpanded = props => {
-  const {workSession, closeWorkSession} = props;
+  const {workSession, closeWorkSession, saveWorkSession} = props;
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
   const [date, setDate] = useState(null);
   const [minutes, setMinutes] = useState(null);
-  const [contract, setContract] = useState('js');
+  const [contract, setContract] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  console.log(workSession);
-  const handleSave = () => {};
+  const handleSave = () => {
+    Keyboard.dismiss();
+    console.log(workSession.id, title, description, url, dateToString(date), Number(minutes), contract);
+    saveWorkSession(
+      workSession.id,
+      title,
+      description,
+      url,
+      dateToString(date),
+      Number(minutes),
+      contract,
+    );
+  };
   const handleDate = date => {
     setShowDatePicker(false);
     if (date) {
       setDate(date);
     }
   };
+
   useEffect(() => {
     if (workSession) {
+      setTitle(workSession.title);
+      setDescription(workSession.description);
+      setMinutes(`${workSession.minutes}`);
+      setContract(workSession.ContractId);
+      setUrl(workSession.url);
       setDate(new Date(workSession.date ? workSession.date : null));
+    } else {
+      setTitle(null);
+      setDescription(null);
+      setMinutes(null);
+      setContract(null);
+      setUrl(null);
+      setDate(null);
     }
   }, [workSession]);
 
@@ -64,83 +117,92 @@ const WorkSessionExpanded = props => {
           <SaveIcon />
         </TouchableOpacity>
       </NavigationButtonsContainer>
-      <Form>
-        <InputElement
-          editable={false}
-          placeholder={workSession.id}
-          label="Id"
-        />
-        <InputElement
-          placeholder={workSession.title}
-          label="Title"
-          onChange={setTitle}
-        />
-        <InputElement
-          placeholder={workSession.description}
-          label="Description"
-          onChange={setDescription}
-        />
-        <InputElement
-          placeholder={workSession.url}
-          label="Url"
-          onChange={setUrl}
-        />
-        <InputContainer
-          style={{
-            borderBottomWidth: 1,
-            borderRadius: 1,
-            borderBottomColor: 'lightgrey',
-            color: 'lightgrey',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              setShowDatePicker(true);
-            }}>
-            <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-            <TextInput
+      <SafeAreaView
+        style={{
+          height: '100%',
+          zIndex: 1,
+        }}>
+        <ScrollView>
+          <Form>
+            <InputElement
               editable={false}
-              onChange={() => {}}
-              placeholder={dateToString(date)}
+              placeholder={workSession.id}
+              label="Id"
             />
-          </TouchableOpacity>
-        </InputContainer>
-        <InputElement
-          placeholder={`${workSession.minutes}`}
-          label="Minutes"
-          onChange={() => {}}
-        />
-        <PickerContainer>
-          <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-          <Picker
-            selectedValue={contract}
-            style={{height: 40, width: '100%'}}
-            onValueChange={itemValue => {
-              setContract(itemValue);
-            }}>
-            {workSession.contracts.map(contract => (
-              <Picker.Item
-                label={`${contract.Project.name} - ${contract.position} - ${
-                  contract.User.username
-                }`}
-                value={contract.id}
-              />
-            ))}
-          </Picker>
-        </PickerContainer>
-      </Form>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          is24Hour={true}
-          display="default"
-          onChange={(event, date) => {
-            handleDate(date);
-          }}
-        />
-      )}
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Background />
-      </TouchableWithoutFeedback>
+            <InputElement
+              placeholder={workSession.title}
+              label="Title"
+              onChange={setTitle}
+            />
+            <InputElement
+              placeholder={workSession.description}
+              label="Description"
+              onChange={setDescription}
+            />
+            <InputElement
+              placeholder={workSession.url}
+              label="Url"
+              onChange={setUrl}
+            />
+            <InputContainer
+              style={{
+                borderBottomWidth: 1,
+                borderRadius: 1,
+                borderBottomColor: 'lightgrey',
+                color: 'lightgrey',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowDatePicker(true);
+                }}>
+                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+                <TextInput
+                  editable={false}
+                  onChange={() => {}}
+                  placeholder={dateToString(date)}
+                />
+              </TouchableOpacity>
+            </InputContainer>
+            <InputElement
+              placeholder={`${workSession.minutes}`}
+              label="Minutes"
+              onChange={setMinutes}
+            />
+            <PickerContainer>
+              <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
+              <Picker
+                selectedValue={contract}
+                style={{height: 40, width: '100%'}}
+                onValueChange={itemValue => {
+                  setContract(itemValue);
+                }}>
+                {workSession.contracts.map(contract => (
+                  <Picker.Item
+                    label={`${contract.Project.name} - ${contract.position} - ${
+                      contract.User.username
+                    }`}
+                    value={contract.id}
+                  />
+                ))}
+              </Picker>
+            </PickerContainer>
+          </Form>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              is24Hour={true}
+              display="default"
+              onChange={(event, date) => {
+                handleDate(date);
+              }}
+            />
+          )}
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <Background />
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </SafeAreaView>
+
     </Container>
   );
 };
@@ -148,11 +210,13 @@ const WorkSessionExpanded = props => {
 WorkSessionExpanded.propTypes = {
   workSession: PropTypes.object,
   closeWorkSession: PropTypes.func,
+  saveWorkSession: PropTypes.func,
 };
 
 WorkSessionExpanded.defaultProps = {
   workSession: null,
   closeWorkSession: () => {},
+  saveWorkSession: () => {},
 };
 
 const Container = styled.View`
@@ -198,7 +262,16 @@ const PickerContainer = styled.View`
   border-bottom-color: lightgrey;
 `;
 
-export default connect(
-  mapStateToProps,
-  null,
-)(WorkSessionExpanded);
+export default graphql(query, {
+  props: ({mutate}) => ({
+    saveWorkSession: (id, title, description, url, date, minutes, ContractId) =>
+      mutate({
+        variables: {id, title, description, url, date, minutes, ContractId},
+      }),
+  }),
+})(
+  connect(
+    mapStateToProps,
+    null,
+  )(WorkSessionExpanded),
+);
