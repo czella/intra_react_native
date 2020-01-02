@@ -17,7 +17,7 @@ const InputElement = props => {
       <TextInput
         multiline={true}
         editable={editable}
-        onChange={onChange}
+        onChangeText={input => onChange(input)}
         placeholder={placeholder}
         onFocus={() => setColor('blue')}
         onBlur={() => setColor('lightgrey')}

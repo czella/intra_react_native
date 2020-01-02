@@ -13,9 +13,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 
 const dateToString = date => {
-  console.log(date, 'converting date...........................................................');
+  console.log(
+    date,
+    'converting date...........................................................',
+  );
   if (date) {
-
     return date.toISOString().split('T')[0];
   }
   return '';
@@ -30,12 +32,11 @@ const WorkSessionExpanded = props => {
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
+  const [date, setDate] = useState(null);
+  const [minutes, setMinutes] = useState(null);
   const [contract, setContract] = useState('js');
   const [showDatePicker, setShowDatePicker] = useState(false);
   console.log(workSession);
-  const [date, setDate] = useState(
-    null
-  );
   const handleSave = () => {};
   const handleDate = date => {
     setShowDatePicker(false);
@@ -45,7 +46,6 @@ const WorkSessionExpanded = props => {
   };
   useEffect(() => {
     if (workSession) {
-
       setDate(new Date(workSession.date ? workSession.date : null));
     }
   }, [workSession]);
@@ -69,22 +69,21 @@ const WorkSessionExpanded = props => {
           editable={false}
           placeholder={workSession.id}
           label="Id"
-          onChange={() => {}}
         />
         <InputElement
           placeholder={workSession.title}
           label="Title"
-          onChange={() => {}}
+          onChange={setTitle}
         />
         <InputElement
           placeholder={workSession.description}
           label="Description"
-          onChange={() => {}}
+          onChange={setDescription}
         />
         <InputElement
           placeholder={workSession.url}
           label="Url"
-          onChange={() => {}}
+          onChange={setUrl}
         />
         <InputContainer
           style={{
@@ -104,11 +103,18 @@ const WorkSessionExpanded = props => {
               placeholder={dateToString(date)}
             />
           </TouchableOpacity>
+        </InputContainer>
+        <InputElement
+          placeholder={`${workSession.minutes}`}
+          label="Minutes"
+          onChange={() => {}}
+        />
+        <PickerContainer>
           <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
           <Picker
             selectedValue={contract}
             style={{height: 40, width: '100%'}}
-            onValueChange={(itemValue, itemIndex) => {
+            onValueChange={itemValue => {
               setContract(itemValue);
             }}>
             {workSession.contracts.map(contract => (
@@ -120,12 +126,7 @@ const WorkSessionExpanded = props => {
               />
             ))}
           </Picker>
-        </InputContainer>
-        <InputElement
-          placeholder={`${workSession.minutes}`}
-          label="Minutes"
-          onChange={() => {}}
-        />
+        </PickerContainer>
       </Form>
       {showDatePicker && (
         <DateTimePicker
@@ -190,6 +191,11 @@ const InputLabel = styled.Text``;
 
 const TextInput = styled.TextInput`
   line-height: 60px;
+`;
+
+const PickerContainer = styled.View`
+  border-bottom-width: 1px;
+  border-bottom-color: lightgrey;
 `;
 
 export default connect(
