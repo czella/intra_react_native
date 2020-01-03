@@ -72,7 +72,6 @@ const contracts = [];
 const WorkSessionsScreen = props => {
   const {navigation} = props;
   const [top, setTop] = useState(new Animated.Value(deviceHeight + 200));
-  const [scale, setScale] = useState(new Animated.Value(1));
   const [translateY, setTranslateY] = useState(new Animated.Value(0));
   const [page, setPage] = useState(0);
 
@@ -105,14 +104,12 @@ const WorkSessionsScreen = props => {
   contracts.push(...data.contracts);
   const expandWorkSession = () => {
     Animated.timing(top, {toValue: 0, duration: 500}).start();
-    // Animated.spring(scale, {toValue: 1}).start();
     Animated.timing(translateY, {toValue: 0, duration: 0}).start();
   };
   const closeWorkSession = () => {
     Keyboard.dismiss();
     setTimeout(() => {
       Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
-      Animated.spring(scale, {toValue: 1}).start();
     }, 500);
     Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
   };
@@ -137,7 +134,7 @@ const WorkSessionsScreen = props => {
       </ButtonContainer>
       <AnimatedWorkSessionModal
         style={{
-          transform: [{scale: scale}, {translateY: translateY}],
+          transform: [{translateY: translateY}],
           top: top,
         }}>
         <WorkSessionExpanded
