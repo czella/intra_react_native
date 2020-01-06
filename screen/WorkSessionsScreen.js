@@ -13,7 +13,7 @@ import WorkSessions from '../component/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
 import {connect} from 'react-redux';
 import WorkSessionExpanded from '../component/WorkSessionExpanded';
-import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import {setWorkSessionsEdited} from '../store/actions';
 import EventPool from '../utils/EventPool';
@@ -78,36 +78,26 @@ const query = gql`
 const workSessions = [];
 const contracts = [];
 const WorkSessionsScreen = props => {
-  const {navigation, workSessionsEdited, setWorkSessionsEdited} = props;
+  const {navigation, setWorkSessionsEdited} = props;
   const [top, setTop] = useState(new Animated.Value(deviceHeight + 500));
   const [translateY, setTranslateY] = useState(new Animated.Value(0));
   const [page, setPage] = useState(0);
 
-  const {loading, data, error, refetch} = useQuery(
-    query,
-    {
-      variables: {
-        page: page,
-        filter: {},
-        perPage: 20,
-        sortField: 'id',
-        sortOrder: 'DESC',
-      },
-      notifyOnNetworkStatusChange: true,
+  const {loading, data, error, refetch} = useQuery(query, {
+    variables: {
+      page: page,
+      filter: {},
+      perPage: 20,
+      sortField: 'id',
+      sortOrder: 'DESC',
     },
-  );
-  // useEffect(() => {
-  //   // loadWorkSessions();
-  // }, [loadWorkSessions]);
+    notifyOnNetworkStatusChange: true,
+  });
   useEffect(() => {
-    const fetchSessions = () => {console.log('fetchin now in session-----------------------------');refetch()};
+    const fetchSessions = () => refetch();
     EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () =>
-      EventPool.removeListener('refreshWorkSessions', fetchSessions);
+    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
   }, []);
-  // if (!called) {
-  //   return null;
-  // }
   if (data) {
   }
   if (loading) {
@@ -136,17 +126,16 @@ const WorkSessionsScreen = props => {
       setTimeout(() => {
         Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
       }, 500);
-      Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
+      Animated.timing(translateY, {
+        toValue: deviceHeight,
+        duration: 500,
+      }).start();
     });
   };
 
   const onWorkSessionSave = () => {
     return new Promise(() => {
       Keyboard.dismiss();
-      // setTimeout(() => {
-      //   Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
-      // }, 500);
-      // Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
       setTop(new Animated.Value(deviceHeight + 500));
       setTranslateY(new Animated.Value(0));
     });
@@ -189,13 +178,11 @@ const WorkSessionsScreen = props => {
 
 WorkSessionsScreen.proptypes = {
   navigation: PropTypes.object,
-  workSessionsEdited: PropTypes.bool,
   setWorkSessionsEdited: PropTypes.func,
 };
 
 WorkSessionsScreen.defaultProps = {
   navigation: {},
-  workSessionsEdited: false,
   setWorkSessionsEdited: () => {},
 };
 
