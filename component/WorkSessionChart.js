@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
@@ -7,8 +7,9 @@ import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
-import {LeftArrowIcon, RightArrowIcon} from '../svg/Icons';
+import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import {connect} from 'react-redux';
+import EventPool from '../utils/EventPool';
 
 const query = gql`
   query allStatsDailyUserWorkSessions($startDate: String!, $endDate: String!) {
@@ -47,19 +48,29 @@ const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,
 });
 
+let convertedData;
+let line;
+let monthLabel;
+let yearLabel;
+
 const WorkSessionChart = props => {
   const {deviceWidth} = props;
   const [referenceDate, setReferenceDate] = useState(new Date());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 
-  const {loading, error, data} = useQuery(query, {
+  const {loading, data, error, refetch} = useQuery(query, {
     variables: {
       startDate: dateToMysqlString(startDate),
       endDate: dateToMysqlString(endDate),
     },
+    notifyOnNetworkStatusChange: true,
   });
-
+  useEffect(() => {
+    const fetchSessions = () => refetch();
+    EventPool.addListener('refreshWorkSessions', fetchSessions);
+    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
+  }, []);
   if (loading) {
     return (
       <LoaderContainer
@@ -71,17 +82,16 @@ const WorkSessionChart = props => {
     );
   }
   if (error) {
-    return `Error! ${error}`;
+    return <Text>`Error! ${error}`</Text>;
   }
-  const convertedData = workSessionDataHelper(data, startDate, endDate);
-
-  const line = {
+  convertedData = workSessionDataHelper(data, startDate, endDate);
+  line = {
     id: 1,
     labels: convertedData.labels,
     datasets: convertedData.dataset,
   };
-  const monthLabel = [...convertedData.months].join(' / ');
-  const yearLabel = [...convertedData.years].join(' / ');
+  monthLabel = [...convertedData.months].join(' / ');
+  yearLabel = [...convertedData.years].join(' / ');
 
   const handleBack = () => {
     const newReferenceDate = new Date(referenceDate.getTime());
@@ -141,10 +151,18 @@ const WorkSessionChart = props => {
             <Text>Previous days</Text>
           </ButtonContainer>
         </TouchableOpacity>
-        <MonthLabelContainer>
-          <Text>{yearLabel}</Text>
-          <Text>{monthLabel}</Text>
-        </MonthLabelContainer>
+        <TestContainer>
+
+          <MonthLabelContainer>
+            <Text>{yearLabel}</Text>
+            <Text>{monthLabel}</Text>
+          </MonthLabelContainer>
+          <TouchableOpacity onPress={() => refetch()}>
+            <ButtonContainer>
+              <RefreshIcon />
+            </ButtonContainer>
+          </TouchableOpacity>
+        </TestContainer>
         <TouchableOpacity onPress={handleForward}>
           <ButtonContainer>
             <Text>Next days</Text>
@@ -193,6 +211,10 @@ const ButtonsRow = styled.View`
 const ButtonContainer = styled.View`
   flex-direction: row;
   align-items: center;
+`;
+
+const TestContainer = styled.View`
+  flex-direction: row;
 `;
 
 const Text = styled.Text``;

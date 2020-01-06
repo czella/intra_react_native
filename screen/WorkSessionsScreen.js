@@ -13,10 +13,18 @@ import WorkSessions from '../component/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
 import {connect} from 'react-redux';
 import WorkSessionExpanded from '../component/WorkSessionExpanded';
-import {useLazyQuery} from '@apollo/react-hooks';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import {setWorkSessionsEdited} from '../store/actions';
+import EventPool from '../utils/EventPool';
+
 const mapStateToProps = state => ({
-  deviceHeight: state.nonCachedReducer.deviceHeight,
+  workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setWorkSessionsEdited: workSessionsEdited =>
+    dispatch(setWorkSessionsEdited(workSessionsEdited)),
 });
 
 let deviceHeight = Dimensions.get('screen').height;
@@ -70,25 +78,37 @@ const query = gql`
 const workSessions = [];
 const contracts = [];
 const WorkSessionsScreen = props => {
-  const {navigation} = props;
-  const [top, setTop] = useState(new Animated.Value(deviceHeight + 200));
+  const {navigation, workSessionsEdited, setWorkSessionsEdited} = props;
+  const [top, setTop] = useState(new Animated.Value(deviceHeight + 500));
   const [translateY, setTranslateY] = useState(new Animated.Value(0));
   const [page, setPage] = useState(0);
 
-  const [loadWorkSessions, {called, loading, data}] = useLazyQuery(query, {
-    variables: {
-      page: page,
-      filter: {},
-      perPage: 20,
-      sortField: 'id',
-      sortOrder: 'DESC',
+  const {loading, data, error, refetch} = useQuery(
+    query,
+    {
+      variables: {
+        page: page,
+        filter: {},
+        perPage: 20,
+        sortField: 'id',
+        sortOrder: 'DESC',
+      },
+      notifyOnNetworkStatusChange: true,
     },
-  });
+  );
+  // useEffect(() => {
+  //   // loadWorkSessions();
+  // }, [loadWorkSessions]);
   useEffect(() => {
-    loadWorkSessions();
-  }, [loadWorkSessions]);
-  if (!called) {
-    return null;
+    const fetchSessions = () => {console.log('fetchin now in session-----------------------------');refetch()};
+    EventPool.addListener('refreshWorkSessions', fetchSessions);
+    return () =>
+      EventPool.removeListener('refreshWorkSessions', fetchSessions);
+  }, []);
+  // if (!called) {
+  //   return null;
+  // }
+  if (data) {
   }
   if (loading) {
     return (
@@ -100,19 +120,38 @@ const WorkSessionsScreen = props => {
       </LoaderContainer>
     );
   }
+  if (error) {
+    return `Error! ${error}`;
+  }
   workSessions.push(...data.items);
   contracts.push(...data.contracts);
   const expandWorkSession = () => {
     Animated.timing(top, {toValue: 0, duration: 500}).start();
     Animated.timing(translateY, {toValue: 0, duration: 0}).start();
   };
+
   const closeWorkSession = () => {
-    Keyboard.dismiss();
-    setTimeout(() => {
-      Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
-    }, 500);
-    Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
+    return new Promise(() => {
+      Keyboard.dismiss();
+      setTimeout(() => {
+        Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
+      }, 500);
+      Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
+    });
   };
+
+  const onWorkSessionSave = () => {
+    return new Promise(() => {
+      Keyboard.dismiss();
+      // setTimeout(() => {
+      //   Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
+      // }, 500);
+      // Animated.timing(translateY, {toValue: deviceHeight, duration: 500}).start();
+      setTop(new Animated.Value(deviceHeight + 500));
+      setTranslateY(new Animated.Value(0));
+    });
+  };
+
   const onLayout = event => {
     deviceHeight = event.nativeEvent.layout.height;
     deviceWidth = event.nativeEvent.layout.width;
@@ -128,7 +167,7 @@ const WorkSessionsScreen = props => {
         contracts={data.contracts}
       />
       <ButtonContainer>
-        <TouchableOpacity onPress={() => navigation.navigate('NewWorkSession')}>
+        <TouchableOpacity onPress={() => refetch()}>
           <AddButtonIcon />
         </TouchableOpacity>
       </ButtonContainer>
@@ -140,7 +179,8 @@ const WorkSessionsScreen = props => {
         <WorkSessionExpanded
           navigation={navigation}
           closeWorkSession={closeWorkSession}
-          onSave={loadWorkSessions}
+          setWorkSessionsEdited={setWorkSessionsEdited}
+          onWorkSessionSave={onWorkSessionSave}
         />
       </AnimatedWorkSessionModal>
     </Container>
@@ -149,12 +189,14 @@ const WorkSessionsScreen = props => {
 
 WorkSessionsScreen.proptypes = {
   navigation: PropTypes.object,
-  deviceHeight: PropTypes.number,
+  workSessionsEdited: PropTypes.bool,
+  setWorkSessionsEdited: PropTypes.func,
 };
 
 WorkSessionsScreen.defaultProps = {
   navigation: {},
-  deviceHeight: 0,
+  workSessionsEdited: false,
+  setWorkSessionsEdited: () => {},
 };
 
 const LoaderContainer = styled.View`
@@ -193,5 +235,5 @@ const ButtonContainer = styled.View`
 
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(WorkSessionsScreen);

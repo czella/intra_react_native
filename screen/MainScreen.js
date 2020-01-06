@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -6,6 +6,7 @@ import {setToken} from '../store/actions';
 import Login from '../component/Login';
 import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/WorkSessionChart';
+import EventPool from '../utils/EventPool';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -17,6 +18,7 @@ const mapDispatchToProps = dispatch => ({
 
 const MainScreen = props => {
   const {token, setToken, navigation} = props;
+
   return (
     <Container>
       {token && (
@@ -45,12 +47,6 @@ MainScreen.defaultProps = {
 const Container = styled.View`
   height: 100%;
   width: 100%;
-`;
-
-const Text = styled.Text`
-  position: absolute;
-  bottom: 0px;
-  font-size: 15px;
 `;
 
 export default connect(

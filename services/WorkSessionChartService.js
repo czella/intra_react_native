@@ -1,6 +1,7 @@
 import {find, isEmpty} from 'lodash';
 
 export const workSessionDataHelper = (data, startDate, endDate) => {
+  console.log('converting------------------------------------');
   const users = {};
 
   const selectedLines = [];

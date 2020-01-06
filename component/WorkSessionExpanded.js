@@ -15,6 +15,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
+import EventPool from '../utils/EventPool';
 
 const dateToString = date => {
   if (date) {
@@ -59,7 +60,7 @@ const query = gql`
 `;
 
 const WorkSessionExpanded = props => {
-  const {workSession, closeWorkSession, saveWorkSession, onSave} = props;
+  const {workSession, closeWorkSession, saveWorkSession, onWorkSessionSave } = props;
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -68,7 +69,6 @@ const WorkSessionExpanded = props => {
   const [contract, setContract] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
-    Keyboard.dismiss();
     saveWorkSession(
       workSession.id,
       title,
@@ -77,9 +77,8 @@ const WorkSessionExpanded = props => {
       dateToString(date),
       Number(minutes),
       contract,
-    );
-    onSave();
-    closeWorkSession();
+    ).then(() => EventPool.emit('refreshWorkSessions'));
+    onWorkSessionSave();
   };
   const handleDate = date => {
     setShowDatePicker(false);
@@ -213,14 +212,16 @@ WorkSessionExpanded.propTypes = {
   workSession: PropTypes.object,
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
-  onSave: PropTypes.func,
+  setWorkSessionsEdited: PropTypes.func,
+  onWorkSessionSave: PropTypes.func,
 };
 
 WorkSessionExpanded.defaultProps = {
   workSession: null,
   closeWorkSession: () => {},
   saveWorkSession: () => {},
-  onSave: () => {},
+  setWorkSessionsEdited: () => {},
+  onWorkSessionSave: () => {},
 };
 
 const Container = styled.View`

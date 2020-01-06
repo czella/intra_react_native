@@ -2,6 +2,7 @@ const initialState = {
   deviceHeight: 0,
   deviceWidth: 0,
   selectedWorkSession: null,
+  workSessionsEdited: false,
 };
 
 const nonCachedReducer = (state = initialState, action) => {
@@ -20,6 +21,11 @@ const nonCachedReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedWorkSession: action.workSession,
+      };
+    case 'SET_WORK_SESSIONS_EDITED':
+      return {
+        ...state,
+        workSessionsEdited: action.workSessionsEdited,
       };
     default: {
       return state;
