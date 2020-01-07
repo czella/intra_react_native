@@ -17,6 +17,7 @@ import {useQuery} from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import {setWorkSessionsEdited} from '../store/actions';
 import EventPool from '../utils/EventPool';
+import WorkSessionNew from '../component/WorkSessionNew';
 
 const mapStateToProps = state => ({
   workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
@@ -79,8 +80,10 @@ const workSessions = [];
 const contracts = [];
 const WorkSessionsScreen = props => {
   const {navigation, setWorkSessionsEdited} = props;
-  const [top, setTop] = useState(new Animated.Value(deviceHeight + 500));
-  const [translateY, setTranslateY] = useState(new Animated.Value(0));
+  const [topExpandedSession, setTopExpandedSession] = useState(new Animated.Value(deviceHeight + 500));
+  const [topNewSession, setTopNewSession] = useState(new Animated.Value(deviceHeight + 500));
+  const [translateYExpandedSession, setTranslateYExpandedSession] = useState(new Animated.Value(0));
+  const [translateYNewSession, setTranslateYNewSession] = useState(new Animated.Value(0));
   const [page, setPage] = useState(0);
 
   const {loading, data, error, refetch} = useQuery(query, {
@@ -115,18 +118,37 @@ const WorkSessionsScreen = props => {
   }
   workSessions.push(...data.items);
   contracts.push(...data.contracts);
+
   const expandWorkSession = () => {
-    Animated.timing(top, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateY, {toValue: 0, duration: 0}).start();
+    Animated.timing(topExpandedSession, {toValue: 0, duration: 500}).start();
+    Animated.timing(translateYExpandedSession, {toValue: 0, duration: 0}).start();
   };
 
-  const closeWorkSession = () => {
+  const newWorkSession = () => {
+    Animated.timing(topNewSession, {toValue: 0, duration: 500}).start();
+    Animated.timing(translateYNewSession, {toValue: 0, duration: 0}).start();
+  };
+
+  const closeExpandedWorkSession = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(top, {toValue: deviceHeight, duration: 0}).start();
+        Animated.timing(topExpandedSession, {toValue: deviceHeight, duration: 0}).start();
       }, 500);
-      Animated.timing(translateY, {
+      Animated.timing(translateYExpandedSession, {
+        toValue: deviceHeight,
+        duration: 500,
+      }).start();
+    });
+  };
+
+  const closeNewWorkSession = () => {
+    return new Promise(() => {
+      Keyboard.dismiss();
+      setTimeout(() => {
+        Animated.timing(topNewSession, {toValue: deviceHeight, duration: 0}).start();
+      }, 500);
+      Animated.timing(translateYNewSession, {
         toValue: deviceHeight,
         duration: 500,
       }).start();
@@ -136,8 +158,8 @@ const WorkSessionsScreen = props => {
   const onWorkSessionSave = () => {
     return new Promise(() => {
       Keyboard.dismiss();
-      setTop(new Animated.Value(deviceHeight + 500));
-      setTranslateY(new Animated.Value(0));
+      setTopExpandedSession(new Animated.Value(deviceHeight + 500));
+      setTranslateYExpandedSession(new Animated.Value(0));
     });
   };
 
@@ -156,18 +178,28 @@ const WorkSessionsScreen = props => {
         contracts={data.contracts}
       />
       <ButtonContainer>
-        <TouchableOpacity onPress={() => refetch()}>
+        <TouchableOpacity onPress={newWorkSession}>
           <AddButtonIcon />
         </TouchableOpacity>
       </ButtonContainer>
       <AnimatedWorkSessionModal
         style={{
-          transform: [{translateY: translateY}],
-          top: top,
+          transform: [{translateY: translateYExpandedSession}],
+          top: topExpandedSession,
         }}>
         <WorkSessionExpanded
-          navigation={navigation}
-          closeWorkSession={closeWorkSession}
+          closeWorkSession={closeExpandedWorkSession}
+          setWorkSessionsEdited={setWorkSessionsEdited}
+          onWorkSessionSave={onWorkSessionSave}
+        />
+      </AnimatedWorkSessionModal>
+      <AnimatedWorkSessionModal
+        style={{
+          transform: [{translateY: translateYNewSession}],
+          top: topNewSession,
+        }}>
+        <WorkSessionNew
+          closeWorkSession={closeNewWorkSession}
           setWorkSessionsEdited={setWorkSessionsEdited}
           onWorkSessionSave={onWorkSessionSave}
         />

@@ -8,6 +8,7 @@ import {
   Picker,
   SafeAreaView,
   ScrollView,
+  CheckBox,
 } from 'react-native';
 import {BackArrowIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
@@ -66,6 +67,7 @@ const WorkSessionExpanded = props => {
     saveWorkSession,
     onWorkSessionSave,
   } = props;
+  const [usingTemplate, setUsingTemplate] = useState(false);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -119,7 +121,7 @@ const WorkSessionExpanded = props => {
         <TouchableOpacity onPress={closeWorkSession}>
           <BackArrowIcon />
         </TouchableOpacity>
-        <TitleBar>Edit Session</TitleBar>
+        <TitleBar>New Session</TitleBar>
         <TouchableOpacity onPress={handleSave}>
           <SaveIcon />
         </TouchableOpacity>
@@ -131,11 +133,13 @@ const WorkSessionExpanded = props => {
         }}>
         <ScrollView>
           <Form>
-            <InputElement
-              editable={false}
-              placeholder={workSession.id}
-              label="Id"
-            />
+            <CheckBoxContainer>
+              <CheckBox
+                value={usingTemplate}
+                onValueChange={() => setUsingTemplate(!usingTemplate)}
+              />
+              <CheckBoxLabel> Use previous session as a template</CheckBoxLabel>
+            </CheckBoxContainer>
             <InputElement
               placeholder={workSession.title}
               label="Title"
@@ -246,6 +250,15 @@ const TitleBar = styled.Text`
 
 const Form = styled.View`
   padding: 10px;
+`;
+
+const CheckBoxContainer = styled.View`
+  flex-direction: row;
+  margin-bottom: 10px;
+`;
+
+const CheckBoxLabel = styled.Text`
+  margin-top: 5;
 `;
 
 const NavigationButtonsContainer = styled.View`
