@@ -1,5 +1,5 @@
 import React from 'react';
-import {Circle, G, Path, Rect, Svg} from 'react-native-svg';
+import {Circle, G, Path, Rect, Svg, Mask} from 'react-native-svg';
 
 export const WorkSessionsIcon = () => (
   <Svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="false">
@@ -148,5 +148,50 @@ export const RefreshIcon = () => (
         d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
       />
     </G>
+  </Svg>
+);
+
+export const CopyIcon = () => (
+  <Svg
+    width="45"
+    height="45"
+    viewBox="0 0 30 30"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Circle cx="15" cy="15" r="14.5" fill="#651FFF" stroke="#651FFF" />
+    <Rect
+      x="12.75"
+      y="11.75"
+      width="10.5"
+      height="13.5"
+      rx="2.25"
+      stroke="#EEEEEE"
+      stroke-width="1.5"
+    />
+    <Mask id="poly">
+      <Path
+        d="M5 4L16.5 3L20.5 5L18.5 10.5H14.5L11.5 12.5V20H11H5.65499L5 4Z"
+        fill="#EEEEEE"
+      />
+    </Mask>
+    <G mask="url(#poly)">
+      <Rect
+        x="6.75"
+        y="4.75"
+        width="10.5"
+        height="13.5"
+        rx="2.25"
+        stroke="#EEEEEE"
+        stroke-width="1.5"
+      />
+    </G>
+  </Svg>
+);
+
+export const CancelIcon = () => (
+  <Svg width="45" height="45" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Circle cx="15" cy="15" r="14.5" fill="#651FFF" stroke="#651FFF"/>
+    <Rect x="7" y="8.41421" width="2" height="20" transform="rotate(-45 7 8.41421)" fill="#EEEEEE"/>
+    <Rect x="8.41421" y="22.5563" width="2" height="20" transform="rotate(-135 8.41421 22.5563)" fill="#EEEEEE"/>
   </Svg>
 );

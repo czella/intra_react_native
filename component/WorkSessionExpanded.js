@@ -129,7 +129,7 @@ const WorkSessionExpanded = props => {
           height: '100%',
           zIndex: 1,
         }}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{paddingBottom: 50}}>
           <Form>
             <InputElement
               editable={false}

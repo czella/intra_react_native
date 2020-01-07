@@ -199,6 +199,8 @@ const WorkSessionsScreen = props => {
           top: topNewSession,
         }}>
         <WorkSessionNew
+          lastWorkSession={data.items[0]}
+          contracts={data.contracts}
           closeWorkSession={closeNewWorkSession}
           setWorkSessionsEdited={setWorkSessionsEdited}
           onWorkSessionSave={onWorkSessionSave}

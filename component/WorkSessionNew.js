@@ -10,7 +10,7 @@ import {
   ScrollView,
   CheckBox,
 } from 'react-native';
-import {BackArrowIcon, SaveIcon} from '../svg/Icons';
+import { BackArrowIcon, CancelIcon, CopyIcon, SaveIcon } from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
@@ -24,10 +24,6 @@ const dateToString = date => {
   }
   return '';
 };
-
-const mapStateToProps = state => ({
-  workSession: state.nonCachedReducer.selectedWorkSession,
-});
 
 const query = gql`
   mutation updateWorkSession(
@@ -62,12 +58,13 @@ const query = gql`
 
 const WorkSessionNew = props => {
   const {
-    workSession,
+    lastWorkSession,
+    contracts,
     closeWorkSession,
     saveWorkSession,
     onWorkSessionSave,
   } = props;
-  const [usingTemplate, setUsingTemplate] = useState(false);
+  const [template, setTemplate] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -77,7 +74,7 @@ const WorkSessionNew = props => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     saveWorkSession(
-      workSession.id,
+      lastWorkSession.id,
       title,
       description,
       url,
@@ -94,27 +91,15 @@ const WorkSessionNew = props => {
     }
   };
 
-  useEffect(() => {
-    if (workSession) {
-      setTitle(workSession.title);
-      setDescription(workSession.description);
-      setMinutes(`${workSession.minutes}`);
-      setContract(workSession.ContractId);
-      setUrl(workSession.url);
-      setDate(new Date(workSession.date ? workSession.date : null));
-    } else {
-      setTitle(null);
-      setDescription(null);
-      setMinutes(null);
-      setContract(null);
-      setUrl(null);
-      setDate(null);
-    }
-  }, [workSession]);
+  const clearFields = () => {
+    setTitle(null);
+    setDescription(null);
+    setMinutes(null);
+    setContract(null);
+    setUrl(null);
+    setDate(null);
+  };
 
-  if (!workSession) {
-    return null;
-  }
   return (
     <Container>
       <NavigationButtonsContainer>
@@ -129,31 +114,31 @@ const WorkSessionNew = props => {
       <SafeAreaView
         style={{
           height: '100%',
+          wdith: '100%',
           zIndex: 1,
         }}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{paddingBottom: 50}}>
           <Form>
-            <CheckBoxContainer>
-              <CheckBox
-                value={usingTemplate}
-                onValueChange={() => setUsingTemplate(!usingTemplate)}
-              />
-              <CheckBoxLabel> Use previous session as a template</CheckBoxLabel>
-            </CheckBoxContainer>
+            <TouchableOpacity onPress={() => setTemplate(lastWorkSession)}>
+              <ButtonContainer>
+                <CopyIcon />
+                <ButtonLabel>Copy last session</ButtonLabel>
+              </ButtonContainer>
+            </TouchableOpacity>
             <InputElement
-              placeholder={workSession.title}
               label="Title"
               onChange={setTitle}
+              value={template ? template.title : null}
             />
             <InputElement
-              placeholder={workSession.description}
               label="Description"
               onChange={setDescription}
+              value={template ? template.description : null}
             />
             <InputElement
-              placeholder={workSession.url}
               label="Url"
               onChange={setUrl}
+              value={template ? template.url : null}
             />
             <InputContainer
               style={{
@@ -170,14 +155,16 @@ const WorkSessionNew = props => {
                 <TextInput
                   editable={false}
                   onChange={() => {}}
-                  placeholder={dateToString(date)}
+                  placeholder={
+                    template ? template.date : dateToString(new Date())
+                  }
                 />
               </TouchableOpacity>
             </InputContainer>
             <InputElement
-              placeholder={`${workSession.minutes}`}
               label="Minutes"
               onChange={setMinutes}
+              value={template ? `${template.minutes}` : null}
             />
             <PickerContainer>
               <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
@@ -187,7 +174,7 @@ const WorkSessionNew = props => {
                 onValueChange={itemValue => {
                   setContract(itemValue);
                 }}>
-                {workSession.contracts.map(contract => (
+                {contracts.map(contract => (
                   <Picker.Item
                     label={`${contract.Project.name} - ${contract.position} - ${
                       contract.User.username
@@ -197,6 +184,12 @@ const WorkSessionNew = props => {
                 ))}
               </Picker>
             </PickerContainer>
+            <TouchableOpacity onPress={() => setTemplate(null)}>
+              <ButtonContainer stlye={{paddingTop: 10}}>
+                <CancelIcon />
+                <ButtonLabel>Clear fields</ButtonLabel>
+              </ButtonContainer>
+            </TouchableOpacity>
           </Form>
           {showDatePicker && (
             <DateTimePicker
@@ -218,7 +211,8 @@ const WorkSessionNew = props => {
 };
 
 WorkSessionNew.propTypes = {
-  workSession: PropTypes.object,
+  lastWorkSession: PropTypes.object,
+  contracts: PropTypes.array,
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
   setWorkSessionsEdited: PropTypes.func,
@@ -226,7 +220,8 @@ WorkSessionNew.propTypes = {
 };
 
 WorkSessionNew.defaultProps = {
-  workSession: null,
+  lastWorkSession: null,
+  contracts: [],
   closeWorkSession: () => {},
   saveWorkSession: () => {},
   setWorkSessionsEdited: () => {},
@@ -236,6 +231,16 @@ WorkSessionNew.defaultProps = {
 const Container = styled.View`
   width: 100%;
   height: 100%;
+`;
+
+const ButtonContainer = styled.View`
+  flex-direction: row;
+  margin-bottom: 10px;
+  margin-top: 20px;
+`;
+
+const CopyContainer = styled.View`
+  flex-direction: row;
 `;
 
 const Background = styled.View`
@@ -252,13 +257,10 @@ const Form = styled.View`
   padding: 10px;
 `;
 
-const CheckBoxContainer = styled.View`
-  flex-direction: row;
-  margin-bottom: 10px;
-`;
-
-const CheckBoxLabel = styled.Text`
-  margin-top: 5;
+const ButtonLabel = styled.Text`
+  line-height: 35px;
+  font-size: 17px;
+  padding-left: 10px;
 `;
 
 const NavigationButtonsContainer = styled.View`
@@ -292,9 +294,4 @@ export default graphql(query, {
         variables: {id, title, description, url, date, minutes, ContractId},
       }),
   }),
-})(
-  connect(
-    mapStateToProps,
-    null,
-  )(WorkSessionNew),
-);
+})(WorkSessionNew);

@@ -52,6 +52,7 @@ const WorkSessions = props => {
           zIndex: 1,
         }}>
         <ScrollView
+          contentContainerStyle={{paddingBottom: 90}}
           onScroll={({nativeEvent}) => {
             if (isCloseToBottom(nativeEvent)) {
               setPage(page + 1);
