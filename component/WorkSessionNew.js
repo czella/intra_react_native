@@ -60,7 +60,7 @@ const query = gql`
   }
 `;
 
-const WorkSessionExpanded = props => {
+const WorkSessionNew = props => {
   const {
     workSession,
     closeWorkSession,
@@ -217,7 +217,7 @@ const WorkSessionExpanded = props => {
   );
 };
 
-WorkSessionExpanded.propTypes = {
+WorkSessionNew.propTypes = {
   workSession: PropTypes.object,
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
@@ -225,7 +225,7 @@ WorkSessionExpanded.propTypes = {
   onWorkSessionSave: PropTypes.func,
 };
 
-WorkSessionExpanded.defaultProps = {
+WorkSessionNew.defaultProps = {
   workSession: null,
   closeWorkSession: () => {},
   saveWorkSession: () => {},
@@ -296,5 +296,5 @@ export default graphql(query, {
   connect(
     mapStateToProps,
     null,
-  )(WorkSessionExpanded),
+  )(WorkSessionNew),
 );
