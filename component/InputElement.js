@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 
 const InputElement = props => {
-  const {editable, placeholder, label, onChange, value} = props;
+  const {editable, placeholder, label, onChange, value, numeric} = props;
   const [color, setColor] = useState('lightgrey');
   return (
     <InputContainer
@@ -22,6 +22,7 @@ const InputElement = props => {
         onFocus={() => setColor('blue')}
         onBlur={() => setColor('lightgrey')}
         value={value}
+        keyboardType={numeric ? 'numeric' : 'default'}
       />
     </InputContainer>
   );
@@ -33,6 +34,7 @@ InputElement.propTypes = {
   label: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string,
+  numeric: PropTypes.bool,
 };
 
 InputElement.defaultProps = {
@@ -41,6 +43,7 @@ InputElement.defaultProps = {
   label: '',
   onChange: () => {},
   value: null,
+  numeric: false,
 };
 
 const InputContainer = styled.View`

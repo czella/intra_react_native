@@ -174,6 +174,7 @@ const WorkSessionExpanded = props => {
               placeholder={`${workSession.minutes}`}
               label="Minutes"
               onChange={setMinutes}
+              numeric={true}
             />
             <PickerContainer>
               <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>

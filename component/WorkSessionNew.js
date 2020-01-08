@@ -170,6 +170,7 @@ const WorkSessionNew = props => {
               label="Minutes"
               onChange={setMinutes}
               value={minutes}
+              numeric={true}
             />
             <PickerContainer>
               <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
