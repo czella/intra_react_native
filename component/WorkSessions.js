@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView, ScrollView, FlatList} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -49,28 +49,23 @@ const WorkSessions = props => {
       <SafeAreaView
         style={{
           height: '100%',
+          flex: 1,
           zIndex: 1,
         }}>
-        <ScrollView
-          contentContainerStyle={{paddingBottom: 90}}
-          onScroll={({nativeEvent}) => {
-            if (isCloseToBottom(nativeEvent)) {
-              setPage(page + 1);
-            }
-          }}
-          scrollEventThrottle={400}>
-          {workSessions.map((item, index) => (
+        <FlatList
+          data={workSessions}
+          renderItem={({item, index}) => (
             <WorkSession
-              key={index}
+              key={item.id}
               title={item.title}
               date={item.date}
               deviceWidth={deviceWidth}
               showLog={showLog}
-              index={index}
               contracts={contracts}
+              index={index}
             />
-          ))}
-        </ScrollView>
+          )}
+        />
       </SafeAreaView>
     </Container>
   );
