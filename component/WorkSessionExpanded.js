@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import EventPool from '../utils/EventPool';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const dateToString = date => {
   if (date) {
@@ -129,7 +130,11 @@ const WorkSessionExpanded = props => {
           height: '100%',
           zIndex: 1,
         }}>
-        <ScrollView contentContainerStyle={{paddingBottom: 50}}>
+        <KeyboardAwareScrollView
+          extraScrollHeight={50}
+          enableOnAndroid={true}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{paddingBottom: 50}}>
           <Form>
             <InputElement
               editable={false}
@@ -208,7 +213,7 @@ const WorkSessionExpanded = props => {
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <Background />
           </TouchableWithoutFeedback>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </Container>
   );

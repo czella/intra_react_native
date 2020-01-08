@@ -10,6 +10,7 @@ import {
   ScrollView,
   CheckBox,
 } from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -128,7 +129,11 @@ const WorkSessionNew = props => {
           wdith: '100%',
           zIndex: 1,
         }}>
-        <ScrollView contentContainerStyle={{paddingBottom: 50}}>
+        <KeyboardAwareScrollView
+          extraScrollHeight={50}
+          enableOnAndroid={true}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{paddingBottom: 50}}>
           <Form>
             <TouchableOpacity onPress={copyTemplateValues}>
               <ButtonContainer>
@@ -210,7 +215,7 @@ const WorkSessionNew = props => {
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <Background />
           </TouchableWithoutFeedback>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </Container>
   );
