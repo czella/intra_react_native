@@ -189,7 +189,7 @@ const Container = styled.View`
 
 const ChartContainer = styled.View`
   width: 100%;
-  height: 80%;
+  height: 75%;
   max-height: 250px;
 `;
 
