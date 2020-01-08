@@ -189,9 +189,35 @@ export const CopyIcon = () => (
 );
 
 export const CancelIcon = () => (
+  <Svg
+    width="45"
+    height="45"
+    viewBox="0 0 30 30"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Circle cx="15" cy="15" r="14.5" fill="#F33B3B" stroke="#F33B3B" />
+    <Rect
+      x="7"
+      y="8.41421"
+      width="2"
+      height="20"
+      transform="rotate(-45 7 8.41421)"
+      fill="#EEEEEE"
+    />
+    <Rect
+      x="8.41421"
+      y="22.5563"
+      width="2"
+      height="20"
+      transform="rotate(-135 8.41421 22.5563)"
+      fill="#EEEEEE"
+    />
+  </Svg>
+);
+
+export const DeleteIcon = () => (
   <Svg width="45" height="45" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <Circle cx="15" cy="15" r="14.5" fill="#651FFF" stroke="#651FFF"/>
-    <Rect x="7" y="8.41421" width="2" height="20" transform="rotate(-45 7 8.41421)" fill="#EEEEEE"/>
-    <Rect x="8.41421" y="22.5563" width="2" height="20" transform="rotate(-135 8.41421 22.5563)" fill="#EEEEEE"/>
+    <Circle cx="15" cy="15" r="14.5" fill="#F33B3B" stroke="#F33B3B"/>
+    <Path d="M9 22C9 23.1 9.9 24 11 24H19C20.1 24 21 23.1 21 22V10H9V22ZM22 7H18.5L17.5 6H12.5L11.5 7H8V9H22V7Z" fill="#EEEEEE"/>
   </Svg>
 );

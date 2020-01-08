@@ -99,7 +99,7 @@ const WorkSessionsScreen = props => {
       page: page,
       filter: {},
       perPage: 20,
-      sortField: 'id',
+      sortField: 'date',
       sortOrder: 'DESC',
     },
     notifyOnNetworkStatusChange: true,

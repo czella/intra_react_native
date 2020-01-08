@@ -73,7 +73,6 @@ const WorkSessionNew = props => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     if (title && description && url && date && minutes && contract) {
-      console.log(typeof contract);
       createWorkSession(
         title,
         description,

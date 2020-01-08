@@ -7,16 +7,15 @@ import {
   TouchableWithoutFeedback,
   Picker,
   SafeAreaView,
-  ScrollView,
 } from 'react-native';
-import {BackArrowIcon, SaveIcon} from '../svg/Icons';
+import {BackArrowIcon, CancelIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import EventPool from '../utils/EventPool';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const dateToString = date => {
   if (date) {
@@ -29,7 +28,7 @@ const mapStateToProps = state => ({
   workSession: state.nonCachedReducer.selectedWorkSession,
 });
 
-const query = gql`
+const editQuery = gql`
   mutation updateWorkSession(
     $id: ID!
     $title: String!
@@ -60,11 +59,21 @@ const query = gql`
   }
 `;
 
+const deleteQuery = gql`
+  mutation deleteWorkSession($id: ID!) {
+    data: deleteWorkSession(id: $id) {
+      id
+      __typename
+    }
+  }
+`;
+
 const WorkSessionExpanded = props => {
   const {
     workSession,
     closeWorkSession,
     saveWorkSession,
+    deleteWorkSession,
     onWorkSessionSave,
   } = props;
   const [title, setTitle] = useState(null);
@@ -84,6 +93,10 @@ const WorkSessionExpanded = props => {
       Number(minutes),
       contract,
     ).then(() => EventPool.emit('refreshWorkSessions'));
+    onWorkSessionSave();
+  };
+  const handleDelete = () => {
+    deleteWorkSession(workSession.id).then(() => EventPool.emit('refreshWorkSessions'));
     onWorkSessionSave();
   };
   const handleDate = date => {
@@ -156,6 +169,7 @@ const WorkSessionExpanded = props => {
               label="Url"
               onChange={setUrl}
             />
+            {console.log(props, 'these are the props')}
             <InputContainer
               style={{
                 borderBottomWidth: 1,
@@ -199,6 +213,12 @@ const WorkSessionExpanded = props => {
                 ))}
               </Picker>
             </PickerContainer>
+            <TouchableOpacity onPress={handleDelete}>
+              <ButtonContainer stlye={{paddingTop: 10}}>
+                <DeleteIcon />
+                <ButtonLabel>Delete session</ButtonLabel>
+              </ButtonContainer>
+            </TouchableOpacity>
           </Form>
           {showDatePicker && (
             <DateTimePicker
@@ -223,6 +243,7 @@ WorkSessionExpanded.propTypes = {
   workSession: PropTypes.object,
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
+  deleteWorkSession: PropTypes.func,
   setWorkSessionsEdited: PropTypes.func,
   onWorkSessionSave: PropTypes.func,
 };
@@ -231,6 +252,7 @@ WorkSessionExpanded.defaultProps = {
   workSession: null,
   closeWorkSession: () => {},
   saveWorkSession: () => {},
+  deleteWorkSession: () => {},
   setWorkSessionsEdited: () => {},
   onWorkSessionSave: () => {},
 };
@@ -278,16 +300,41 @@ const PickerContainer = styled.View`
   border-bottom-color: lightgrey;
 `;
 
-export default graphql(query, {
+const ButtonContainer = styled.View`
+  flex-direction: row;
+  margin-bottom: 10px;
+  margin-top: 20px;
+`;
+
+const ButtonLabel = styled.Text`
+  line-height: 35px;
+  font-size: 17px;
+  padding-left: 10px;
+`;
+
+const saveWorkSessionQuery = graphql(editQuery, {
   props: ({mutate}) => ({
     saveWorkSession: (id, title, description, url, date, minutes, ContractId) =>
       mutate({
         variables: {id, title, description, url, date, minutes, ContractId},
       }),
   }),
-})(
-  connect(
-    mapStateToProps,
-    null,
-  )(WorkSessionExpanded),
+});
+
+const deleteWorkSessionQuery = graphql(deleteQuery, {
+  props: ({mutate}) => ({
+    deleteWorkSession: id =>
+      mutate({
+        variables: {id},
+      }),
+  }),
+});
+
+export default saveWorkSessionQuery(
+  deleteWorkSessionQuery(
+    connect(
+      mapStateToProps,
+      null,
+    )(WorkSessionExpanded),
+  ),
 );
