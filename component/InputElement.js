@@ -21,7 +21,7 @@ const InputElement = props => {
         placeholder={placeholder}
         onFocus={() => setColor('blue')}
         onBlur={() => setColor('lightgrey')}
-        defaultValue={value}
+        value={value}
       />
     </InputContainer>
   );

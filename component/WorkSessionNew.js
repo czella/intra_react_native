@@ -10,7 +10,7 @@ import {
   ScrollView,
   CheckBox,
 } from 'react-native';
-import { BackArrowIcon, CancelIcon, CopyIcon, SaveIcon } from '../svg/Icons';
+import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
@@ -64,7 +64,7 @@ const WorkSessionNew = props => {
     saveWorkSession,
     onWorkSessionSave,
   } = props;
-  const [template, setTemplate] = useState(null);
+  const [usingTemplate, setUsingTemplate] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -92,12 +92,23 @@ const WorkSessionNew = props => {
   };
 
   const clearFields = () => {
+    setUsingTemplate(false);
     setTitle(null);
     setDescription(null);
     setMinutes(null);
     setContract(null);
     setUrl(null);
     setDate(null);
+  };
+
+  const copyTemplateValues = () => {
+    setUsingTemplate(true);
+    setTitle(lastWorkSession.title);
+    setDescription(lastWorkSession.description);
+    setMinutes(`${lastWorkSession.minutes}`);
+    setContract(lastWorkSession.ContractId);
+    setUrl(lastWorkSession.url);
+    setDate(new Date(lastWorkSession.date));
   };
 
   return (
@@ -119,27 +130,19 @@ const WorkSessionNew = props => {
         }}>
         <ScrollView contentContainerStyle={{paddingBottom: 50}}>
           <Form>
-            <TouchableOpacity onPress={() => setTemplate(lastWorkSession)}>
+            <TouchableOpacity onPress={copyTemplateValues}>
               <ButtonContainer>
                 <CopyIcon />
                 <ButtonLabel>Copy last session</ButtonLabel>
               </ButtonContainer>
             </TouchableOpacity>
-            <InputElement
-              label="Title"
-              onChange={setTitle}
-              value={template ? template.title : null}
-            />
+            <InputElement label="Title" onChange={setTitle} value={title} />
             <InputElement
               label="Description"
               onChange={setDescription}
-              value={template ? template.description : null}
+              value={description}
             />
-            <InputElement
-              label="Url"
-              onChange={setUrl}
-              value={template ? template.url : null}
-            />
+            <InputElement label="Url" onChange={setUrl} value={url} />
             <InputContainer
               style={{
                 borderBottomWidth: 1,
@@ -156,7 +159,9 @@ const WorkSessionNew = props => {
                   editable={false}
                   onChange={() => {}}
                   placeholder={
-                    template ? template.date : dateToString(new Date())
+                    usingTemplate
+                      ? dateToString(date)
+                      : dateToString(new Date())
                   }
                 />
               </TouchableOpacity>
@@ -164,7 +169,7 @@ const WorkSessionNew = props => {
             <InputElement
               label="Minutes"
               onChange={setMinutes}
-              value={template ? `${template.minutes}` : null}
+              value={minutes}
             />
             <PickerContainer>
               <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
@@ -184,7 +189,7 @@ const WorkSessionNew = props => {
                 ))}
               </Picker>
             </PickerContainer>
-            <TouchableOpacity onPress={() => setTemplate(null)}>
+            <TouchableOpacity onPress={clearFields}>
               <ButtonContainer stlye={{paddingTop: 10}}>
                 <CancelIcon />
                 <ButtonLabel>Clear fields</ButtonLabel>
