@@ -80,10 +80,18 @@ const workSessions = [];
 const contracts = [];
 const WorkSessionsScreen = props => {
   const {navigation, setWorkSessionsEdited} = props;
-  const [topExpandedSession, setTopExpandedSession] = useState(new Animated.Value(deviceHeight + 500));
-  const [topNewSession, setTopNewSession] = useState(new Animated.Value(deviceHeight + 500));
-  const [translateYExpandedSession, setTranslateYExpandedSession] = useState(new Animated.Value(0));
-  const [translateYNewSession, setTranslateYNewSession] = useState(new Animated.Value(0));
+  const [topExpandedSession, setTopExpandedSession] = useState(
+    new Animated.Value(deviceHeight + 500),
+  );
+  const [topNewSession, setTopNewSession] = useState(
+    new Animated.Value(deviceHeight + 500),
+  );
+  const [translateYExpandedSession, setTranslateYExpandedSession] = useState(
+    new Animated.Value(0),
+  );
+  const [translateYNewSession, setTranslateYNewSession] = useState(
+    new Animated.Value(0),
+  );
   const [page, setPage] = useState(0);
 
   const {loading, data, error, refetch} = useQuery(query, {
@@ -100,7 +108,7 @@ const WorkSessionsScreen = props => {
     const fetchSessions = () => refetch();
     EventPool.addListener('refreshWorkSessions', fetchSessions);
     return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, []);
+  }, [refetch]);
   if (data) {
   }
   if (loading) {
@@ -121,7 +129,10 @@ const WorkSessionsScreen = props => {
 
   const expandWorkSession = () => {
     Animated.timing(topExpandedSession, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateYExpandedSession, {toValue: 0, duration: 0}).start();
+    Animated.timing(translateYExpandedSession, {
+      toValue: 0,
+      duration: 0,
+    }).start();
   };
 
   const newWorkSession = () => {
@@ -133,7 +144,10 @@ const WorkSessionsScreen = props => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(topExpandedSession, {toValue: deviceHeight, duration: 0}).start();
+        Animated.timing(topExpandedSession, {
+          toValue: deviceHeight,
+          duration: 0,
+        }).start();
       }, 500);
       Animated.timing(translateYExpandedSession, {
         toValue: deviceHeight,
@@ -146,7 +160,10 @@ const WorkSessionsScreen = props => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(topNewSession, {toValue: deviceHeight, duration: 0}).start();
+        Animated.timing(topNewSession, {
+          toValue: deviceHeight,
+          duration: 0,
+        }).start();
       }, 500);
       Animated.timing(translateYNewSession, {
         toValue: deviceHeight,
@@ -156,11 +173,15 @@ const WorkSessionsScreen = props => {
   };
 
   const onWorkSessionSave = () => {
-    return new Promise(() => {
-      Keyboard.dismiss();
-      setTopExpandedSession(new Animated.Value(deviceHeight + 500));
-      setTranslateYExpandedSession(new Animated.Value(0));
-    });
+    Keyboard.dismiss();
+    setTopExpandedSession(new Animated.Value(deviceHeight + 500));
+    setTranslateYExpandedSession(new Animated.Value(0));
+  };
+
+  const onWorkSessionCreate = () => {
+    Keyboard.dismiss();
+    setTopNewSession(new Animated.Value(deviceHeight + 500));
+    setTranslateYNewSession(new Animated.Value(0));
   };
 
   const onLayout = event => {
@@ -203,7 +224,7 @@ const WorkSessionsScreen = props => {
           contracts={data.contracts}
           closeWorkSession={closeNewWorkSession}
           setWorkSessionsEdited={setWorkSessionsEdited}
-          onWorkSessionSave={onWorkSessionSave}
+          onWorkSessionCreate={onWorkSessionCreate}
         />
       </AnimatedWorkSessionModal>
     </Container>

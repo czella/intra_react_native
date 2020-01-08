@@ -27,8 +27,7 @@ const dateToString = date => {
 };
 
 const query = gql`
-  mutation updateWorkSession(
-    $id: ID!
+  mutation createWorkSession(
     $title: String!
     $description: String!
     $url: String!
@@ -36,8 +35,7 @@ const query = gql`
     $minutes: Int!
     $ContractId: ID!
   ) {
-    data: updateWorkSession(
-      id: $id
+    data: createWorkSession(
       title: $title
       description: $description
       url: $url
@@ -62,30 +60,35 @@ const WorkSessionNew = props => {
     lastWorkSession,
     contracts,
     closeWorkSession,
-    saveWorkSession,
-    onWorkSessionSave,
+    createWorkSession,
+    onWorkSessionCreate,
   } = props;
   const [usingTemplate, setUsingTemplate] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(new Date());
   const [minutes, setMinutes] = useState(null);
   const [contract, setContract] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
-    saveWorkSession(
-      lastWorkSession.id,
-      title,
-      description,
-      url,
-      dateToString(date),
-      Number(minutes),
-      contract,
-    ).then(() => EventPool.emit('refreshWorkSessions'));
-    onWorkSessionSave();
+    if (title && description && url && date && minutes && contract) {
+      console.log(typeof contract);
+      createWorkSession(
+        title,
+        description,
+        url,
+        dateToString(date),
+        Number(minutes),
+        contract,
+      ).then(() => EventPool.emit('refreshWorkSessions'));
+      onWorkSessionCreate();
+    } else {
+      console.log('Form is not completed!');
+    }
   };
   const handleDate = date => {
+    console.log('handling date', date);
     setShowDatePicker(false);
     if (date) {
       setDate(date);
@@ -99,7 +102,7 @@ const WorkSessionNew = props => {
     setMinutes(null);
     setContract(null);
     setUrl(null);
-    setDate(null);
+    setDate(new Date());
   };
 
   const copyTemplateValues = () => {
@@ -163,11 +166,7 @@ const WorkSessionNew = props => {
                 <TextInput
                   editable={false}
                   onChange={() => {}}
-                  placeholder={
-                    usingTemplate
-                      ? dateToString(date)
-                      : dateToString(new Date())
-                  }
+                  placeholder={dateToString(date)}
                 />
               </TouchableOpacity>
             </InputContainer>
@@ -225,18 +224,18 @@ WorkSessionNew.propTypes = {
   lastWorkSession: PropTypes.object,
   contracts: PropTypes.array,
   closeWorkSession: PropTypes.func,
-  saveWorkSession: PropTypes.func,
+  createWorkSession: PropTypes.func,
   setWorkSessionsEdited: PropTypes.func,
-  onWorkSessionSave: PropTypes.func,
+  onWorkSessionCreate: PropTypes.func,
 };
 
 WorkSessionNew.defaultProps = {
   lastWorkSession: null,
   contracts: [],
   closeWorkSession: () => {},
-  saveWorkSession: () => {},
+  createWorkSession: () => {},
   setWorkSessionsEdited: () => {},
-  onWorkSessionSave: () => {},
+  onWorkSessionCreate: () => {},
 };
 
 const Container = styled.View`
@@ -300,9 +299,16 @@ const PickerContainer = styled.View`
 
 export default graphql(query, {
   props: ({mutate}) => ({
-    saveWorkSession: (id, title, description, url, date, minutes, ContractId) =>
+    createWorkSession: (
+      title,
+      description,
+      url,
+      date,
+      minutes,
+      ContractId,
+    ) =>
       mutate({
-        variables: {id, title, description, url, date, minutes, ContractId},
+        variables: {title, description, url, date, minutes, ContractId},
       }),
   }),
 })(WorkSessionNew);
