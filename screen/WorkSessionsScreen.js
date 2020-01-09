@@ -76,10 +76,11 @@ const query = gql`
   }
 `;
 
-const workSessions = [];
-const contracts = [];
+let page = 0;
+
 const WorkSessionsScreen = props => {
   const {navigation, setWorkSessionsEdited} = props;
+  const [workSessions, setWorkSessions] = useState([]);
   const [topExpandedSession, setTopExpandedSession] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -92,16 +93,17 @@ const WorkSessionsScreen = props => {
   const [translateYNewSession, setTranslateYNewSession] = useState(
     new Animated.Value(0),
   );
-  const [page, setPage] = useState(0);
+  // const [page, setPage] = useState(0);
 
-  const {loading, data, error, refetch} = useQuery(query, {
+  const {loading, data, error, refetch, fetchMore} = useQuery(query, {
     variables: {
-      page: page,
+      page: 0,
       filter: {},
       perPage: 20,
       sortField: 'date',
       sortOrder: 'DESC',
     },
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
   useEffect(() => {
@@ -109,24 +111,51 @@ const WorkSessionsScreen = props => {
     EventPool.addListener('refreshWorkSessions', fetchSessions);
     return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
   }, [refetch]);
-  if (data) {
-  }
-  if (loading) {
-    return (
-      <LoaderContainer
-        style={{
-          width: deviceWidth - 20,
-        }}>
-        <ActivityIndicator size="large" color="#7423B5" />
-      </LoaderContainer>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <LoaderContainer
+  //       style={{
+  //         width: deviceWidth - 20,
+  //       }}>
+  //       <ActivityIndicator size="large" color="#7423B5" />
+  //     </LoaderContainer>
+  //   );
+  // }
   if (error) {
     return `Error! ${error}`;
   }
-  workSessions.push(...data.items);
-  contracts.push(...data.contracts);
+  if (data) {
+    console.log(data.items ? data.items.length : 'no', 'item length');
+  }
 
+  const fetchMoreSessions = () => {
+    if (data.items.length < data.total.count) {
+      page++;
+      console.log(page, 'page number');
+      console.log('fetching More');
+      fetchMore({
+        variables: {
+          page: page,
+          filter: {},
+          perPage: 20,
+          sortField: 'date',
+          sortOrder: 'DESC',
+        },
+        updateQuery: (prev, {fetchMoreResult}) => {
+          if (!fetchMoreResult) {
+            return prev;
+          }
+          const dat = Object.assign({}, prev, {
+            items: [...prev.items, ...fetchMoreResult.items],
+          });
+          return dat;
+        },
+      });
+    }
+  };
+  const resetPageCount = () => {
+    page = 0;
+  };
   const expandWorkSession = () => {
     Animated.timing(topExpandedSession, {toValue: 0, duration: 500}).start();
     Animated.timing(translateYExpandedSession, {
@@ -195,38 +224,46 @@ const WorkSessionsScreen = props => {
       <WorkSessions
         onExpandWorkSession={expandWorkSession}
         navigation={navigation}
-        workSessions={data.items}
-        contracts={data.contracts}
+        workSessions={data ? data.items : []}
+        contracts={data ? data.contracts : []}
+        fetchMoreSessions={fetchMoreSessions}
+        totalCount={data ? data.total.count : 0}
       />
       <ButtonContainer>
         <TouchableOpacity onPress={newWorkSession}>
           <AddButtonIcon />
         </TouchableOpacity>
       </ButtonContainer>
-      <AnimatedWorkSessionModal
-        style={{
-          transform: [{translateY: translateYExpandedSession}],
-          top: topExpandedSession,
-        }}>
-        <WorkSessionExpanded
-          closeWorkSession={closeExpandedWorkSession}
-          setWorkSessionsEdited={setWorkSessionsEdited}
-          onWorkSessionSave={onWorkSessionSave}
-        />
-      </AnimatedWorkSessionModal>
-      <AnimatedWorkSessionModal
-        style={{
-          transform: [{translateY: translateYNewSession}],
-          top: topNewSession,
-        }}>
-        <WorkSessionNew
-          lastWorkSession={data.items[0]}
-          contracts={data.contracts}
-          closeWorkSession={closeNewWorkSession}
-          setWorkSessionsEdited={setWorkSessionsEdited}
-          onWorkSessionCreate={onWorkSessionCreate}
-        />
-      </AnimatedWorkSessionModal>
+      {!loading && (
+        <AnimatedWorkSessionModal
+          style={{
+            transform: [{translateY: translateYExpandedSession}],
+            top: topExpandedSession,
+          }}>
+          <WorkSessionExpanded
+            closeWorkSession={closeExpandedWorkSession}
+            setWorkSessionsEdited={setWorkSessionsEdited}
+            onWorkSessionSave={onWorkSessionSave}
+            resetPageCount={resetPageCount}
+          />
+        </AnimatedWorkSessionModal>
+      )}
+      {!loading && (
+        <AnimatedWorkSessionModal
+          style={{
+            transform: [{translateY: translateYNewSession}],
+            top: topNewSession,
+          }}>
+          <WorkSessionNew
+            lastWorkSession={data ? data.items[0] : null}
+            contracts={data ? data.contracts : []}
+            closeWorkSession={closeNewWorkSession}
+            setWorkSessionsEdited={setWorkSessionsEdited}
+            onWorkSessionCreate={onWorkSessionCreate}
+            resetPageCount={resetPageCount}
+          />
+        </AnimatedWorkSessionModal>
+      )}
     </Container>
   );
 };

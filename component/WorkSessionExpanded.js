@@ -75,6 +75,7 @@ const WorkSessionExpanded = props => {
     saveWorkSession,
     deleteWorkSession,
     onWorkSessionSave,
+    resetPageCount,
   } = props;
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
@@ -84,6 +85,7 @@ const WorkSessionExpanded = props => {
   const [contract, setContract] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
+    resetPageCount();
     saveWorkSession(
       workSession.id,
       title,
@@ -96,6 +98,7 @@ const WorkSessionExpanded = props => {
     onWorkSessionSave();
   };
   const handleDelete = () => {
+    resetPageCount();
     deleteWorkSession(workSession.id).then(() => EventPool.emit('refreshWorkSessions'));
     onWorkSessionSave();
   };
@@ -169,7 +172,6 @@ const WorkSessionExpanded = props => {
               label="Url"
               onChange={setUrl}
             />
-            {console.log(props, 'these are the props')}
             <InputContainer
               style={{
                 borderBottomWidth: 1,
@@ -246,6 +248,7 @@ WorkSessionExpanded.propTypes = {
   deleteWorkSession: PropTypes.func,
   setWorkSessionsEdited: PropTypes.func,
   onWorkSessionSave: PropTypes.func,
+  resetPageCount: PropTypes.func,
 };
 
 WorkSessionExpanded.defaultProps = {
@@ -255,6 +258,7 @@ WorkSessionExpanded.defaultProps = {
   deleteWorkSession: () => {},
   setWorkSessionsEdited: () => {},
   onWorkSessionSave: () => {},
+  resetPageCount: () => {},
 };
 
 const Container = styled.View`

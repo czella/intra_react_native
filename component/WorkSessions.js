@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {SafeAreaView, ScrollView, FlatList} from 'react-native';
+import { SafeAreaView, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -22,6 +22,8 @@ const WorkSessions = props => {
     onExpandWorkSession,
     workSessions,
     contracts,
+    fetchMoreSessions,
+    totalCount,
   } = props;
   const [page, setPage] = useState(0);
   const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
@@ -30,6 +32,16 @@ const WorkSessions = props => {
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
     );
+  };
+  const renderFooter = () => {
+    if (workSessions.length < totalCount) {
+      return (
+        <LoaderContainer style={{paddingVertical: 45}}>
+          <ActivityIndicator size="large" color="#7423B5" />
+        </LoaderContainer>
+      );
+    }
+    return null;
   };
   const showLog = index => {
     setSelectedWorkSession({...workSessions[index], contracts});
@@ -65,6 +77,11 @@ const WorkSessions = props => {
               index={index}
             />
           )}
+          keyExtractor={item => item.id}
+          ListFooterComponent={renderFooter}
+          onEndReached={fetchMoreSessions}
+          onEndReachedThreshold={0.5}
+          initialNumToRender={20}
         />
       </SafeAreaView>
     </Container>
@@ -77,6 +94,8 @@ WorkSessions.propTypes = {
   setSelectedWorkSession: PropTypes.func,
   workSessions: PropTypes.array,
   contracts: PropTypes.array,
+  fetchMoreSessions: PropTypes.func,
+  totalCount: PropTypes.number,
 };
 
 WorkSessions.defaultProps = {
@@ -85,11 +104,17 @@ WorkSessions.defaultProps = {
   setSelectedWorkSession: () => {},
   workSessions: [],
   contracts: [],
+  fetchMoreSessions: () => {},
+  totalCount: 0,
 };
 
 const Container = styled.View`
   padding: 10px 10px 0px 10px;
   height: 100%;
+`;
+
+const LoaderContainer = styled.View`
+
 `;
 
 const TableHeader = styled.View`

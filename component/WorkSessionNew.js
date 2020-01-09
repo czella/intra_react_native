@@ -62,17 +62,18 @@ const WorkSessionNew = props => {
     closeWorkSession,
     createWorkSession,
     onWorkSessionCreate,
-  } = props;
-  const [usingTemplate, setUsingTemplate] = useState(null);
+    resetPageCount,
+} = props;
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
   const [date, setDate] = useState(new Date());
   const [minutes, setMinutes] = useState(null);
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState(contracts[0].id);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     if (title && description && url && date && minutes && contract) {
+      resetPageCount();
       createWorkSession(
         title,
         description,
@@ -87,7 +88,6 @@ const WorkSessionNew = props => {
     }
   };
   const handleDate = date => {
-    console.log('handling date', date);
     setShowDatePicker(false);
     if (date) {
       setDate(date);
@@ -95,17 +95,15 @@ const WorkSessionNew = props => {
   };
 
   const clearFields = () => {
-    setUsingTemplate(false);
     setTitle(null);
     setDescription(null);
     setMinutes(null);
-    setContract(null);
+    setContract(contracts[0].id);
     setUrl(null);
     setDate(new Date());
   };
 
   const copyTemplateValues = () => {
-    setUsingTemplate(true);
     setTitle(lastWorkSession.title);
     setDescription(lastWorkSession.description);
     setMinutes(`${lastWorkSession.minutes}`);
@@ -226,6 +224,7 @@ WorkSessionNew.propTypes = {
   createWorkSession: PropTypes.func,
   setWorkSessionsEdited: PropTypes.func,
   onWorkSessionCreate: PropTypes.func,
+  resetPageCount: PropTypes.func,
 };
 
 WorkSessionNew.defaultProps = {
@@ -235,6 +234,7 @@ WorkSessionNew.defaultProps = {
   createWorkSession: () => {},
   setWorkSessionsEdited: () => {},
   onWorkSessionCreate: () => {},
+  resetPageCount: () => {},
 };
 
 const Container = styled.View`
