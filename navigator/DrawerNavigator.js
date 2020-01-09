@@ -11,12 +11,12 @@ import NewWorkSession from '../component/NewWorkSession';
 
 const DrawerNavigator = createDrawerNavigator(
   {
+    Home: {
+      screen: MainScreen,
+    },
     WorkSessions: {
       // screen: WorksSessionsScreen,
       screen: WorksSessionsScreen,
-    },
-    Home: {
-      screen: MainScreen,
     },
     WorkSessionExpanded: {
       screen: WorkSessionExpanded,

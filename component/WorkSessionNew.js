@@ -187,6 +187,7 @@ const WorkSessionNew = props => {
                       contract.User.username
                     }`}
                     value={contract.id}
+                    key={contract.id}
                   />
                 ))}
               </Picker>

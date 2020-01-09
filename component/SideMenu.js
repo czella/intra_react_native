@@ -14,6 +14,7 @@ const SideMenu = props => {
   const {navigation, setToken} = props;
   const handleLogout = () => {
     setToken(null);
+    navigation.navigate('Home');
     navigation.closeDrawer();
   };
 

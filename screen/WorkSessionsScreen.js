@@ -8,12 +8,12 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
-import MenuBar from '../component/MenuBar';
-import WorkSessions from '../component/WorkSessions';
-import {AddButtonIcon} from '../svg/Icons';
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import MenuBar from '../component/MenuBar';
+import WorkSessions from '../component/WorkSessions';
+import {AddButtonIcon} from '../svg/Icons';
 import WorkSessionExpanded from '../component/WorkSessionExpanded';
 import {setWorkSessionsEdited} from '../store/actions';
 import EventPool from '../utils/EventPool';
@@ -21,6 +21,7 @@ import WorkSessionNew from '../component/WorkSessionNew';
 
 const mapStateToProps = state => ({
   workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
+  token: state.cachedReducer.token,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -79,8 +80,7 @@ const query = gql`
 let page = 0;
 
 const WorkSessionsScreen = props => {
-  const {navigation, setWorkSessionsEdited} = props;
-  const [workSessions, setWorkSessions] = useState([]);
+  const {navigation, setWorkSessionsEdited, token} = props;
   const [topExpandedSession, setTopExpandedSession] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -93,46 +93,48 @@ const WorkSessionsScreen = props => {
   const [translateYNewSession, setTranslateYNewSession] = useState(
     new Animated.Value(0),
   );
-  // const [page, setPage] = useState(0);
-
-  const {loading, data, error, refetch, fetchMore} = useQuery(query, {
-    variables: {
-      page: 0,
-      filter: {},
-      perPage: 20,
-      sortField: 'date',
-      sortOrder: 'DESC',
+  const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
+    query,
+    {
+      variables: {
+        page: 0,
+        filter: {},
+        perPage: 20,
+        sortField: 'date',
+        sortOrder: 'DESC',
+      },
+      skip: !token,
+      fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
     },
-    fetchPolicy: 'cache-and-network',
-    notifyOnNetworkStatusChange: true,
-  });
+  );
   useEffect(() => {
     const fetchSessions = () => refetch();
     EventPool.addListener('refreshWorkSessions', fetchSessions);
     return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, [refetch]);
-  // if (loading) {
-  //   return (
-  //     <LoaderContainer
-  //       style={{
-  //         width: deviceWidth - 20,
-  //       }}>
-  //       <ActivityIndicator size="large" color="#7423B5" />
-  //     </LoaderContainer>
-  //   );
-  // }
-  if (error) {
-    return `Error! ${error}`;
+  }, []);
+  if (!token) {
+    return null;
   }
-  if (data) {
-    console.log(data.items ? data.items.length : 'no', 'item length');
+  if (loading) {
+    if (networkStatus !== 3) {
+      return (
+        <LoaderContainer
+          style={{
+            width: deviceWidth - 20,
+          }}>
+          <ActivityIndicator size="large" color="#7423B5" />
+        </LoaderContainer>
+      );
+    }
+  }
+  if (error) {
+    return <Text>`Error! ${error}`</Text>;
   }
 
   const fetchMoreSessions = () => {
     if (data.items.length < data.total.count) {
       page++;
-      console.log(page, 'page number');
-      console.log('fetching More');
       fetchMore({
         variables: {
           page: page,
@@ -271,11 +273,13 @@ const WorkSessionsScreen = props => {
 WorkSessionsScreen.proptypes = {
   navigation: PropTypes.object,
   setWorkSessionsEdited: PropTypes.func,
+  token: PropTypes.string,
 };
 
 WorkSessionsScreen.defaultProps = {
   navigation: {},
   setWorkSessionsEdited: () => {},
+  token: '',
 };
 
 const LoaderContainer = styled.View`
@@ -304,6 +308,8 @@ const AnimatedWorkSessionModal = Animated.createAnimatedComponent(
 const Container = styled.View`
   height: 100%;
 `;
+
+const Text = styled.Text``;
 
 const ButtonContainer = styled.View`
   position: absolute;
