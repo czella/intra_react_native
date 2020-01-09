@@ -5,8 +5,8 @@
  * @format
  * @flow
  */
-
-import React from 'react';
+import SplashScreen from 'react-native-splash-screen'
+import React, {useEffect} from 'react';
 import {persistor, store} from './store/store';
 import {connect, Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
@@ -55,6 +55,9 @@ const ApiWrapperWithState = connect(
 )(ApiWrapper);
 
 const App: () => React$Node = () => {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
