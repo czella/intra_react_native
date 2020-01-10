@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {SafeAreaView, FlatList, ActivityIndicator} from 'react-native';
+import {SafeAreaView, FlatList, ActivityIndicator, Picker} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -25,6 +25,7 @@ const WorkSessions = props => {
     fetchMoreSessions,
     totalCount,
   } = props;
+  const [displayedProperty, setDisplayedProperty] = useState('title');
   const renderFooter = () => {
     if (workSessions.length < totalCount) {
       return (
@@ -43,12 +44,22 @@ const WorkSessions = props => {
     <Container>
       <TableHeader>
         <Date>Date</Date>
-        <Title
-          style={{
-            width: deviceWidth - 120,
-          }}>
-          Title
-        </Title>
+        <PickerContainer>
+          <Picker
+            selectedValue={displayedProperty}
+            style={{height: 40, width: '100%'}}
+            onValueChange={itemValue => {
+              setDisplayedProperty(itemValue);
+            }}>
+            <Picker.Item label="Title" value="title" key="title" />
+            <Picker.Item
+              label="Description"
+              value="description"
+              key="description"
+            />
+            <Picker.Item label="Url" value="url" key="url" />
+          </Picker>
+        </PickerContainer>
       </TableHeader>
       <SafeAreaView
         style={{
@@ -61,7 +72,7 @@ const WorkSessions = props => {
           renderItem={({item, index}) => (
             <WorkSession
               key={item.id}
-              title={item.title}
+              title={item[displayedProperty]}
               date={item.date}
               deviceWidth={deviceWidth}
               showLog={showLog}
@@ -122,11 +133,9 @@ const Date = styled.Text`
   line-height: 40px;
 `;
 
-const Title = styled.Text`
-  font-size: 18px;
-  color: grey;
-  line-height: 40px;
-  padding-left: 20px;
+const PickerContainer = styled.View`
+  width: 80%;
+  padding-left: 10px;
 `;
 
 export default connect(
