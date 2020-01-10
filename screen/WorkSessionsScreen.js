@@ -15,18 +15,12 @@ import MenuBar from '../component/MenuBar';
 import WorkSessions from '../component/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
 import WorkSessionExpanded from '../component/WorkSessionExpanded';
-import {setWorkSessionsEdited} from '../store/actions';
 import EventPool from '../utils/EventPool';
 import WorkSessionNew from '../component/WorkSessionNew';
 
 const mapStateToProps = state => ({
   workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
   token: state.cachedReducer.token,
-});
-
-const mapDispatchToProps = dispatch => ({
-  setWorkSessionsEdited: workSessionsEdited =>
-    dispatch(setWorkSessionsEdited(workSessionsEdited)),
 });
 
 let deviceHeight = Dimensions.get('screen').height;
@@ -80,7 +74,7 @@ const query = gql`
 let page = 0;
 
 const WorkSessionsScreen = props => {
-  const {navigation, setWorkSessionsEdited, token} = props;
+  const {navigation, token} = props;
   const [topExpandedSession, setTopExpandedSession] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -131,7 +125,6 @@ const WorkSessionsScreen = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
-
   const fetchMoreSessions = () => {
     if (data.items.length < data.total.count) {
       page++;
@@ -165,12 +158,10 @@ const WorkSessionsScreen = props => {
       duration: 0,
     }).start();
   };
-
   const newWorkSession = () => {
     Animated.timing(topNewSession, {toValue: 0, duration: 500}).start();
     Animated.timing(translateYNewSession, {toValue: 0, duration: 0}).start();
   };
-
   const closeExpandedWorkSession = () => {
     return new Promise(() => {
       Keyboard.dismiss();
@@ -186,7 +177,6 @@ const WorkSessionsScreen = props => {
       }).start();
     });
   };
-
   const closeNewWorkSession = () => {
     return new Promise(() => {
       Keyboard.dismiss();
@@ -202,24 +192,20 @@ const WorkSessionsScreen = props => {
       }).start();
     });
   };
-
   const onWorkSessionSave = () => {
     Keyboard.dismiss();
     setTopExpandedSession(new Animated.Value(deviceHeight + 500));
     setTranslateYExpandedSession(new Animated.Value(0));
   };
-
   const onWorkSessionCreate = () => {
     Keyboard.dismiss();
     setTopNewSession(new Animated.Value(deviceHeight + 500));
     setTranslateYNewSession(new Animated.Value(0));
   };
-
   const onLayout = event => {
     deviceHeight = event.nativeEvent.layout.height;
     deviceWidth = event.nativeEvent.layout.width;
   };
-
   return (
     <Container onLayout={event => onLayout(event)}>
       <MenuBar title="Work Sessions" navigation={navigation} />
@@ -244,7 +230,6 @@ const WorkSessionsScreen = props => {
           }}>
           <WorkSessionExpanded
             closeWorkSession={closeExpandedWorkSession}
-            setWorkSessionsEdited={setWorkSessionsEdited}
             onWorkSessionSave={onWorkSessionSave}
             resetPageCount={resetPageCount}
           />
@@ -260,7 +245,6 @@ const WorkSessionsScreen = props => {
             lastWorkSession={data ? data.items[0] : null}
             contracts={data ? data.contracts : []}
             closeWorkSession={closeNewWorkSession}
-            setWorkSessionsEdited={setWorkSessionsEdited}
             onWorkSessionCreate={onWorkSessionCreate}
             resetPageCount={resetPageCount}
           />
@@ -272,13 +256,11 @@ const WorkSessionsScreen = props => {
 
 WorkSessionsScreen.proptypes = {
   navigation: PropTypes.object,
-  setWorkSessionsEdited: PropTypes.func,
   token: PropTypes.string,
 };
 
 WorkSessionsScreen.defaultProps = {
   navigation: {},
-  setWorkSessionsEdited: () => {},
   token: '',
 };
 
@@ -320,5 +302,5 @@ const ButtonContainer = styled.View`
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(WorkSessionsScreen);

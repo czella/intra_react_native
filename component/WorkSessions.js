@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import { SafeAreaView, ScrollView, FlatList, ActivityIndicator } from 'react-native';
+import {SafeAreaView, FlatList, ActivityIndicator} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -25,14 +25,6 @@ const WorkSessions = props => {
     fetchMoreSessions,
     totalCount,
   } = props;
-  const [page, setPage] = useState(0);
-  const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
-    const paddingToBottom = 20;
-    return (
-      layoutMeasurement.height + contentOffset.y >=
-      contentSize.height - paddingToBottom
-    );
-  };
   const renderFooter = () => {
     if (workSessions.length < totalCount) {
       return (
@@ -113,9 +105,7 @@ const Container = styled.View`
   height: 100%;
 `;
 
-const LoaderContainer = styled.View`
-
-`;
+const LoaderContainer = styled.View``;
 
 const TableHeader = styled.View`
   display: flex;

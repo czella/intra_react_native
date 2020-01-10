@@ -6,9 +6,9 @@ import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import {connect} from 'react-redux';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
-import {connect} from 'react-redux';
 import EventPool from '../utils/EventPool';
 
 const query = gql`
@@ -66,11 +66,13 @@ const WorkSessionChart = props => {
     },
     notifyOnNetworkStatusChange: true,
   });
+
   useEffect(() => {
     const fetchSessions = () => refetch();
     EventPool.addListener('refreshWorkSessions', fetchSessions);
     return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
   }, []);
+
   if (loading) {
     return (
       <LoaderContainer
@@ -152,7 +154,6 @@ const WorkSessionChart = props => {
           </ButtonContainer>
         </TouchableOpacity>
         <TestContainer>
-
           <MonthLabelContainer>
             <Text>{yearLabel}</Text>
             <Text>{monthLabel}</Text>

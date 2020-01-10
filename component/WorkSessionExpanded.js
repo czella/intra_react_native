@@ -8,14 +8,14 @@ import {
   Picker,
   SafeAreaView,
 } from 'react-native';
-import {BackArrowIcon, CancelIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
+import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
-import EventPool from '../utils/EventPool';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import EventPool from '../utils/EventPool';
 
 const dateToString = date => {
   if (date) {
@@ -99,7 +99,9 @@ const WorkSessionExpanded = props => {
   };
   const handleDelete = () => {
     resetPageCount();
-    deleteWorkSession(workSession.id).then(() => EventPool.emit('refreshWorkSessions'));
+    deleteWorkSession(workSession.id).then(() =>
+      EventPool.emit('refreshWorkSessions'),
+    );
     onWorkSessionSave();
   };
   const handleDate = date => {
@@ -247,7 +249,6 @@ WorkSessionExpanded.propTypes = {
   closeWorkSession: PropTypes.func,
   saveWorkSession: PropTypes.func,
   deleteWorkSession: PropTypes.func,
-  setWorkSessionsEdited: PropTypes.func,
   onWorkSessionSave: PropTypes.func,
   resetPageCount: PropTypes.func,
 };
@@ -257,7 +258,6 @@ WorkSessionExpanded.defaultProps = {
   closeWorkSession: () => {},
   saveWorkSession: () => {},
   deleteWorkSession: () => {},
-  setWorkSessionsEdited: () => {},
   onWorkSessionSave: () => {},
   resetPageCount: () => {},
 };

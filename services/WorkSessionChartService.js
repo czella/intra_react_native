@@ -7,7 +7,20 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
   const labels = [];
   const months = new Set([]);
   const years = new Set([]);
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
 
   for (
     const currentDate = new Date(startDate.getTime());
@@ -31,8 +44,6 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
       email: entry.userEmail,
     };
   }
-
-  const selectedLine = selectedLines.length > 1 ? null : selectedLines[0];
 
   const getHoursFromMinutes = minutes => {
     let hours = minutes / 60;
@@ -89,13 +100,6 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
         '-' +
         (day > 9 ? '' : '0') +
         day;
-
-      // weekends
-      const newDateDay = new Date(year, currentDate.getMonth(), day).getDay();
-      const stat = {
-        name: day,
-        isWeekend: newDateDay === 0 || newDateDay === 6,
-      };
 
       const dataRow = find(data.allStatsDailyUserWorkSessions, function(o) {
         return o.UserId === userId && o.date === date;

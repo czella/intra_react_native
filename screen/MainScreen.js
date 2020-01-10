@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -6,7 +6,6 @@ import {setToken} from '../store/actions';
 import Login from '../component/Login';
 import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/WorkSessionChart';
-import EventPool from '../utils/EventPool';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,

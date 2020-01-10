@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
   TouchableOpacity,
@@ -7,16 +7,13 @@ import {
   TouchableWithoutFeedback,
   Picker,
   SafeAreaView,
-  ScrollView,
-  CheckBox,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
-import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {connect} from 'react-redux';
 import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
+import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
+import InputElement from './InputElement';
 import EventPool from '../utils/EventPool';
 
 const dateToString = date => {
@@ -223,7 +220,6 @@ WorkSessionNew.propTypes = {
   contracts: PropTypes.array,
   closeWorkSession: PropTypes.func,
   createWorkSession: PropTypes.func,
-  setWorkSessionsEdited: PropTypes.func,
   onWorkSessionCreate: PropTypes.func,
   resetPageCount: PropTypes.func,
 };
@@ -233,7 +229,6 @@ WorkSessionNew.defaultProps = {
   contracts: [],
   closeWorkSession: () => {},
   createWorkSession: () => {},
-  setWorkSessionsEdited: () => {},
   onWorkSessionCreate: () => {},
   resetPageCount: () => {},
 };
@@ -247,10 +242,6 @@ const ButtonContainer = styled.View`
   flex-direction: row;
   margin-bottom: 10px;
   margin-top: 20px;
-`;
-
-const CopyContainer = styled.View`
-  flex-direction: row;
 `;
 
 const Background = styled.View`
@@ -299,14 +290,7 @@ const PickerContainer = styled.View`
 
 export default graphql(query, {
   props: ({mutate}) => ({
-    createWorkSession: (
-      title,
-      description,
-      url,
-      date,
-      minutes,
-      ContractId,
-    ) =>
+    createWorkSession: (title, description, url, date, minutes, ContractId) =>
       mutate({
         variables: {title, description, url, date, minutes, ContractId},
       }),

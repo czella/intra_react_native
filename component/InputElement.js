@@ -52,7 +52,6 @@ const InputContainer = styled.View`
 
 const InputLabel = styled.Text``;
 
-const TextInput = styled.TextInput`
-`;
+const TextInput = styled.TextInput``;
 
 export default InputElement;

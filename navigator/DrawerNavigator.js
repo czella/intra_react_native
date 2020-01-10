@@ -15,7 +15,6 @@ const DrawerNavigator = createDrawerNavigator(
       screen: MainScreen,
     },
     WorkSessions: {
-      // screen: WorksSessionsScreen,
       screen: WorksSessionsScreen,
     },
     WorkSessionExpanded: {
@@ -23,7 +22,7 @@ const DrawerNavigator = createDrawerNavigator(
     },
     NewWorkSession: {
       screen: NewWorkSession,
-    }
+    },
   },
   {
     contentComponent: SideMenu,
