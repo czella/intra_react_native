@@ -1,5 +1,5 @@
 const initialState = {
-  token: '',
+  token: null,
 };
 
 const cachedReducer = (state = initialState, action) => {

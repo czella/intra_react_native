@@ -55,7 +55,13 @@ let yearLabel;
 
 const WorkSessionChart = props => {
   const {deviceWidth} = props;
-  const [referenceDate, setReferenceDate] = useState(new Date());
+  const getTodaysUTCDate = () => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+    return date;
+  };
+  const [referenceDate, setReferenceDate] = useState(getTodaysUTCDate());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 

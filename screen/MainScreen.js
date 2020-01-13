@@ -38,7 +38,7 @@ MainScreen.proptypes = {
 };
 
 MainScreen.defaultProps = {
-  token: '',
+  token: null,
   setToken: () => {},
   navigation: {},
 };
