@@ -72,7 +72,7 @@ const WorkSessions = props => {
           renderItem={({item, index}) => (
             <WorkSession
               key={item.id}
-              title={item[displayedProperty]}
+              displayedProperty={item[displayedProperty]}
               date={item.date}
               deviceWidth={deviceWidth}
               showLog={showLog}
@@ -127,14 +127,14 @@ const TableHeader = styled.View`
 `;
 
 const Date = styled.Text`
-  width: 20%;
+  width: 75px;
   font-size: 18px;
   color: grey;
   line-height: 40px;
 `;
 
 const PickerContainer = styled.View`
-  width: 80%;
+  width: 160px;
   padding-left: 10px;
 `;
 

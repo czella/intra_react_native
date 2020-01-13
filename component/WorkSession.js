@@ -1,16 +1,26 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
 import {SmallRightArrowIcon} from '../svg/Icons';
 
 const WorkSession = props => {
-  const {title, date, showLog, index} = props;
+  const {displayedProperty, date, showLog, index} = props;
+  const [displayedPropWidth, setDisplayedPropWidth] = useState(0);
   return (
     <TouchableOpacity onPress={() => showLog(index)}>
-      <Container>
+      <Container
+        onLayout={event =>
+          setDisplayedPropWidth(event.nativeEvent.layout.width - 90)
+        }>
         <Date>{date}</Date>
-        <Title numberOfLines={1}>{title}</Title>
+        <DisplayedProperty
+          style={{
+            width: displayedPropWidth,
+          }}
+          numberOfLines={1}>
+          {displayedProperty}
+        </DisplayedProperty>
         <IconContainer>
           <SmallRightArrowIcon />
         </IconContainer>
@@ -20,14 +30,14 @@ const WorkSession = props => {
 };
 
 WorkSession.propTypes = {
-  title: PropTypes.string,
+  displayedProperty: PropTypes.string,
   date: PropTypes.string,
   showLog: PropTypes.func,
   index: PropTypes.number,
 };
 
 WorkSession.defaultProps = {
-  title: '',
+  displayedProperty: '',
   date: '',
   showLog: () => {},
   index: 0,
@@ -48,18 +58,18 @@ const IconContainer = styled.View`
   height: 60px;
   flex-direction: row;
   align-items: center;
-  width: 5%;
+  width: 15px;
 `;
 
-const Title = styled.Text`
+const DisplayedProperty = styled.Text`
   line-height: 60px;
-  width: 75%;
   padding-left: 20px;
+  width: 75px;
 `;
 
 const Date = styled.Text`
   line-height: 60px;
-  width: 20%;
+  width: 75px;
 `;
 
 export default WorkSession;
