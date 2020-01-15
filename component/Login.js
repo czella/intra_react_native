@@ -1,15 +1,9 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
-import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import PropTypes from 'prop-types';
-
-const query = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password)
-  }
-`;
+import {loginUser} from '../queries/queries';
 
 const Login = props => {
   const {login, setToken} = props;
@@ -98,7 +92,7 @@ const Image = styled.Image`
   resize-mode: contain;
 `;
 
-export default graphql(query, {
+export default graphql(loginUser, {
   props: ({mutate}) => ({
     login: (email, password) => mutate({variables: {email, password}}),
   }),

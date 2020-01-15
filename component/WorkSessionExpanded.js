@@ -12,10 +12,10 @@ import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
-import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../utils/EventPool';
+import {deleteWorkSession, editWorkSession} from '../queries/queries';
 
 const dateToString = date => {
   if (date) {
@@ -27,46 +27,6 @@ const dateToString = date => {
 const mapStateToProps = state => ({
   workSession: state.nonCachedReducer.selectedWorkSession,
 });
-
-const editQuery = gql`
-  mutation updateWorkSession(
-    $id: ID!
-    $title: String!
-    $description: String!
-    $url: String!
-    $date: String!
-    $minutes: Int!
-    $ContractId: ID!
-  ) {
-    data: updateWorkSession(
-      id: $id
-      title: $title
-      description: $description
-      url: $url
-      date: $date
-      minutes: $minutes
-      ContractId: $ContractId
-    ) {
-      id
-      title
-      description
-      url
-      date
-      minutes
-      ContractId
-      __typename
-    }
-  }
-`;
-
-const deleteQuery = gql`
-  mutation deleteWorkSession($id: ID!) {
-    data: deleteWorkSession(id: $id) {
-      id
-      __typename
-    }
-  }
-`;
 
 const WorkSessionExpanded = props => {
   const {
@@ -317,7 +277,7 @@ const ButtonLabel = styled.Text`
   padding-left: 10px;
 `;
 
-const saveWorkSessionQuery = graphql(editQuery, {
+const saveWorkSessionQuery = graphql(editWorkSession, {
   props: ({mutate}) => ({
     saveWorkSession: (id, title, description, url, date, minutes, ContractId) =>
       mutate({
@@ -326,7 +286,7 @@ const saveWorkSessionQuery = graphql(editQuery, {
   }),
 });
 
-const deleteWorkSessionQuery = graphql(deleteQuery, {
+const deleteWorkSessionQuery = graphql(deleteWorkSession, {
   props: ({mutate}) => ({
     deleteWorkSession: id =>
       mutate({

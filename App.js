@@ -31,7 +31,8 @@ const ApiWrapper = props => {
     headers.authorization = 'Bearer ' + token;
   }
   const client = new ApolloClient({
-    uri: 'https://intra.modolit.com/api',
+    // uri: 'https://intra.modolit.com/api',
+    uri: 'http://10.0.2.2:3001/api',
     headers: headers,
   });
 

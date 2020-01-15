@@ -6,8 +6,6 @@ import SideMenu from '../component/SideMenu';
 import {createAppContainer} from 'react-navigation';
 import MainScreen from '../screen/MainScreen';
 import WorksSessionsScreen from '../screen/WorkSessionsScreen';
-import WorkSessionExpanded from '../component/WorkSessionExpanded';
-import NewWorkSession from '../component/NewWorkSession';
 
 const DrawerNavigator = createDrawerNavigator(
   {
@@ -16,12 +14,6 @@ const DrawerNavigator = createDrawerNavigator(
     },
     WorkSessions: {
       screen: WorksSessionsScreen,
-    },
-    WorkSessionExpanded: {
-      screen: WorkSessionExpanded,
-    },
-    NewWorkSession: {
-      screen: NewWorkSession,
     },
   },
   {

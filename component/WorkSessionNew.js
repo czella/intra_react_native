@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import gql from 'graphql-tag';
 import {graphql} from 'react-apollo';
 import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import EventPool from '../utils/EventPool';
+import {createWorkSession} from '../queries/queries';
 
 const dateToString = date => {
   if (date) {
@@ -22,35 +22,6 @@ const dateToString = date => {
   }
   return '';
 };
-
-const query = gql`
-  mutation createWorkSession(
-    $title: String!
-    $description: String!
-    $url: String!
-    $date: String!
-    $minutes: Int!
-    $ContractId: ID!
-  ) {
-    data: createWorkSession(
-      title: $title
-      description: $description
-      url: $url
-      date: $date
-      minutes: $minutes
-      ContractId: $ContractId
-    ) {
-      id
-      title
-      description
-      url
-      date
-      minutes
-      ContractId
-      __typename
-    }
-  }
-`;
 
 const WorkSessionNew = props => {
   const {
@@ -288,7 +259,7 @@ const PickerContainer = styled.View`
   border-bottom-color: lightgrey;
 `;
 
-export default graphql(query, {
+export default graphql(createWorkSession, {
   props: ({mutate}) => ({
     createWorkSession: (title, description, url, date, minutes, ContractId) =>
       mutate({

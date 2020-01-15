@@ -23,7 +23,7 @@ const MainScreen = props => {
       {token && (
         <Container>
           <MenuBar navigation={navigation} title="Dashboard" />
-          <WorkSessionChart />
+          <WorkSessionChart token={token} />
         </Container>
       )}
       {!token && <Login setToken={setToken} />}

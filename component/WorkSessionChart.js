@@ -1,29 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import {connect} from 'react-redux';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
-
-const query = gql`
-  query allStatsDailyUserWorkSessions($startDate: String!, $endDate: String!) {
-    allStatsDailyUserWorkSessions(
-      filter: {startDate: $startDate, endDate: $endDate}
-    ) {
-      date
-      UserId
-      username
-      userEmail
-      minutes
-    }
-  }
-`;
+import {useRole, ADMIN_ROLE} from '../hooks/useRole';
+import {allWorkSessions} from '../queries/queries';
 
 const dateToMysqlString = date => {
   const compensateUTCConversion = new Date(
@@ -44,17 +29,13 @@ const getStartAndEndDate = referenceDate => {
   return {startDate: startDate, endDate: endDate};
 };
 
-const mapStateToProps = state => ({
-  deviceWidth: state.nonCachedReducer.deviceWidth,
-});
-
 let convertedData;
 let line;
 let monthLabel;
 let yearLabel;
 
 const WorkSessionChart = props => {
-  const {deviceWidth} = props;
+  const role = useRole();
   const getTodaysUTCDate = () => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -65,7 +46,7 @@ const WorkSessionChart = props => {
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 
-  const {loading, data, error, refetch} = useQuery(query, {
+  const {loading, data, error, refetch} = useQuery(allWorkSessions, {
     variables: {
       startDate: dateToMysqlString(startDate),
       endDate: dateToMysqlString(endDate),
@@ -77,14 +58,11 @@ const WorkSessionChart = props => {
     const fetchSessions = () => refetch();
     EventPool.addListener('refreshWorkSessions', fetchSessions);
     return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, []);
+  }, [refetch]);
 
   if (loading) {
     return (
-      <LoaderContainer
-        style={{
-          width: deviceWidth - 20,
-        }}>
+      <LoaderContainer>
         <ActivityIndicator size="large" color="#7423B5" />
       </LoaderContainer>
     );
@@ -181,13 +159,9 @@ const WorkSessionChart = props => {
   );
 };
 
-WorkSessionChart.propTypes = {
-  deviceWidth: PropTypes.number,
-};
+WorkSessionChart.propTypes = {};
 
-WorkSessionChart.defaultProps = {
-  deviceWidth: 0,
-};
+WorkSessionChart.defaultProps = {};
 
 const Container = styled.View`
   padding: 10px;
@@ -232,7 +206,4 @@ const MonthLabelContainer = styled.View`
   flex-direction: column;
 `;
 
-export default connect(
-  mapStateToProps,
-  null,
-)(WorkSessionChart);
+export default WorkSessionChart;
