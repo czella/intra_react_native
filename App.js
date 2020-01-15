@@ -13,7 +13,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from 'react-apollo';
 import DrawerNavigator from './navigator/DrawerNavigator';
-import { StatusBar } from 'react-native';
+import {StatusBar, SafeAreaView} from 'react-native';
 import styled from 'styled-components';
 
 const mapStateToProps = state => ({
@@ -39,9 +39,9 @@ const ApiWrapper = props => {
   return (
     <ApolloProvider client={client}>
       <StatusBar backgroundColor="#651FFF" />
-      <Container>
-        {children}
-      </Container>
+      <SafeAreaView style={{flex: 1}}>
+        <Container>{children}</Container>
+      </SafeAreaView>
     </ApolloProvider>
   );
 };

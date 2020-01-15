@@ -7,7 +7,6 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
-import {useRole, ADMIN_ROLE} from '../hooks/useRole';
 import {allWorkSessions} from '../queries/queries';
 
 const dateToMysqlString = date => {
@@ -35,7 +34,6 @@ let monthLabel;
 let yearLabel;
 
 const WorkSessionChart = props => {
-  const role = useRole();
   const getTodaysUTCDate = () => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -166,6 +164,7 @@ WorkSessionChart.defaultProps = {};
 const Container = styled.View`
   padding: 10px;
   width: 100%;
+  background: blue;
 `;
 
 const ChartContainer = styled.View`
