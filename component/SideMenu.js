@@ -6,18 +6,24 @@ import {connect} from 'react-redux';
 import {setToken} from '../store/actions';
 import {DashboardIcon, LogoutIcon, WorkSessionsIcon} from '../svg/Icons';
 
+const mapStateToProps = state => ({
+  token: state.cachedReducer.token,
+});
+
 const mapDispatchToProps = dispatch => ({
   setToken: token => dispatch(setToken(token)),
 });
 
 const SideMenu = props => {
-  const {navigation, setToken} = props;
+  const {navigation, token, setToken} = props;
   const handleLogout = () => {
     setToken(null);
     navigation.navigate('Home');
     navigation.closeDrawer();
   };
-
+  if (!token) {
+    return null;
+  }
   return (
     <Container>
       <SafeAreaView>
@@ -51,11 +57,13 @@ const SideMenu = props => {
 
 SideMenu.propTypes = {
   navigation: PropTypes.object,
+  token: PropTypes.string,
   setToken: PropTypes.func,
 };
 
 SideMenu.defaultProps = {
   navigation: {},
+  token: '',
   setToken: () => {},
 };
 
@@ -90,6 +98,6 @@ const FooterContainer = styled.View`
 `;
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(SideMenu);
