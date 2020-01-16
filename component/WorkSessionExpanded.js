@@ -6,7 +6,6 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Picker,
-  SafeAreaView,
 } from 'react-native';
 import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
@@ -103,103 +102,97 @@ const WorkSessionExpanded = props => {
           <SaveIcon />
         </TouchableOpacity>
       </NavigationButtonsContainer>
-      <SafeAreaView
-        style={{
-          height: '100%',
-          zIndex: 1,
-        }}>
-        <KeyboardAwareScrollView
-          extraScrollHeight={50}
-          enableOnAndroid={true}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{paddingBottom: 50}}>
-          <Form>
-            <InputElement
-              editable={false}
-              placeholder={workSession.id}
-              label="Id"
-            />
-            <InputElement
-              placeholder={workSession.title}
-              label="Title"
-              onChange={setTitle}
-            />
-            <InputElement
-              placeholder={workSession.description}
-              label="Description"
-              onChange={setDescription}
-            />
-            <InputElement
-              placeholder={workSession.url}
-              label="Url"
-              onChange={setUrl}
-            />
-            <InputContainer
-              style={{
-                borderBottomWidth: 1,
-                borderRadius: 1,
-                borderBottomColor: 'lightgrey',
-                color: 'lightgrey',
+      <KeyboardAwareScrollView
+        extraScrollHeight={50}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 50}}>
+        <Form>
+          <InputElement
+            editable={false}
+            placeholder={workSession.id}
+            label="Id"
+          />
+          <InputElement
+            placeholder={workSession.title}
+            label="Title"
+            onChange={setTitle}
+          />
+          <InputElement
+            placeholder={workSession.description}
+            label="Description"
+            onChange={setDescription}
+          />
+          <InputElement
+            placeholder={workSession.url}
+            label="Url"
+            onChange={setUrl}
+          />
+          <InputContainer
+            style={{
+              borderBottomWidth: 1,
+              borderRadius: 1,
+              borderBottomColor: 'lightgrey',
+              color: 'lightgrey',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePicker(true);
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowDatePicker(true);
-                }}>
-                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-                <TextInput
-                  editable={false}
-                  onChange={() => {}}
-                  placeholder={dateToString(date)}
-                />
-              </TouchableOpacity>
-            </InputContainer>
-            <InputElement
-              placeholder={`${workSession.minutes}`}
-              label="Minutes"
-              onChange={setMinutes}
-              numeric={true}
-            />
-            <PickerContainer>
-              <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-              <Picker
-                selectedValue={contract}
-                style={{height: 40, width: '100%'}}
-                onValueChange={itemValue => {
-                  setContract(itemValue);
-                }}>
-                {workSession.contracts.map(contract => (
-                  <Picker.Item
-                    label={`${contract.Project.name} - ${contract.position} - ${
-                      contract.User.username
-                    }`}
-                    value={contract.id}
-                    key={contract.id}
-                  />
-                ))}
-              </Picker>
-            </PickerContainer>
-            <TouchableOpacity onPress={handleDelete}>
-              <ButtonContainer stlye={{paddingTop: 10}}>
-                <DeleteIcon />
-                <ButtonLabel>Delete session</ButtonLabel>
-              </ButtonContainer>
+              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+              <TextInput
+                editable={false}
+                onChange={() => {}}
+                placeholder={dateToString(date)}
+              />
             </TouchableOpacity>
-          </Form>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              is24Hour={true}
-              display="default"
-              onChange={(event, date) => {
-                handleDate(date);
-              }}
-            />
-          )}
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <Background />
-          </TouchableWithoutFeedback>
-        </KeyboardAwareScrollView>
-      </SafeAreaView>
+          </InputContainer>
+          <InputElement
+            placeholder={`${workSession.minutes}`}
+            label="Minutes"
+            onChange={setMinutes}
+            numeric={true}
+          />
+          <PickerContainer>
+            <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
+            <Picker
+              selectedValue={contract}
+              style={{height: 40, width: '100%'}}
+              onValueChange={itemValue => {
+                setContract(itemValue);
+              }}>
+              {workSession.contracts.map(contract => (
+                <Picker.Item
+                  label={`${contract.Project.name} - ${contract.position} - ${
+                    contract.User.username
+                  }`}
+                  value={contract.id}
+                  key={contract.id}
+                />
+              ))}
+            </Picker>
+          </PickerContainer>
+          <TouchableOpacity onPress={handleDelete}>
+            <ButtonContainer stlye={{paddingTop: 10}}>
+              <DeleteIcon />
+              <ButtonLabel>Delete session</ButtonLabel>
+            </ButtonContainer>
+          </TouchableOpacity>
+        </Form>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            is24Hour={true}
+            display="default"
+            onChange={(event, date) => {
+              handleDate(date);
+            }}
+          />
+        )}
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <Background />
+        </TouchableWithoutFeedback>
+      </KeyboardAwareScrollView>
     </Container>
   );
 };

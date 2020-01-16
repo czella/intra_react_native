@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import {TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
+import {TouchableOpacity, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {setToken} from '../store/actions';
 import {DashboardIcon, LogoutIcon, WorkSessionsIcon} from '../svg/Icons';
@@ -26,22 +26,20 @@ const SideMenu = props => {
   }
   return (
     <Container>
-      <SafeAreaView>
-        <ScrollView>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <MenuElement>
-              <DashboardIcon />
-              <Text>Dashboard</Text>
-            </MenuElement>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
-            <MenuElement>
-              <WorkSessionsIcon />
-              <Text>Work Sessions</Text>
-            </MenuElement>
-          </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
+      <ScrollView>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <MenuElement>
+            <DashboardIcon />
+            <Text>Dashboard</Text>
+          </MenuElement>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
+          <MenuElement>
+            <WorkSessionsIcon />
+            <Text>Work Sessions</Text>
+          </MenuElement>
+        </TouchableOpacity>
+      </ScrollView>
 
       <FooterContainer>
         <TouchableOpacity onPress={handleLogout}>

@@ -8,7 +8,7 @@ import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/WorkSessionChart';
 import {useRole, ADMIN_ROLE} from '../hooks/useRole';
 import WorkSessionsAggregated from '../component/WorkSessionsAggregated';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {ScrollView} from 'react-native';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -27,16 +27,10 @@ const MainScreen = props => {
       {token && (
         <Container>
           <MenuBar navigation={navigation} title="Dashboard" />
-          <SafeAreaView
-            style={{
-              height: '100%',
-              zIndex: 1,
-            }}>
-            <ScrollView style={{height: '100%'}}>
-              <WorkSessionChart token={token} />
-              {role === ADMIN_ROLE && <WorkSessionsAggregated />}
-            </ScrollView>
-          </SafeAreaView>
+          <ScrollView style={{height: '100%'}}>
+            <WorkSessionChart token={token} />
+            {role === ADMIN_ROLE && <WorkSessionsAggregated />}
+          </ScrollView>
         </Container>
       )}
       {!token && <Login setToken={setToken} />}

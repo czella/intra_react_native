@@ -6,7 +6,6 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Picker,
-  SafeAreaView,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -91,97 +90,90 @@ const WorkSessionNew = props => {
           <SaveIcon />
         </TouchableOpacity>
       </NavigationButtonsContainer>
-      <SafeAreaView
-        style={{
-          height: '100%',
-          wdith: '100%',
-          zIndex: 1,
-        }}>
-        <KeyboardAwareScrollView
-          extraScrollHeight={50}
-          enableOnAndroid={true}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{paddingBottom: 50}}>
-          <Form>
-            <TouchableOpacity onPress={copyTemplateValues}>
-              <ButtonContainer>
-                <CopyIcon />
-                <ButtonLabel>Copy last session</ButtonLabel>
-              </ButtonContainer>
-            </TouchableOpacity>
-            <InputElement label="Title" onChange={setTitle} value={title} />
-            <InputElement
-              label="Description"
-              onChange={setDescription}
-              value={description}
-            />
-            <InputElement label="Url" onChange={setUrl} value={url} />
-            <InputContainer
-              style={{
-                borderBottomWidth: 1,
-                borderRadius: 1,
-                borderBottomColor: 'lightgrey',
-                color: 'lightgrey',
+      <KeyboardAwareScrollView
+        extraScrollHeight={50}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 50}}>
+        <Form>
+          <TouchableOpacity onPress={copyTemplateValues}>
+            <ButtonContainer>
+              <CopyIcon />
+              <ButtonLabel>Copy last session</ButtonLabel>
+            </ButtonContainer>
+          </TouchableOpacity>
+          <InputElement label="Title" onChange={setTitle} value={title} />
+          <InputElement
+            label="Description"
+            onChange={setDescription}
+            value={description}
+          />
+          <InputElement label="Url" onChange={setUrl} value={url} />
+          <InputContainer
+            style={{
+              borderBottomWidth: 1,
+              borderRadius: 1,
+              borderBottomColor: 'lightgrey',
+              color: 'lightgrey',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePicker(true);
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowDatePicker(true);
-                }}>
-                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-                <TextInput
-                  editable={false}
-                  onChange={() => {}}
-                  placeholder={dateToString(date)}
-                />
-              </TouchableOpacity>
-            </InputContainer>
-            <InputElement
-              label="Minutes"
-              onChange={setMinutes}
-              value={minutes}
-              numeric={true}
-            />
-            <PickerContainer>
-              <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-              <Picker
-                selectedValue={contract}
-                style={{height: 40, width: '100%'}}
-                onValueChange={itemValue => {
-                  setContract(itemValue);
-                }}>
-                {contracts.map(contract => (
-                  <Picker.Item
-                    label={`${contract.Project.name} - ${contract.position} - ${
-                      contract.User.username
-                    }`}
-                    value={contract.id}
-                    key={contract.id}
-                  />
-                ))}
-              </Picker>
-            </PickerContainer>
-            <TouchableOpacity onPress={clearFields}>
-              <ButtonContainer stlye={{paddingTop: 10}}>
-                <CancelIcon />
-                <ButtonLabel>Clear fields</ButtonLabel>
-              </ButtonContainer>
+              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+              <TextInput
+                editable={false}
+                onChange={() => {}}
+                placeholder={dateToString(date)}
+              />
             </TouchableOpacity>
-          </Form>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              is24Hour={true}
-              display="default"
-              onChange={(event, date) => {
-                handleDate(date);
-              }}
-            />
-          )}
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <Background />
-          </TouchableWithoutFeedback>
-        </KeyboardAwareScrollView>
-      </SafeAreaView>
+          </InputContainer>
+          <InputElement
+            label="Minutes"
+            onChange={setMinutes}
+            value={minutes}
+            numeric={true}
+          />
+          <PickerContainer>
+            <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
+            <Picker
+              selectedValue={contract}
+              style={{height: 40, width: '100%'}}
+              onValueChange={itemValue => {
+                setContract(itemValue);
+              }}>
+              {contracts.map(contract => (
+                <Picker.Item
+                  label={`${contract.Project.name} - ${contract.position} - ${
+                    contract.User.username
+                  }`}
+                  value={contract.id}
+                  key={contract.id}
+                />
+              ))}
+            </Picker>
+          </PickerContainer>
+          <TouchableOpacity onPress={clearFields}>
+            <ButtonContainer stlye={{paddingTop: 10}}>
+              <CancelIcon />
+              <ButtonLabel>Clear fields</ButtonLabel>
+            </ButtonContainer>
+          </TouchableOpacity>
+        </Form>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            is24Hour={true}
+            display="default"
+            onChange={(event, date) => {
+              handleDate(date);
+            }}
+          />
+        )}
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <Background />
+        </TouchableWithoutFeedback>
+      </KeyboardAwareScrollView>
     </Container>
   );
 };
