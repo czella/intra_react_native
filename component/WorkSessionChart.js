@@ -164,7 +164,6 @@ WorkSessionChart.defaultProps = {};
 const Container = styled.View`
   padding: 10px;
   width: 100%;
-  background: blue;
 `;
 
 const ChartContainer = styled.View`

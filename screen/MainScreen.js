@@ -27,10 +27,8 @@ const MainScreen = props => {
       {token && (
         <Container>
           <MenuBar navigation={navigation} title="Dashboard" />
-          <ScrollView style={{height: '100%'}}>
-            <WorkSessionChart token={token} />
-            {role === ADMIN_ROLE && <WorkSessionsAggregated />}
-          </ScrollView>
+          <WorkSessionChart token={token} />
+            {/*{role === ADMIN_ROLE && <WorkSessionsAggregated />}*/}
         </Container>
       )}
       {!token && <Login setToken={setToken} />}
