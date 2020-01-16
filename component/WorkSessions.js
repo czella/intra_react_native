@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {FlatList, ActivityIndicator, Picker} from 'react-native';
+import {FlatList, ActivityIndicator} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
@@ -46,34 +46,24 @@ const WorkSessions = props => {
       <TableHeader>
         <Date>Date</Date>
         <PickerContainer>
-          {/* <Picker
-            selectedValue={displayedProperty}
-            style={{height: 40, width: '100%'}}
-            onValueChange={itemValue => {
-              setDisplayedProperty(itemValue);
-            }}>
-            <Picker.Item label="Title" value="title" key="title" />
-            <Picker.Item
-              label="Description"
-              value="description"
-              key="description"
-            />
-            <Picker.Item label="Url" value="url" key="url" />
-          </Picker> */}
           <RNPickerSelect
             onValueChange={itemValue => {
               setDisplayedProperty(itemValue);
             }}
             value={displayedProperty}
-            inputAndroid={{
-              height: 40, width: '100%'
+            placeholder={{}}
+            style={{
+              inputAndroid: {
+                height: 40,
+                width: '100%',
+              },
             }}
             items={[
-                { label: 'Title', value: 'title' },
-                { label: 'Description', value: 'description' },
-                { label: 'Url', value: 'url' },
+              {label: 'Title', value: 'title'},
+              {label: 'Description', value: 'description'},
+              {label: 'Url', value: 'url'},
             ]}
-        />
+          />
         </PickerContainer>
       </TableHeader>
       <FlatList
