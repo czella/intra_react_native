@@ -52,11 +52,16 @@ const WorkSessions = props => {
             }}
             value={displayedProperty}
             placeholder={{}}
+            InputAccessoryView={() => {return null}}
             style={{
               inputAndroid: {
                 height: 40,
-                width: '100%',
+                padding: 0,
               },
+              inputIOS: {
+                height: 40,
+                fontSize: 18,
+              }
             }}
             items={[
               {label: 'Title', value: 'title'},
@@ -133,7 +138,7 @@ const Date = styled.Text`
 
 const PickerContainer = styled.View`
   width: 160px;
-  padding-left: 10px;
+  padding-left: 20px;
 `;
 
 export default connect(
