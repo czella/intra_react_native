@@ -86,6 +86,22 @@ export const SmallRightArrowIcon = () => (
   </Svg>
 );
 
+export const SmallDownArrowIcon = () => (
+  <Svg
+    width="15"
+    height="9"
+    viewBox="0 0 15 9"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Path
+      d="M14.6809 0.470745C14.3883 0.763299 7.5 8.44947 7.5 8.44947L0.319149 0.470745L3.51064 0.470745L7.5 5.25798L11.4894 0.470745L14.6809 0.470745Z"
+      fill="#E3DCE8"
+      stroke="#E3DCE8"
+      stroke-width="0.239362"
+    />
+  </Svg>
+);
+
 export const BackArrowIcon = () => (
   <Svg
     width="35"

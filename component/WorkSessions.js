@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../store/actions';
+import {SmallDownArrowIcon} from '../svg/Icons';
 
 const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,
@@ -15,6 +16,12 @@ const mapDispatchToProps = dispatch => ({
   setSelectedWorkSession: workSession =>
     dispatch(setSelectedWorkSession(workSession)),
 });
+
+const properties = [
+  {label: 'Title', value: 'title'},
+  {label: 'Description', value: 'description'},
+  {label: 'Url', value: 'url'},
+];
 
 const WorkSessions = props => {
   const {
@@ -52,22 +59,28 @@ const WorkSessions = props => {
             }}
             value={displayedProperty}
             placeholder={{}}
-            InputAccessoryView={() => {return null}}
+            InputAccessoryView={() => {
+              return null;
+            }}
+            useNativeAndroidPickerStyle={false}
+            Icon={() => <SmallDownArrowIcon />}
             style={{
               inputAndroid: {
                 height: 40,
                 padding: 0,
+                fontSize: 18,
               },
               inputIOS: {
                 height: 40,
                 fontSize: 18,
-              }
+              },
+              iconContainer: {
+                height: 40,
+                top: 15,
+                right: 15,
+              },
             }}
-            items={[
-              {label: 'Title', value: 'title'},
-              {label: 'Description', value: 'description'},
-              {label: 'Url', value: 'url'},
-            ]}
+            items={properties}
           />
         </PickerContainer>
       </TableHeader>
