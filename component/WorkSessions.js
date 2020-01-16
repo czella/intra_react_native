@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {FlatList, ActivityIndicator, Picker} from 'react-native';
-import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import RNPickerSelect from 'react-native-picker-select';
+import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../store/actions';
 
 const mapStateToProps = state => ({
@@ -45,7 +46,7 @@ const WorkSessions = props => {
       <TableHeader>
         <Date>Date</Date>
         <PickerContainer>
-          <Picker
+          {/* <Picker
             selectedValue={displayedProperty}
             style={{height: 40, width: '100%'}}
             onValueChange={itemValue => {
@@ -58,7 +59,21 @@ const WorkSessions = props => {
               key="description"
             />
             <Picker.Item label="Url" value="url" key="url" />
-          </Picker>
+          </Picker> */}
+          <RNPickerSelect
+            onValueChange={itemValue => {
+              setDisplayedProperty(itemValue);
+            }}
+            value={displayedProperty}
+            inputAndroid={{
+              height: 40, width: '100%'
+            }}
+            items={[
+                { label: 'Title', value: 'title' },
+                { label: 'Description', value: 'description' },
+                { label: 'Url', value: 'url' },
+            ]}
+        />
         </PickerContainer>
       </TableHeader>
       <FlatList
