@@ -11,7 +11,7 @@ const WorkSession = props => {
     <TouchableOpacity onPress={() => showLog(index)}>
       <Container
         onLayout={event =>
-          setDisplayedPropWidth(event.nativeEvent.layout.width - 90)
+          setDisplayedPropWidth(event.nativeEvent.layout.width - 95)
         }>
         <Date>{date}</Date>
         <DisplayedProperty
@@ -64,12 +64,11 @@ const IconContainer = styled.View`
 const DisplayedProperty = styled.Text`
   line-height: 60px;
   padding-left: 20px;
-  width: 75px;
 `;
 
 const Date = styled.Text`
   line-height: 60px;
-  width: 75px;
+  width: 80px;
 `;
 
 export default WorkSession;

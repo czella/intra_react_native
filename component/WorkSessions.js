@@ -120,7 +120,7 @@ const TableHeader = styled.View`
 `;
 
 const Date = styled.Text`
-  width: 75px;
+  width: 80px;
   font-size: 18px;
   color: grey;
   line-height: 40px;
