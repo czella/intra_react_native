@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {SafeAreaView, FlatList, ActivityIndicator, Picker} from 'react-native';
+import {FlatList, ActivityIndicator, Picker} from 'react-native';
 import WorkSession from './WorkSession';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -61,32 +61,25 @@ const WorkSessions = props => {
           </Picker>
         </PickerContainer>
       </TableHeader>
-      <SafeAreaView
-        style={{
-          height: '100%',
-          flex: 1,
-          zIndex: 1,
-        }}>
-        <FlatList
-          data={workSessions}
-          renderItem={({item, index}) => (
-            <WorkSession
-              key={item.id}
-              displayedProperty={item[displayedProperty]}
-              date={item.date}
-              deviceWidth={deviceWidth}
-              showLog={showLog}
-              contracts={contracts}
-              index={index}
-            />
-          )}
-          keyExtractor={item => item.id}
-          ListFooterComponent={renderFooter}
-          onEndReached={fetchMoreSessions}
-          onEndReachedThreshold={0.5}
-          initialNumToRender={20}
-        />
-      </SafeAreaView>
+      <FlatList
+        data={workSessions}
+        renderItem={({item, index}) => (
+          <WorkSession
+            key={item.id}
+            displayedProperty={item[displayedProperty]}
+            date={item.date}
+            deviceWidth={deviceWidth}
+            showLog={showLog}
+            contracts={contracts}
+            index={index}
+          />
+        )}
+        keyExtractor={item => item.id}
+        ListFooterComponent={renderFooter}
+        onEndReached={fetchMoreSessions}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={20}
+      />
     </Container>
   );
 };
