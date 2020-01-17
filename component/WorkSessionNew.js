@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Picker,
+  Platform,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -68,7 +68,9 @@ const WorkSessionNew = props => {
   };
 
   const handleDate = date => {
-    setShowDatePicker(false);
+    if (Platform.OS === 'android' ) {
+      setShowDatePicker(false);
+    }
     if (date) {
       setDate(date);
     }
@@ -129,25 +131,26 @@ const WorkSessionNew = props => {
             value={description}
           />
           <InputElement label="Url" onChange={setUrl} value={url} />
-          <InputContainer
-            style={{
-              borderBottomWidth: 1,
-              borderRadius: 1,
-              borderBottomColor: 'lightgrey',
-              color: 'lightgrey',
+          <TouchableOpacity
+            onPress={() => {
+              setShowDatePicker(true);
             }}>
-            <TouchableOpacity
-              onPress={() => {
-                setShowDatePicker(true);
-              }}>
-              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-              <TextInput
-                editable={false}
-                onChange={() => {}}
-                placeholder={dateToString(date)}
-              />
-            </TouchableOpacity>
-          </InputContainer>
+            <InputContainer
+              style={{
+                borderBottomWidth: 1,
+                borderRadius: 1,
+                borderBottomColor: 'lightgrey',
+                color: 'lightgrey',
+              }}
+              pointerEvents='none'>
+                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+                <TextInput
+                  editable={false}
+                  onChange={() => {}}
+                  placeholder={dateToString(date)}
+                />
+            </InputContainer>
+          </TouchableOpacity>
           <InputElement
             label="Minutes"
             onChange={setMinutes}
@@ -205,14 +208,17 @@ const WorkSessionNew = props => {
           </TouchableOpacity>
         </Form>
         {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            is24Hour={true}
-            display="default"
-            onChange={(event, date) => {
-              handleDate(date);
-            }}
-          />
+          <DatePickerContainer>
+            <DateTimePicker
+              value={date}
+              is24Hour={true}
+              display="default"
+              onChange={(event, date) => {
+                handleDate(date);
+              }}
+            />
+           {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><PickerButton>Done</PickerButton></TouchableOpacity>}
+          </DatePickerContainer>
         )}
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <Background />
@@ -245,10 +251,18 @@ const Container = styled.View`
   height: 100%;
 `;
 
+const DatePickerContainer = styled.View``;
+
 const ButtonContainer = styled.View`
   flex-direction: row;
   margin-bottom: 10px;
   margin-top: 20px;
+`;
+
+const PickerButton = styled.Text`
+  width: 50px;
+  font-size: 18px;
+  margin: auto;
 `;
 
 const Background = styled.View`
@@ -287,7 +301,6 @@ const InputContainer = styled.View`
 const InputLabel = styled.Text``;
 
 const TextInput = styled.TextInput`
-  line-height: 60px;
 `;
 
 const PickerContainer = styled.View`

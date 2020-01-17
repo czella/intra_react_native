@@ -148,7 +148,6 @@ const WorkSessionExpanded = props => {
             label="Url"
             onChange={setUrl}
           />
-          <TouchableOpacity onPress={()=>{console.log('hellllheoho')}}><InputLabel>Hello</InputLabel></TouchableOpacity>  
           <TouchableOpacity
             onPress={() => {
               console.log('showing')
@@ -160,12 +159,14 @@ const WorkSessionExpanded = props => {
                 borderRadius: 1,
                 borderBottomColor: 'lightgrey',
                 color: 'lightgrey',
-              }}>
-                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-                <TextInput
-                  editable={false}
-                  onChange={() => {}}
-                  placeholder={dateToString(date)}
+                background: 'red',
+              }}
+              pointerEvents='none'>
+              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+              <TextInput
+                editable={false}
+                onChange={() => {}}
+                placeholder={dateToString(date)}
                 />
             </InputContainer>
           </TouchableOpacity>
@@ -235,7 +236,7 @@ const WorkSessionExpanded = props => {
                 handleDate(date);
               }}
             />
-            {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><Test>Done</Test></TouchableOpacity>}
+            {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><PickerButton>Done</PickerButton></TouchableOpacity>}
           </DatePickerContainer>
           
         )}
@@ -280,7 +281,7 @@ const TitleBar = styled.Text`
   line-height: 50px;
 `;
 
-const Test = styled.Text`
+const PickerButton = styled.Text`
   width: 50px;
   font-size: 18px;
   margin: auto;
@@ -308,7 +309,6 @@ const DatePickerContainer = styled.View``;
 const InputLabel = styled.Text``;
 
 const TextInput = styled.TextInput`
-  line-height: 60px;
 `;
 
 const PickerContainer = styled.View`
