@@ -10,10 +10,14 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {graphql} from 'react-apollo';
+import {find} from 'lodash';
 import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import EventPool from '../utils/EventPool';
+
 import {createWorkSession} from '../queries/queries';
+import PickerTrigger from './PickerTrigger';
+import RNPickerSelect from 'react-native-picker-select';
 
 const dateToString = date => {
   if (date) {
@@ -21,7 +25,6 @@ const dateToString = date => {
   }
   return '';
 };
-
 const WorkSessionNew = props => {
   const {
     lastWorkSession,
@@ -30,13 +33,22 @@ const WorkSessionNew = props => {
     createWorkSession,
     onWorkSessionCreate,
     resetPageCount,
-} = props;
+  } = props;
+
+  const createSessionLabel = contract => {
+    return `${contract.Project.name} - ${contract.position} - ${
+      contract.User.username
+    }`;
+  };
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
   const [date, setDate] = useState(new Date());
   const [minutes, setMinutes] = useState(null);
-  const [contract, setContract] = useState(contracts[0].id);
+  const [contract, setContract] = useState({
+    label: createSessionLabel(contracts[0]),
+    id: contracts[0].id,
+  });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     if (title && description && url && date && minutes && contract) {
@@ -47,13 +59,14 @@ const WorkSessionNew = props => {
         url,
         dateToString(date),
         Number(minutes),
-        contract,
+        contract.id,
       ).then(() => EventPool.emit('refreshWorkSessions'));
       onWorkSessionCreate();
     } else {
       console.log('Form is not completed!');
     }
   };
+
   const handleDate = date => {
     setShowDatePicker(false);
     if (date) {
@@ -65,7 +78,10 @@ const WorkSessionNew = props => {
     setTitle(null);
     setDescription(null);
     setMinutes(null);
-    setContract(contracts[0].id);
+    setContract({
+      label: createSessionLabel(contracts[0]),
+      id: contracts[0].id,
+    });
     setUrl(null);
     setDate(new Date());
   };
@@ -74,11 +90,15 @@ const WorkSessionNew = props => {
     setTitle(lastWorkSession.title);
     setDescription(lastWorkSession.description);
     setMinutes(`${lastWorkSession.minutes}`);
-    setContract(lastWorkSession.ContractId);
+    setContract({
+      label: createSessionLabel(
+        find(contracts, {id: lastWorkSession.ContractId}),
+      ),
+      id: lastWorkSession.ContractId,
+    });
     setUrl(lastWorkSession.url);
     setDate(new Date(lastWorkSession.date));
   };
-
   return (
     <Container>
       <NavigationButtonsContainer>
@@ -136,22 +156,46 @@ const WorkSessionNew = props => {
           />
           <PickerContainer>
             <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-            <Picker
-              selectedValue={contract}
-              style={{height: 40, width: '100%'}}
-              onValueChange={itemValue => {
-                setContract(itemValue);
-              }}>
-              {contracts.map(contract => (
-                <Picker.Item
-                  label={`${contract.Project.name} - ${contract.position} - ${
-                    contract.User.username
-                  }`}
-                  value={contract.id}
-                  key={contract.id}
-                />
-              ))}
-            </Picker>
+            <RNPickerSelect
+              onValueChange={(itemValue, index) => {
+                setContract({
+                  label: createSessionLabel(contracts[index]),
+                  id: itemValue,
+                });
+              }}
+              value={contract.id}
+              placeholder={{}}
+              InputAccessoryView={() => {
+                return null;
+              }}
+              useNativeAndroidPickerStyle={false}
+              Icon={() => null}
+              style={{
+                inputAndroidContainer: {
+                  textAlign: 'left',
+                },
+                inputAndroid: {
+                  height: 40,
+                  padding: 0,
+                  fontSize: 15,
+                  width: '100%',
+                },
+                inputIOS: {
+                  height: 40,
+                  fontSize: 18,
+                },
+                iconContainer: {
+                  height: 40,
+                  top: 15,
+                  right: 15,
+                },
+              }}
+              items={contracts.map(contract => ({
+                label: createSessionLabel(contract),
+                value: contract.id,
+              }))}>
+              <PickerTrigger label={contract.label} />
+            </RNPickerSelect>
           </PickerContainer>
           <TouchableOpacity onPress={clearFields}>
             <ButtonContainer stlye={{paddingTop: 10}}>

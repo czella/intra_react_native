@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../store/actions';
 import {SmallDownArrowIcon} from '../svg/Icons';
+import PickerTrigger from './PickerTrigger';
 
 const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,
@@ -33,7 +34,7 @@ const WorkSessions = props => {
     fetchMoreSessions,
     totalCount,
   } = props;
-  const [displayedProperty, setDisplayedProperty] = useState('title');
+  const [displayedProperty, setDisplayedProperty] = useState(properties[0]);
   const renderFooter = () => {
     if (workSessions.length < totalCount) {
       return (
@@ -54,16 +55,16 @@ const WorkSessions = props => {
         <Date>Date</Date>
         <PickerContainer>
           <RNPickerSelect
-            onValueChange={itemValue => {
-              setDisplayedProperty(itemValue);
+            onValueChange={(itemValue, index) => {
+              setDisplayedProperty(properties[index]);
             }}
-            value={displayedProperty}
+            value={displayedProperty.value}
             placeholder={{}}
             InputAccessoryView={() => {
               return null;
             }}
             useNativeAndroidPickerStyle={false}
-            Icon={() => <SmallDownArrowIcon />}
+            Icon={() => null}
             style={{
               inputAndroid: {
                 height: 40,
@@ -80,8 +81,12 @@ const WorkSessions = props => {
                 right: 15,
               },
             }}
-            items={properties}
-          />
+            items={properties}>
+            <PickerTrigger
+              label={displayedProperty.label}
+              labelStyle={{fontSize: 18}}
+            />
+          </RNPickerSelect>
         </PickerContainer>
       </TableHeader>
       <FlatList
@@ -89,7 +94,7 @@ const WorkSessions = props => {
         renderItem={({item, index}) => (
           <WorkSession
             key={item.id}
-            displayedProperty={item[displayedProperty]}
+            displayedProperty={item[displayedProperty.value]}
             date={item.date}
             deviceWidth={deviceWidth}
             showLog={showLog}

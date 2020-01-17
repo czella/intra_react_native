@@ -7,14 +7,22 @@ import {
   TouchableWithoutFeedback,
   Picker,
 } from 'react-native';
-import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
+import {
+  BackArrowIcon,
+  DeleteIcon,
+  SaveIcon,
+  SmallDownArrowIcon,
+} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
+import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../utils/EventPool';
 import {deleteWorkSession, editWorkSession} from '../queries/queries';
+import RNPickerSelect from 'react-native-picker-select';
+import PickerTrigger from './PickerTrigger';
 
 const dateToString = date => {
   if (date) {
@@ -41,7 +49,7 @@ const WorkSessionExpanded = props => {
   const [url, setUrl] = useState(null);
   const [date, setDate] = useState(null);
   const [minutes, setMinutes] = useState(null);
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState({label: null, id: null});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
     resetPageCount();
@@ -52,7 +60,7 @@ const WorkSessionExpanded = props => {
       url,
       dateToString(date),
       Number(minutes),
-      contract,
+      contract.id,
     ).then(() => EventPool.emit('refreshWorkSessions'));
     onWorkSessionSave();
   };
@@ -69,20 +77,30 @@ const WorkSessionExpanded = props => {
       setDate(date);
     }
   };
+  const createSessionLabel = contract => {
+    return `${contract.Project.name} - ${contract.position} - ${
+      contract.User.username
+    }`;
+  };
 
   useEffect(() => {
     if (workSession) {
       setTitle(workSession.title);
       setDescription(workSession.description);
       setMinutes(`${workSession.minutes}`);
-      setContract(workSession.ContractId);
+      setContract({
+        label: createSessionLabel(
+          find(workSession.contracts, {id: workSession.ContractId}),
+        ),
+        id: workSession.ContractId,
+      });
       setUrl(workSession.url);
       setDate(new Date(workSession.date ? workSession.date : null));
     } else {
       setTitle(null);
       setDescription(null);
       setMinutes(null);
-      setContract(null);
+      setContract({label: null, id: null});
       setUrl(null);
       setDate(null);
     }
@@ -155,22 +173,46 @@ const WorkSessionExpanded = props => {
           />
           <PickerContainer>
             <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-            <Picker
-              selectedValue={contract}
-              style={{height: 40, width: '100%'}}
-              onValueChange={itemValue => {
-                setContract(itemValue);
-              }}>
-              {workSession.contracts.map(contract => (
-                <Picker.Item
-                  label={`${contract.Project.name} - ${contract.position} - ${
-                    contract.User.username
-                  }`}
-                  value={contract.id}
-                  key={contract.id}
-                />
-              ))}
-            </Picker>
+            <RNPickerSelect
+              onValueChange={(itemValue, index) => {
+                setContract({
+                  label: createSessionLabel(workSession.contracts[index]),
+                  id: itemValue,
+                });
+              }}
+              value={contract.id}
+              placeholder={{}}
+              InputAccessoryView={() => {
+                return null;
+              }}
+              useNativeAndroidPickerStyle={false}
+              Icon={() => null}
+              style={{
+                inputAndroidContainer: {
+                  textAlign: 'left',
+                },
+                inputAndroid: {
+                  height: 40,
+                  padding: 0,
+                  fontSize: 15,
+                  width: '100%',
+                },
+                inputIOS: {
+                  height: 40,
+                  fontSize: 18,
+                },
+                iconContainer: {
+                  height: 40,
+                  top: 15,
+                  right: 15,
+                },
+              }}
+              items={workSession.contracts.map(contract => ({
+                label: createSessionLabel(contract),
+                value: contract.id,
+              }))}>
+              <PickerTrigger label={contract.label} />
+            </RNPickerSelect>
           </PickerContainer>
           <TouchableOpacity onPress={handleDelete}>
             <ButtonContainer stlye={{paddingTop: 10}}>
@@ -228,6 +270,10 @@ const TitleBar = styled.Text`
   font-size: 25px;
   color: white;
   line-height: 50px;
+`;
+
+const Test = styled.Text`
+  width: 50px;
 `;
 
 const Form = styled.View`
