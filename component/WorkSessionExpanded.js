@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Picker,
+  Platform,
 } from 'react-native';
 import {
   BackArrowIcon,
@@ -72,7 +72,9 @@ const WorkSessionExpanded = props => {
     onWorkSessionSave();
   };
   const handleDate = date => {
-    setShowDatePicker(false);
+    if (Platform.OS === 'android' ) {
+      setShowDatePicker(false);
+    }
     if (date) {
       setDate(date);
     }
@@ -146,25 +148,27 @@ const WorkSessionExpanded = props => {
             label="Url"
             onChange={setUrl}
           />
-          <InputContainer
-            style={{
-              borderBottomWidth: 1,
-              borderRadius: 1,
-              borderBottomColor: 'lightgrey',
-              color: 'lightgrey',
+          <TouchableOpacity onPress={()=>{console.log('hellllheoho')}}><InputLabel>Hello</InputLabel></TouchableOpacity>  
+          <TouchableOpacity
+            onPress={() => {
+              console.log('showing')
+              setShowDatePicker(true);
             }}>
-            <TouchableOpacity
-              onPress={() => {
-                setShowDatePicker(true);
+            <InputContainer
+              style={{
+                borderBottomWidth: 1,
+                borderRadius: 1,
+                borderBottomColor: 'lightgrey',
+                color: 'lightgrey',
               }}>
-              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-              <TextInput
-                editable={false}
-                onChange={() => {}}
-                placeholder={dateToString(date)}
-              />
-            </TouchableOpacity>
-          </InputContainer>
+                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+                <TextInput
+                  editable={false}
+                  onChange={() => {}}
+                  placeholder={dateToString(date)}
+                />
+            </InputContainer>
+          </TouchableOpacity>
           <InputElement
             placeholder={`${workSession.minutes}`}
             label="Minutes"
@@ -222,14 +226,18 @@ const WorkSessionExpanded = props => {
           </TouchableOpacity>
         </Form>
         {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            is24Hour={true}
-            display="default"
-            onChange={(event, date) => {
-              handleDate(date);
-            }}
-          />
+          <DatePickerContainer>
+            <DateTimePicker
+              value={date}
+              is24Hour={true}
+              display="default"
+              onChange={(event, date) => {
+                handleDate(date);
+              }}
+            />
+            {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><Test>Done</Test></TouchableOpacity>}
+          </DatePickerContainer>
+          
         )}
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <Background />
@@ -274,6 +282,8 @@ const TitleBar = styled.Text`
 
 const Test = styled.Text`
   width: 50px;
+  font-size: 18px;
+  margin: auto;
 `;
 
 const Form = styled.View`
@@ -292,6 +302,8 @@ const NavigationButtonsContainer = styled.View`
 const InputContainer = styled.View`
   margin-bottom: 10px;
 `;
+
+const DatePickerContainer = styled.View``;
 
 const InputLabel = styled.Text``;
 
