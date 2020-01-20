@@ -72,7 +72,7 @@ const WorkSessionExpanded = props => {
     onWorkSessionSave();
   };
   const handleDate = date => {
-    if (Platform.OS === 'android' ) {
+    if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
     if (date) {
@@ -150,7 +150,7 @@ const WorkSessionExpanded = props => {
           />
           <TouchableOpacity
             onPress={() => {
-              console.log('showing')
+              console.log('showing');
               setShowDatePicker(true);
             }}>
             <InputContainer
@@ -161,13 +161,13 @@ const WorkSessionExpanded = props => {
                 color: 'lightgrey',
                 background: 'red',
               }}
-              pointerEvents='none'>
+              pointerEvents="none">
               <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
               <TextInput
                 editable={false}
                 onChange={() => {}}
                 placeholder={dateToString(date)}
-                />
+              />
             </InputContainer>
           </TouchableOpacity>
           <InputElement
@@ -236,9 +236,12 @@ const WorkSessionExpanded = props => {
                 handleDate(date);
               }}
             />
-            {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><PickerButton>Done</PickerButton></TouchableOpacity>}
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                <PickerButton>Done</PickerButton>
+              </TouchableOpacity>
+            )}
           </DatePickerContainer>
-          
         )}
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <Background />
@@ -308,8 +311,7 @@ const DatePickerContainer = styled.View``;
 
 const InputLabel = styled.Text``;
 
-const TextInput = styled.TextInput`
-`;
+const TextInput = styled.TextInput``;
 
 const PickerContainer = styled.View`
   border-bottom-width: 1px;

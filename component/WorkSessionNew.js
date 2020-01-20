@@ -34,7 +34,6 @@ const WorkSessionNew = props => {
     onWorkSessionCreate,
     resetPageCount,
   } = props;
-
   const createSessionLabel = contract => {
     return `${contract.Project.name} - ${contract.position} - ${
       contract.User.username
@@ -46,8 +45,8 @@ const WorkSessionNew = props => {
   const [date, setDate] = useState(new Date());
   const [minutes, setMinutes] = useState(null);
   const [contract, setContract] = useState({
-    label: createSessionLabel(contracts[0]),
-    id: contracts[0].id,
+    label: contracts[0] ? createSessionLabel(contracts[0]) : null,
+    id: contracts[0] ? contracts[0].id : null,
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleSave = () => {
