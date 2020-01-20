@@ -75,7 +75,7 @@ const Button = styled.View`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  box-shadow: 0 10px 20px #c2cbff;
+  box-shadow: 0 1px 1px #000000;
   margin-top: 20px;
 `;
 
