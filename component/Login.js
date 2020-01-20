@@ -20,6 +20,7 @@ const Login = props => {
         onChangeText={email => setEmail(email)}
         placeholder="Email"
         keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         onChangeText={password => setPassword(password)}
