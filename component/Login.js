@@ -54,7 +54,7 @@ const Container = styled.View`
   padding-top: 50px;
   align-items: center;
   background-color: #651fff;
-  height: 100%;
+  flex: 1;
 `;
 
 const TextInput = styled.TextInput`
