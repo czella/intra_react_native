@@ -25,11 +25,13 @@ const MainScreen = props => {
   return (
     <Container>
       {token && (
-        <Container>
+        <DashboardContainer>
           <MenuBar navigation={navigation} title="Dashboard" />
-          <WorkSessionChart token={token} />
-            {/*{role === ADMIN_ROLE && <WorkSessionsAggregated />}*/}
-        </Container>
+          <ScrollView style={{height: '100%'}}>
+            <WorkSessionChart token={token} />
+            {role === ADMIN_ROLE && <WorkSessionsAggregated />}
+          </ScrollView>
+        </DashboardContainer>
       )}
       {!token && <Login setToken={setToken} />}
     </Container>
@@ -49,9 +51,12 @@ MainScreen.defaultProps = {
 };
 
 const Container = styled.View`
-  height: 100%;
-  width: 100%;
-  flex-direction: column;
+  flex: 1;
+  flex-direction: row;
+`;
+
+const DashboardContainer = styled.View`
+  flex: 1;
 `;
 
 export default connect(

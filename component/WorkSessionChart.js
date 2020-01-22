@@ -109,7 +109,7 @@ const WorkSessionChart = props => {
           <LineChart
             data={line}
             width={chartDimensions.width} // from react-native
-            height={chartDimensions.height}
+            height={250}
             yAxisSuffix={' h'}
             chartConfig={{
               backgroundColor: '#DCDCDC',
@@ -135,7 +135,7 @@ const WorkSessionChart = props => {
             <Text>Previous days</Text>
           </ButtonContainer>
         </TouchableOpacity>
-        <TestContainer>
+        <DateContainer>
           <MonthLabelContainer>
             <Text>{yearLabel}</Text>
             <Text>{monthLabel}</Text>
@@ -145,7 +145,7 @@ const WorkSessionChart = props => {
               <RefreshIcon />
             </ButtonContainer>
           </TouchableOpacity>
-        </TestContainer>
+        </DateContainer>
         <TouchableOpacity onPress={handleForward}>
           <ButtonContainer>
             <Text>Next days</Text>
@@ -163,7 +163,7 @@ WorkSessionChart.defaultProps = {};
 
 const Container = styled.View`
   padding: 10px;
-  width: 100%;
+  flex: 1;
 `;
 
 const ChartContainer = styled.View`
@@ -192,7 +192,7 @@ const ButtonContainer = styled.View`
   align-items: center;
 `;
 
-const TestContainer = styled.View`
+const DateContainer = styled.View`
   flex-direction: row;
 `;
 

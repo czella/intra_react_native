@@ -19,6 +19,7 @@ const Container = styled.View`
   padding: 10px 10px 0px 10px;
   background: red;
   margin-top: 0px;
+  background: green;
 `;
 
 const Text = styled.Text`
