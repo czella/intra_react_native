@@ -150,7 +150,6 @@ const WorkSessionExpanded = props => {
           />
           <TouchableOpacity
             onPress={() => {
-              console.log('showing');
               setShowDatePicker(true);
             }}>
             <InputContainer
