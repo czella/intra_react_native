@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import MenuBar from '../component/MenuBar';
 import WorkSessions from '../component/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
 import WorkSessionExpanded from '../component/WorkSessionExpanded';
 import EventPool from '../utils/EventPool';
 import WorkSessionNew from '../component/WorkSessionNew';
+import {allWorkSessions} from '../queries/queries';
 
 const mapStateToProps = state => ({
   workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
@@ -25,51 +25,6 @@ const mapStateToProps = state => ({
 
 let deviceHeight = Dimensions.get('screen').height;
 let deviceWidth = Dimensions.get('screen').width;
-
-const query = gql`
-  query allWorkSessions(
-    $page: Int
-    $perPage: Int
-    $sortField: String
-    $sortOrder: String
-    $filter: WorkSessionFilter
-  ) {
-    items: allWorkSessions(
-      page: $page
-      perPage: $perPage
-      sortField: $sortField
-      sortOrder: $sortOrder
-      filter: $filter
-    ) {
-      id
-      title
-      description
-      url
-      date
-      minutes
-      ContractId
-      __typename
-    }
-    total: _allWorkSessionsMeta(
-      page: $page
-      perPage: $perPage
-      filter: $filter
-    ) {
-      count
-      __typename
-    }
-    contracts: allContracts {
-      id
-      position
-      Project {
-        name
-      }
-      User {
-        username
-      }
-    }
-  }
-`;
 
 let page = 0;
 
@@ -88,7 +43,7 @@ const WorkSessionsScreen = props => {
     new Animated.Value(0),
   );
   const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
-    query,
+    allWorkSessions,
     {
       variables: {
         page: 0,

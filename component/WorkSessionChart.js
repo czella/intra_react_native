@@ -7,7 +7,7 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
-import {allWorkSessions} from '../queries/queries';
+import {allStatsDailyUserWorkSessions} from '../queries/queries';
 
 const dateToMysqlString = date => {
   const compensateUTCConversion = new Date(
@@ -34,6 +34,7 @@ let monthLabel;
 let yearLabel;
 
 const WorkSessionChart = props => {
+  const {} = props;
   const getTodaysUTCDate = () => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -44,7 +45,7 @@ const WorkSessionChart = props => {
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 
-  const {loading, data, error, refetch} = useQuery(allWorkSessions, {
+  const {loading, data, error, refetch} = useQuery(allStatsDailyUserWorkSessions, {
     variables: {
       startDate: dateToMysqlString(startDate),
       endDate: dateToMysqlString(endDate),
@@ -157,9 +158,11 @@ const WorkSessionChart = props => {
   );
 };
 
-WorkSessionChart.propTypes = {};
+WorkSessionChart.propTypes = {
+};
 
-WorkSessionChart.defaultProps = {};
+WorkSessionChart.defaultProps = {
+};
 
 const Container = styled.View`
   padding: 10px;

@@ -21,7 +21,6 @@ const mapDispatchToProps = dispatch => ({
 const MainScreen = props => {
   const {token, setToken, navigation} = props;
   const role = useRole();
-
   return (
     <Container>
       {token && (

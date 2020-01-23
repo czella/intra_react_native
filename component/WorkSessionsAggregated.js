@@ -1,7 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@apollo/react-hooks';
+import { aggregatedWorkSessions } from '../queries/queries';
 
 const WorkSessionsAggregated = props => {
+  // const {loading, data, error, refetch} = useQuery(aggregatedWorkSessions, {
+  //
+  //   variables: {
+  //     startDate: dateToMysqlString(startDate),
+  //     endDate: dateToMysqlString(endDate),
+  //   },
+  //   notifyOnNetworkStatusChange: true,
+  // });
   return (
     <Container>
       <Text>Aggregated stuff</Text>

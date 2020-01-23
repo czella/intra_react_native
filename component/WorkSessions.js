@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../store/actions';
-import {SmallDownArrowIcon} from '../svg/Icons';
 import PickerTrigger from './PickerTrigger';
 
 const mapStateToProps = state => ({

@@ -6,7 +6,7 @@ export const loginUser = gql`
   }
 `;
 
-export const allWorkSessions = gql`
+export const allStatsDailyUserWorkSessions = gql`
   query allStatsDailyUserWorkSessions($startDate: String!, $endDate: String!) {
     allStatsDailyUserWorkSessions(
       filter: {startDate: $startDate, endDate: $endDate}
@@ -32,6 +32,51 @@ export const aggregatedWorkSessions = gql`
       price
       CurrencyId
       CurrencyName
+    }
+  }
+`;
+
+export const allWorkSessions = gql`
+  query allWorkSessions(
+    $page: Int
+    $perPage: Int
+    $sortField: String
+    $sortOrder: String
+    $filter: WorkSessionFilter
+  ) {
+    items: allWorkSessions(
+      page: $page
+      perPage: $perPage
+      sortField: $sortField
+      sortOrder: $sortOrder
+      filter: $filter
+    ) {
+      id
+      title
+      description
+      url
+      date
+      minutes
+      ContractId
+      __typename
+    }
+    total: _allWorkSessionsMeta(
+      page: $page
+      perPage: $perPage
+      filter: $filter
+    ) {
+      count
+      __typename
+    }
+    contracts: allContracts {
+      id
+      position
+      Project {
+        name
+      }
+      User {
+        username
+      }
     }
   }
 `;
