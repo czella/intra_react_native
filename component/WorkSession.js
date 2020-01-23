@@ -6,19 +6,11 @@ import {SmallRightArrowIcon} from '../svg/Icons';
 
 const WorkSession = props => {
   const {displayedProperty, date, showLog, index} = props;
-  const [displayedPropWidth, setDisplayedPropWidth] = useState(0);
   return (
     <TouchableOpacity onPress={() => showLog(index)}>
-      <Container
-        onLayout={event =>
-          setDisplayedPropWidth(event.nativeEvent.layout.width - 95)
-        }>
+      <Container>
         <Date>{date}</Date>
-        <DisplayedProperty
-          style={{
-            width: displayedPropWidth,
-          }}
-          numberOfLines={1}>
+        <DisplayedProperty numberOfLines={1}>
           {displayedProperty}
         </DisplayedProperty>
         <IconContainer>
@@ -64,6 +56,7 @@ const IconContainer = styled.View`
 const DisplayedProperty = styled.Text`
   line-height: 60px;
   padding-left: 20px;
+  flex: 1;
 `;
 
 const Date = styled.Text`

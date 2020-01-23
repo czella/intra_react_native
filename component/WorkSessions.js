@@ -32,6 +32,9 @@ const WorkSessions = props => {
     contracts,
     fetchMoreSessions,
     totalCount,
+    users,
+    selectedUser,
+    setSelectedUser,
   } = props;
   const [displayedProperty, setDisplayedProperty] = useState(properties[0]);
   const renderFooter = () => {
@@ -50,9 +53,47 @@ const WorkSessions = props => {
   };
   return (
     <Container>
+      <UserSelectContainer>
+        <UserLabel>Selected user:</UserLabel>
+        <UserPickerContainer>
+          <RNPickerSelect
+            onValueChange={(itemValue, index) => {
+              setSelectedUser(users[index]);
+            }}
+            value={selectedUser.value}
+            placeholder={{}}
+            InputAccessoryView={() => {
+              return null;
+            }}
+            useNativeAndroidPickerStyle={false}
+            Icon={() => null}
+            style={{
+              inputAndroid: {
+                height: 40,
+                padding: 0,
+                fontSize: 18,
+              },
+              inputIOS: {
+                height: 40,
+                fontSize: 18,
+              },
+              iconContainer: {
+                height: 40,
+                top: 15,
+                right: 15,
+              },
+            }}
+            items={users}>
+            <PickerTrigger
+              label={selectedUser.label}
+              labelStyle={{fontSize: 18}}
+            />
+          </RNPickerSelect>
+        </UserPickerContainer>
+      </UserSelectContainer>
       <TableHeader>
         <Date>Date</Date>
-        <PickerContainer>
+        <PropertyPickerContainer>
           <RNPickerSelect
             onValueChange={(itemValue, index) => {
               setDisplayedProperty(properties[index]);
@@ -86,7 +127,7 @@ const WorkSessions = props => {
               labelStyle={{fontSize: 18}}
             />
           </RNPickerSelect>
-        </PickerContainer>
+        </PropertyPickerContainer>
       </TableHeader>
       <FlatList
         data={workSessions}
@@ -119,6 +160,9 @@ WorkSessions.propTypes = {
   contracts: PropTypes.array,
   fetchMoreSessions: PropTypes.func,
   totalCount: PropTypes.number,
+  users: PropTypes.array,
+  selectedUser: PropTypes.object,
+  setSelectedUser: PropTypes.func,
 };
 
 WorkSessions.defaultProps = {
@@ -129,6 +173,9 @@ WorkSessions.defaultProps = {
   contracts: [],
   fetchMoreSessions: () => {},
   totalCount: 0,
+  users: [],
+  selectedUser: {},
+  setSelectedUser: () => {},
 };
 
 const Container = styled.View`
@@ -137,6 +184,26 @@ const Container = styled.View`
 `;
 
 const LoaderContainer = styled.View``;
+
+const UserSelectContainer = styled.View`
+  flex-direction: row;
+  border-bottom-width: 3px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom-color: #eeeeee;
+`;
+
+const UserLabel = styled.Text`
+  flex: 1;
+  font-size: 18px;
+  color: grey;
+  line-height: 40px;
+`;
+
+const UserPickerContainer = styled.View`
+  flex: 2;
+  margin: auto;
+`;
 
 const TableHeader = styled.View`
   display: flex;
@@ -153,8 +220,9 @@ const Date = styled.Text`
   line-height: 40px;
 `;
 
-const PickerContainer = styled.View`
+const PropertyPickerContainer = styled.View`
   width: 160px;
+  flex: 1;
   padding-left: 20px;
 `;
 

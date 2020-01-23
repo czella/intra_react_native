@@ -28,8 +28,10 @@ let deviceWidth = Dimensions.get('screen').width;
 
 let page = 0;
 
+let users = [];
 const WorkSessionsScreen = props => {
   const {navigation, token} = props;
+  const [selectedUser, setSelectedUser] = useState({label: 'All', value: null});
   const [topExpandedSession, setTopExpandedSession] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -47,7 +49,7 @@ const WorkSessionsScreen = props => {
     {
       variables: {
         page: 0,
-        filter: {},
+        filter: {UserId: selectedUser.value},
         perPage: 20,
         sortField: 'date',
         sortOrder: 'DESC',
@@ -79,6 +81,14 @@ const WorkSessionsScreen = props => {
   }
   if (error) {
     return <Text>`Error! ${error}`</Text>;
+  }
+  if (data) {
+    users = [
+      {label: 'All', value: null},
+      ...data.users.map(user => {
+        return {label: user.username, value: user.id};
+      }),
+    ];
   }
   const fetchMoreSessions = () => {
     if (data.items.length < data.total.count) {
@@ -171,6 +181,9 @@ const WorkSessionsScreen = props => {
         contracts={data ? data.contracts : []}
         fetchMoreSessions={fetchMoreSessions}
         totalCount={data ? data.total.count : 0}
+        users={users}
+        setSelectedUser={setSelectedUser}
+        selectedUser={selectedUser}
       />
       <ButtonContainer>
         <TouchableOpacity onPress={newWorkSession}>

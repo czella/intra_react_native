@@ -78,6 +78,14 @@ export const allWorkSessions = gql`
         username
       }
     }
+    users: allUsers {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
   }
 `;
 
