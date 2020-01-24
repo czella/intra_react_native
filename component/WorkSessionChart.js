@@ -8,25 +8,7 @@ import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
 import {allStatsDailyUserWorkSessions} from '../queries/queries';
-
-const dateToMysqlString = date => {
-  const compensateUTCConversion = new Date(
-    date.getTime() + date.getTimezoneOffset() * 60000,
-  );
-
-  return compensateUTCConversion
-    .toISOString()
-    .replace('T', ' ')
-    .replace(/\.\d+Z$/, '');
-};
-
-const getStartAndEndDate = referenceDate => {
-  const startDate = new Date(referenceDate.getTime());
-  startDate.setDate(referenceDate.getDate() - 7);
-  const endDate = new Date(referenceDate.getTime());
-  endDate.setDate(referenceDate.getDate() + 7);
-  return {startDate: startDate, endDate: endDate};
-};
+import {dateToMysqlString, getStartAndEndDate} from '../utils/DateHelpers';
 
 let convertedData;
 let line;

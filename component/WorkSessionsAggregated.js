@@ -1,18 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
+import PropTypes from 'prop-types';
 import {Table, Row, Rows} from 'react-native-table-component';
-import {aggregatedWorkSessions} from '../queries/queries';
 import {ActivityIndicator} from 'react-native';
+import {aggregatedWorkSessions} from '../queries/queries';
+import {dateToMysqlString} from '../utils/DateHelpers';
+import EventPool from '../utils/EventPool';
 
 const WorkSessionsAggregated = props => {
+  const {selectedMonth} = props;
   const {loading, data, error, refetch} = useQuery(aggregatedWorkSessions, {
     variables: {
-      startDate: '2020-01-01',
-      endDate: '2020-01-31',
+      startDate: dateToMysqlString(
+        new Date(selectedMonth.year, selectedMonth.monthIndex, 1),
+      ),
+      endDate: dateToMysqlString(
+        new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 1),
+      ),
     },
     notifyOnNetworkStatusChange: true,
   });
+  useEffect(() => {
+    const fetchSessions = () => refetch();
+    EventPool.addListener('refreshWorkSessions', fetchSessions);
+    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
+  }, [refetch]);
+  if (error) {
+    return <Text>`Error! ${error}`</Text>;
+  }
   if (loading) {
     return (
       <LoaderContainer>
@@ -25,21 +41,19 @@ const WorkSessionsAggregated = props => {
     tableData = data.allStatsMonthlyUserAggregates.map(userAggregate => [
       userAggregate.username,
       Math.round((userAggregate.minutes / 60 + Number.EPSILON) * 100) / 100,
+      Math.round((userAggregate.price) * 100) / 100,
       userAggregate.CurrencyName,
     ]);
   }
   const tableHead = ['User', 'Hours', 'Price', 'Currency'];
   return (
     <Container>
-      <Text>Aggregated stuff</Text>
       <Table>
         <Row
           data={tableHead}
           style={{
             paddingLeft: 10,
             height: 50,
-            borderTopColor: 'lightgrey',
-            borderTopWidth: 1,
           }}
           flexArr={[1.5, 1, 1, 1]}
           textStyle={{
@@ -61,9 +75,13 @@ const WorkSessionsAggregated = props => {
   );
 };
 
-WorkSessionsAggregated.propTypes = {};
+WorkSessionsAggregated.propTypes = {
+  selectedMonth: PropTypes.object,
+};
 
-WorkSessionsAggregated.defaultProps = {};
+WorkSessionsAggregated.defaultProps = {
+  selectedMonth: {},
+};
 
 const Container = styled.View`
   margin: 10px;
@@ -73,8 +91,6 @@ const Container = styled.View`
 
 const LoaderContainer = styled.View``;
 
-const Text = styled.Text`
-  font-size: 20px;
-`;
+const Text = styled.Text``;
 
 export default WorkSessionsAggregated;
