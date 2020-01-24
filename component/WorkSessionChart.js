@@ -93,7 +93,6 @@ const WorkSessionChart = props => {
           onSwipeRight={handleBack}
           config={swipeConfig}>
           <LineChart
-            onDataPointClick={(value) => console.log('hello', value)}
             data={line}
             width={chartDimensions.width} // from react-native
             height={250}

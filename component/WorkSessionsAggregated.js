@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
@@ -7,6 +7,10 @@ import {ActivityIndicator} from 'react-native';
 import {aggregatedWorkSessions} from '../queries/queries';
 import {dateToMysqlString} from '../utils/DateHelpers';
 import EventPool from '../utils/EventPool';
+
+const roundToTwoDecimals = number => {
+  return Math.round((number + Number.EPSILON) * 100) / 100;
+};
 
 const WorkSessionsAggregated = props => {
   const {selectedMonth} = props;
@@ -37,13 +41,33 @@ const WorkSessionsAggregated = props => {
     );
   }
   let tableData = [];
+  let sumRows = {};
   if (data) {
-    tableData = data.allStatsMonthlyUserAggregates.map(userAggregate => [
-      userAggregate.username,
-      Math.round((userAggregate.minutes / 60 + Number.EPSILON) * 100) / 100,
-      Math.round((userAggregate.price) * 100) / 100,
-      userAggregate.CurrencyName,
-    ]);
+    tableData = data.allStatsMonthlyUserAggregates.map(userAggregate => {
+      const currencyName = userAggregate.CurrencyName;
+      if (!sumRows[currencyName]) {
+        sumRows[currencyName] = {hours: 0, price: 0};
+      }
+      sumRows[currencyName].hours += userAggregate.minutes;
+      sumRows[currencyName].price += userAggregate.price;
+      return [
+        userAggregate.username,
+        roundToTwoDecimals(userAggregate.minutes / 60),
+        roundToTwoDecimals(userAggregate.price),
+        currencyName,
+      ];
+    });
+    for (let key in sumRows) {
+      if (!sumRows.hasOwnProperty(key)) {
+        continue;
+      }
+      tableData.push([
+        '∑',
+        roundToTwoDecimals(sumRows[key].hours / 60),
+        roundToTwoDecimals(sumRows[key].price),
+        key,
+      ]);
+    }
   }
   const tableHead = ['User', 'Hours', 'Price', 'Currency'];
   return (

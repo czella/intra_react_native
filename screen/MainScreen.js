@@ -26,12 +26,13 @@ const MainScreen = props => {
   const now = new Date();
   const nextMonthFirstDay = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const dateFilters = getDateFilters(new Date('2018-06-01'), nextMonthFirstDay);
-  const [selectedMonth, setSelectedMonth] = useState(dateFilters[dateFilters.length - 1]);
+  const [selectedMonth, setSelectedMonth] = useState(
+    dateFilters[dateFilters.length - 1],
+  );
 
   const role = useRole();
   return (
     <Container>
-      {console.log(selectedMonth, dateFilters, 'hello')}
       {token && (
         <DashboardContainer>
           <MenuBar navigation={navigation} title="Dashboard" />
@@ -65,7 +66,11 @@ const MainScreen = props => {
               }}
               items={dateFilters.map(date => ({
                 label: date.label,
-                value: {label: date.label, monthIndex: date.monthIndex, year: date.year},
+                value: {
+                  label: date.label,
+                  monthIndex: date.monthIndex,
+                  year: date.year,
+                },
               }))}>
               <PickerTrigger
                 label={selectedMonth.label}
@@ -76,7 +81,7 @@ const MainScreen = props => {
           <ScrollView style={{height: '100%'}}>
             <WorkSessionChart token={token} />
             {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
-              <WorkSessionsAggregated selectedMonth={selectedMonth}/>
+              <WorkSessionsAggregated selectedMonth={selectedMonth} />
             )}
           </ScrollView>
         </DashboardContainer>

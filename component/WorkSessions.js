@@ -180,7 +180,7 @@ WorkSessions.defaultProps = {
 
 const Container = styled.View`
   padding: 10px 10px 0px 10px;
-  height: 100%;
+  flex: 1;
 `;
 
 const LoaderContainer = styled.View``;
