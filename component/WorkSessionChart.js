@@ -45,13 +45,16 @@ const WorkSessionChart = props => {
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
 
-  const {loading, data, error, refetch} = useQuery(allStatsDailyUserWorkSessions, {
-    variables: {
-      startDate: dateToMysqlString(startDate),
-      endDate: dateToMysqlString(endDate),
+  const {loading, data, error, refetch} = useQuery(
+    allStatsDailyUserWorkSessions,
+    {
+      variables: {
+        startDate: dateToMysqlString(startDate),
+        endDate: dateToMysqlString(endDate),
+      },
+      notifyOnNetworkStatusChange: true,
     },
-    notifyOnNetworkStatusChange: true,
-  });
+  );
 
   useEffect(() => {
     const fetchSessions = () => refetch();
@@ -108,6 +111,7 @@ const WorkSessionChart = props => {
           onSwipeRight={handleBack}
           config={swipeConfig}>
           <LineChart
+            onDataPointClick={(value) => console.log('hello', value)}
             data={line}
             width={chartDimensions.width} // from react-native
             height={250}
@@ -158,11 +162,9 @@ const WorkSessionChart = props => {
   );
 };
 
-WorkSessionChart.propTypes = {
-};
+WorkSessionChart.propTypes = {};
 
-WorkSessionChart.defaultProps = {
-};
+WorkSessionChart.defaultProps = {};
 
 const Container = styled.View`
   padding: 10px;

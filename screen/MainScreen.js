@@ -6,7 +6,7 @@ import {setToken} from '../store/actions';
 import Login from '../component/Login';
 import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/WorkSessionChart';
-import {useRole, ADMIN_ROLE} from '../hooks/useRole';
+import { useRole, ADMIN_ROLE, PROJECT_OWNER } from '../hooks/useRole';
 import WorkSessionsAggregated from '../component/WorkSessionsAggregated';
 import {ScrollView} from 'react-native';
 
@@ -28,7 +28,9 @@ const MainScreen = props => {
           <MenuBar navigation={navigation} title="Dashboard" />
           <ScrollView style={{height: '100%'}}>
             <WorkSessionChart token={token} />
-            {role === ADMIN_ROLE && <WorkSessionsAggregated />}
+            {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
+              <WorkSessionsAggregated />
+            )}
           </ScrollView>
         </DashboardContainer>
       )}
