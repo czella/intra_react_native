@@ -4,11 +4,19 @@ import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import PropTypes from 'prop-types';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
 import {allStatsDailyUserWorkSessions} from '../queries/queries';
-import {dateToMysqlString, getStartAndEndDate} from '../utils/DateHelpers';
+import {
+  dateToMysqlString,
+  getStartAndEndDate,
+  getTodaysUTCDate,
+  getWeekCount,
+  getFirstDayOfWeek,
+  getLastDayOfWeek,
+} from '../utils/DateHelpers';
 
 let convertedData;
 let line;
@@ -16,23 +24,30 @@ let monthLabel;
 let yearLabel;
 
 const WorkSessionChart = props => {
-  const {} = props;
-  const getTodaysUTCDate = () => {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
-    return date;
-  };
+  const {selectedMonth} = props;
+  const [currentWeek, setCurrentWeek] = useState(1);
+  const weekCount = getWeekCount(selectedMonth.year, selectedMonth.monthIndex);
   const [referenceDate, setReferenceDate] = useState(getTodaysUTCDate());
   const {startDate, endDate} = getStartAndEndDate(referenceDate);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
-
   const {loading, data, error, refetch} = useQuery(
     allStatsDailyUserWorkSessions,
     {
       variables: {
-        startDate: dateToMysqlString(startDate),
-        endDate: dateToMysqlString(endDate),
+        startDate: dateToMysqlString(
+          getFirstDayOfWeek(
+            selectedMonth.year,
+            selectedMonth.monthIndex,
+            currentWeek,
+          ),
+        ),
+        endDate: dateToMysqlString(
+          getLastDayOfWeek(
+            selectedMonth.year,
+            selectedMonth.monthIndex,
+            currentWeek,
+          ),
+        ),
       },
       notifyOnNetworkStatusChange: true,
     },
@@ -54,6 +69,7 @@ const WorkSessionChart = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
+  console.log(data);
   convertedData = workSessionDataHelper(data, startDate, endDate);
   line = {
     id: 1,
@@ -143,9 +159,13 @@ const WorkSessionChart = props => {
   );
 };
 
-WorkSessionChart.propTypes = {};
+WorkSessionChart.propTypes = {
+  selectedMonth: PropTypes.object,
+};
 
-WorkSessionChart.defaultProps = {};
+WorkSessionChart.defaultProps = {
+  selectedMonth: {},
+};
 
 const Container = styled.View`
   padding: 10px;

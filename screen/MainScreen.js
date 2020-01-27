@@ -79,7 +79,7 @@ const MainScreen = props => {
             </RNPickerSelect>
           </MonthPickerContainer>
           <ScrollView style={{height: '100%'}}>
-            <WorkSessionChart token={token} />
+            <WorkSessionChart selectedMonth={selectedMonth} />
             {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
               <WorkSessionsAggregated selectedMonth={selectedMonth} />
             )}
