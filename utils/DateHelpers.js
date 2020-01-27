@@ -9,14 +9,6 @@ export const dateToMysqlString = date => {
     .replace(/\.\d+Z$/, '');
 };
 
-export const getStartAndEndDate = referenceDate => {
-  const startDate = new Date(referenceDate.getTime());
-  startDate.setDate(referenceDate.getDate() - 7);
-  const endDate = new Date(referenceDate.getTime());
-  endDate.setDate(referenceDate.getDate() + 7);
-  return {startDate: startDate, endDate: endDate};
-};
-
 export const getDateFilters = (startDate, endDate) => {
   const filters = [];
   const months = [
@@ -72,6 +64,12 @@ const getWeekNumber = d => {
   return weekNo;
 };
 
+export const getTodaysMonthWeekNumber = () => {
+  const currentDate = getTodaysUTCDate();
+  const firstDayOfCurrentMonth = new Date(currentDate.getFullYear(),currentDate.getMonth(), 1);
+  return getWeekNumber(currentDate) - getWeekNumber(firstDayOfCurrentMonth) + 1;
+};
+
 export const getFirstDayOfWeek = (year, month, week) => {
   const firstOfMonthDate = new Date(year, month, 1);
   if (week === 1) {
@@ -93,7 +91,7 @@ export const getLastDayOfWeek = (year, month, week) => {
   const lastDayOfWeek = new Date(
     year,
     month,
-    firstOfMonthDate.getDate() + delay + distanceFromSunday,
+    firstOfMonthDate.getDate() + delay + distanceFromSunday + 1,
   );
   if (lastDayOfWeek.getMonth() !== month) {
     return new Date(year, month + 1, 0);

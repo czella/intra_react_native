@@ -5,8 +5,6 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
 
   const selectedLines = [];
   const labels = [];
-  const months = new Set([]);
-  const years = new Set([]);
   const monthNames = [
     'Jan',
     'Feb',
@@ -21,18 +19,15 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
     'Nov',
     'Dec',
   ];
+  const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   for (
     const currentDate = new Date(startDate.getTime());
     currentDate < endDate;
     currentDate.setDate(currentDate.getDate() + 1)
   ) {
-    const day = currentDate.getDate();
-    const month = currentDate.getMonth();
-    const year = currentDate.getFullYear();
+    const day = `${currentDate.getDate()}. (${dayNames[currentDate.getDay()]})`;
     labels.push(day);
-    months.add(monthNames[month]);
-    years.add(year);
   }
   for (const entry of data.allStatsDailyUserWorkSessions) {
     if (users[entry.UserId]) {
@@ -117,5 +112,5 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
     };
     dataset.push(userData);
   }
-  return {dataset: dataset, labels: labels, months: months, years: years};
+  return {dataset: dataset, labels: labels};
 };

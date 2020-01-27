@@ -9,37 +9,43 @@ export const WorkSessionsIcon = () => (
   </Svg>
 );
 
-export const LeftArrowIcon = () => (
-  <Svg
-    width="35"
-    height="35"
-    viewBox="0 0 105 188"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-    <Path
-      d="M103 4C99.3333 7.66667 3 94 3 94L103 184V144L43 94L103 44V4Z"
-      fill="#651FFF"
-      stroke="#651FFF"
-      stroke-width="3"
-    />
-  </Svg>
-);
+export const LeftArrowIcon = props => {
+  const {color} = props;
+  return (
+    <Svg
+      width="35"
+      height="35"
+      viewBox="0 0 105 188"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M103 4C99.3333 7.66667 3 94 3 94L103 184V144L43 94L103 44V4Z"
+        fill={color}
+        stroke={color}
+        stroke-width="3"
+      />
+    </Svg>
+  );
+};
 
-export const RightArrowIcon = () => (
-  <Svg
-    width="35"
-    height="35"
-    viewBox="0 0 105 188"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-    <Path
-      d="M2 4C5.66667 7.66667 102 94 102 94L2 184V144L62 94L2 44V4Z"
-      fill="#651FFF"
-      stroke="#651FFF"
-      stroke-width="3"
-    />
-  </Svg>
-);
+export const RightArrowIcon = props => {
+  const {color} = props;
+  return (
+    <Svg
+      width="35"
+      height="35"
+      viewBox="0 0 105 188"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M2 4C5.66667 7.66667 102 94 102 94L2 184V144L62 94L2 44V4Z"
+        fill={color}
+        stroke={color}
+        stroke-width="3"
+      />
+    </Svg>
+  );
+};
 
 export const HamburgerMenuIcon = () => (
   <Svg
@@ -232,8 +238,16 @@ export const CancelIcon = () => (
 );
 
 export const DeleteIcon = () => (
-  <Svg width="45" height="45" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <Circle cx="15" cy="15" r="14.5" fill="#F33B3B" stroke="#F33B3B"/>
-    <Path d="M9 22C9 23.1 9.9 24 11 24H19C20.1 24 21 23.1 21 22V10H9V22ZM22 7H18.5L17.5 6H12.5L11.5 7H8V9H22V7Z" fill="#EEEEEE"/>
+  <Svg
+    width="45"
+    height="45"
+    viewBox="0 0 30 30"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <Circle cx="15" cy="15" r="14.5" fill="#F33B3B" stroke="#F33B3B" />
+    <Path
+      d="M9 22C9 23.1 9.9 24 11 24H19C20.1 24 21 23.1 21 22V10H9V22ZM22 7H18.5L17.5 6H12.5L11.5 7H8V9H22V7Z"
+      fill="#EEEEEE"
+    />
   </Svg>
 );

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
-import GestureRecognizer from 'react-native-swipe-gestures';
 import PropTypes from 'prop-types';
 import {workSessionDataHelper} from '../services/WorkSessionChartService';
 import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
@@ -11,43 +10,45 @@ import EventPool from '../utils/EventPool';
 import {allStatsDailyUserWorkSessions} from '../queries/queries';
 import {
   dateToMysqlString,
-  getStartAndEndDate,
   getTodaysUTCDate,
   getWeekCount,
   getFirstDayOfWeek,
   getLastDayOfWeek,
+  getTodaysMonthWeekNumber,
 } from '../utils/DateHelpers';
 
 let convertedData;
 let line;
-let monthLabel;
-let yearLabel;
 
 const WorkSessionChart = props => {
   const {selectedMonth} = props;
   const [currentWeek, setCurrentWeek] = useState(1);
   const weekCount = getWeekCount(selectedMonth.year, selectedMonth.monthIndex);
-  const [referenceDate, setReferenceDate] = useState(getTodaysUTCDate());
-  const {startDate, endDate} = getStartAndEndDate(referenceDate);
+  const startDate = getFirstDayOfWeek(
+    selectedMonth.year,
+    selectedMonth.monthIndex,
+    currentWeek,
+  );
+  const endDate = getLastDayOfWeek(
+    selectedMonth.year,
+    selectedMonth.monthIndex,
+    currentWeek,
+  );
+  useEffect(() => {
+    const currentDate = getTodaysUTCDate();
+    if (selectedMonth.monthIndex === currentDate.getMonth() && selectedMonth.year === currentDate.getFullYear()) {
+      setCurrentWeek(getTodaysMonthWeekNumber());
+    } else {
+      setCurrentWeek(1);
+    }
+  }, [selectedMonth]);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
   const {loading, data, error, refetch} = useQuery(
     allStatsDailyUserWorkSessions,
     {
       variables: {
-        startDate: dateToMysqlString(
-          getFirstDayOfWeek(
-            selectedMonth.year,
-            selectedMonth.monthIndex,
-            currentWeek,
-          ),
-        ),
-        endDate: dateToMysqlString(
-          getLastDayOfWeek(
-            selectedMonth.year,
-            selectedMonth.monthIndex,
-            currentWeek,
-          ),
-        ),
+        startDate: dateToMysqlString(startDate),
+        endDate: dateToMysqlString(endDate),
       },
       notifyOnNetworkStatusChange: true,
     },
@@ -69,31 +70,11 @@ const WorkSessionChart = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
-  console.log(data);
   convertedData = workSessionDataHelper(data, startDate, endDate);
   line = {
     id: 1,
     labels: convertedData.labels,
     datasets: convertedData.dataset,
-  };
-  monthLabel = [...convertedData.months].join(' / ');
-  yearLabel = [...convertedData.years].join(' / ');
-
-  const handleBack = () => {
-    const newReferenceDate = new Date(referenceDate.getTime());
-    newReferenceDate.setDate(referenceDate.getDate() - 7);
-    setReferenceDate(newReferenceDate);
-  };
-
-  const handleForward = () => {
-    const newReferenceDate = new Date(referenceDate.getTime());
-    newReferenceDate.setDate(referenceDate.getDate() + 7);
-    setReferenceDate(newReferenceDate);
-  };
-
-  const swipeConfig = {
-    velocityThreshold: 0.3,
-    directionalOffsetThreshold: 80,
   };
   return (
     <Container>
@@ -104,54 +85,55 @@ const WorkSessionChart = props => {
             width: event.nativeEvent.layout.width,
           })
         }>
-        <GestureRecognizer
-          onSwipeLeft={handleForward}
-          onSwipeRight={handleBack}
-          config={swipeConfig}>
-          <LineChart
-            data={line}
-            width={chartDimensions.width} // from react-native
-            height={250}
-            yAxisSuffix={' h'}
-            chartConfig={{
-              backgroundColor: '#DCDCDC',
-              backgroundGradientFrom: '#E6E6FA',
-              backgroundGradientTo: '#D8BFD8',
-              decimalPlaces: 2, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-            }}
-            bezier
-            style={{
-              borderRadius: 5,
-            }}
-          />
-        </GestureRecognizer>
+        <LineChart
+          data={line}
+          width={chartDimensions.width} // from react-native
+          height={250}
+          yAxisSuffix={' h'}
+          chartConfig={{
+            backgroundColor: '#DCDCDC',
+            backgroundGradientFrom: '#E6E6FA',
+            backgroundGradientTo: '#D8BFD8',
+            decimalPlaces: 2, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            style: {
+              borderRadius: 16,
+            },
+          }}
+          bezier
+          style={{
+            borderRadius: 5,
+          }}
+        />
       </ChartContainer>
       <ButtonsRow>
-        <TouchableOpacity onPress={handleBack}>
+        <TouchableOpacity
+          onPress={() => setCurrentWeek(currentWeek - 1)}
+          disabled={currentWeek === 1}>
           <ButtonContainer>
-            <LeftArrowIcon />
-            <Text>Previous days</Text>
+            <LeftArrowIcon color={currentWeek !== 1 ? '#651FFF' : '#eeeeee'} />
+            <Text style={{opacity: currentWeek !== 1 ? 1 : 0.5}}>
+              Previous week
+            </Text>
           </ButtonContainer>
         </TouchableOpacity>
         <DateContainer>
-          <MonthLabelContainer>
-            <Text>{yearLabel}</Text>
-            <Text>{monthLabel}</Text>
-          </MonthLabelContainer>
           <TouchableOpacity onPress={() => refetch()}>
             <ButtonContainer>
               <RefreshIcon />
             </ButtonContainer>
           </TouchableOpacity>
         </DateContainer>
-        <TouchableOpacity onPress={handleForward}>
+        <TouchableOpacity
+          onPress={() => setCurrentWeek(currentWeek + 1)}
+          disabled={currentWeek === weekCount}>
           <ButtonContainer>
-            <Text>Next days</Text>
-            <RightArrowIcon />
+            <Text style={{opacity: currentWeek !== weekCount ? 1 : 0.5}}>
+              Next week
+            </Text>
+            <RightArrowIcon
+              color={currentWeek !== weekCount ? '#651FFF' : '#eeeeee'}
+            />
           </ButtonContainer>
         </TouchableOpacity>
       </ButtonsRow>
@@ -204,10 +186,9 @@ const DateContainer = styled.View`
 
 const Text = styled.Text``;
 
-const MonthLabelContainer = styled.View`
-  height: 35px
-  align-items: center;
+const ButtonTextContainer = styled.View`
   flex-direction: column;
+  align-items: center;
 `;
 
 export default WorkSessionChart;
