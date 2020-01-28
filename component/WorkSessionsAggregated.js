@@ -7,10 +7,8 @@ import {ActivityIndicator} from 'react-native';
 import {aggregatedWorkSessions} from '../queries/queries';
 import {dateToMysqlString} from '../utils/DateHelpers';
 import EventPool from '../utils/EventPool';
+import { roundToTwoDecimals } from '../utils/MathHelpers';
 
-const roundToTwoDecimals = number => {
-  return Math.round((number + Number.EPSILON) * 100) / 100;
-};
 
 const WorkSessionsAggregated = props => {
   const {selectedMonth} = props;

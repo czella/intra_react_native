@@ -12,6 +12,7 @@ import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
 import WorkSessionsAggregated from '../component/WorkSessionsAggregated';
 import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
+import ProjectsAggregated from '../component/ProjectsAggregated';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -38,7 +39,7 @@ const MainScreen = props => {
           <MenuBar navigation={navigation} title="Dashboard" />
           <MonthPickerContainer>
             <RNPickerSelect
-              onValueChange={(itemValue, index) => {
+              onValueChange={(itemValue) => {
                 setSelectedMonth(itemValue);
               }}
               value={selectedMonth}
@@ -81,7 +82,13 @@ const MainScreen = props => {
           <ScrollView style={{height: '100%'}}>
             <WorkSessionChart selectedMonth={selectedMonth} />
             {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
-              <WorkSessionsAggregated selectedMonth={selectedMonth} />
+              <MonthlyAggregatesContainer>
+                <Text>Monthly Aggregates</Text>
+                <WorkSessionsAggregated selectedMonth={selectedMonth} />
+              </MonthlyAggregatesContainer>
+            )}
+            {role === ADMIN_ROLE && (
+              <ProjectsAggregated selectedMonth={selectedMonth} />
             )}
           </ScrollView>
         </DashboardContainer>
@@ -116,6 +123,15 @@ const MonthPickerContainer = styled.View`
 
 const DashboardContainer = styled.View`
   flex: 1;
+`;
+
+const MonthlyAggregatesContainer = styled.View`
+  flex: 1;
+`;
+
+const Text = styled.Text`
+  padding-left: 20px;
+  font-size: 18px;
 `;
 
 export default connect(

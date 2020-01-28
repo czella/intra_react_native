@@ -172,7 +172,7 @@ const ButtonsRow = styled.View`
   justify-content: space-between;
   max-height: 60px;
   height: 20%;
-  padding-top: 20px;
+  padding-top: 30px;
 `;
 
 const ButtonContainer = styled.View`

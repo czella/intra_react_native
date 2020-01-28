@@ -36,6 +36,18 @@ export const aggregatedWorkSessions = gql`
   }
 `;
 
+export const monthlyProjectAggregated = gql`
+  query monthlyProjectAggregatedStats($startDate: String!, $endDate: String!) {
+    monthlyProjectStats(filter: {startDate: $startDate, endDate: $endDate}) {
+      username
+      projectName
+      hours
+      price
+      CurrencyName
+    }
+  }
+`;
+
 export const allWorkSessions = gql`
   query allWorkSessions(
     $page: Int
