@@ -7,12 +7,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import {
-  BackArrowIcon,
-  DeleteIcon,
-  SaveIcon,
-  SmallDownArrowIcon,
-} from '../svg/Icons';
+import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
 import InputElement from './InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
@@ -20,6 +15,7 @@ import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../utils/EventPool';
+import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
 import {deleteWorkSession, editWorkSession} from '../queries/queries';
 import RNPickerSelect from 'react-native-picker-select';
 import PickerTrigger from './PickerTrigger';
@@ -44,6 +40,7 @@ const WorkSessionExpanded = props => {
     onWorkSessionSave,
     resetPageCount,
   } = props;
+  const role = useRole();
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
@@ -128,6 +125,16 @@ const WorkSessionExpanded = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
+          {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
+            <InputElement
+              editable={false}
+              placeholder={
+                find(workSession.contracts, {id: workSession.ContractId}).User
+                  .username
+              }
+              label="Username"
+            />
+          )}
           <InputElement
             editable={false}
             placeholder={workSession.id}

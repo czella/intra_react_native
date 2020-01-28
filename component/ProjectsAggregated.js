@@ -65,7 +65,7 @@ const ProjectsAggregated = props => {
         <ProjectAggregated
           projectName={key}
           projectData={projects[key].data}
-          projectSum={projects[key].sumRows}
+          sumRows={projects[key].sumRows}
         />
       ))}
     </Container>

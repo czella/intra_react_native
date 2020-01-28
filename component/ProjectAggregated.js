@@ -5,18 +5,18 @@ import {roundToTwoDecimals} from '../utils/MathHelpers';
 import {Row, Rows, Table} from 'react-native-table-component';
 
 const ProjectAggregated = props => {
-  const {projectName, projectSum, projectData} = props;
+  const {projectName, sumRows, projectData} = props;
   const tableHead = [projectName, 'Hours', 'Price', 'Currency'];
   const getFullTableData = data => {
     const tableData = [...data];
-    for (let key in projectSum) {
-      if (!projectSum.hasOwnProperty(key)) {
+    for (let key in sumRows) {
+      if (!sumRows.hasOwnProperty(key)) {
         continue;
       }
       tableData.push([
         '∑',
-        roundToTwoDecimals(projectSum[key].hours),
-        roundToTwoDecimals(projectSum[key].price),
+        roundToTwoDecimals(sumRows[key].hours),
+        roundToTwoDecimals(sumRows[key].price),
         key,
       ]);
     }
@@ -54,13 +54,13 @@ const ProjectAggregated = props => {
 
 ProjectAggregated.propTypes = {
   projectName: PropTypes.string,
-  projectSum: PropTypes.object,
+  sumRows: PropTypes.object,
   projectData: PropTypes.array,
 };
 
 ProjectAggregated.defaultProps = {
   projectName: '',
-  projectSum: {},
+  sumRows: {},
   projectData: [],
 };
 
