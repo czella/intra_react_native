@@ -7,18 +7,18 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import {BackArrowIcon, DeleteIcon, SaveIcon} from '../svg/Icons';
-import InputElement from './InputElement';
+import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
+import InputElement from '../InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import EventPool from '../utils/EventPool';
-import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
-import {deleteWorkSession, editWorkSession} from '../queries/queries';
+import EventPool from '../../utils/EventPool';
+import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../../hooks/useRole';
+import {deleteWorkSession, editWorkSession} from '../../queries/queries';
 import RNPickerSelect from 'react-native-picker-select';
-import PickerTrigger from './PickerTrigger';
+import PickerTrigger from '../PickerTrigger';
 
 const dateToString = date => {
   if (date) {

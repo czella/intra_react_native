@@ -4,10 +4,10 @@ import {useQuery} from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
 import {Table, Row, Rows} from 'react-native-table-component';
 import {ActivityIndicator} from 'react-native';
-import {aggregatedWorkSessions} from '../queries/queries';
-import {dateToMysqlString} from '../utils/DateHelpers';
-import EventPool from '../utils/EventPool';
-import { roundToTwoDecimals } from '../utils/MathHelpers';
+import {aggregatedWorkSessions} from '../../queries/queries';
+import {dateToMysqlString} from '../../utils/DateHelpers';
+import EventPool from '../../utils/EventPool';
+import { roundToTwoDecimals } from '../../utils/MathHelpers';
 
 
 const WorkSessionsAggregated = props => {

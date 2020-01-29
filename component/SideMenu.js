@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import {TouchableOpacity, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {setToken} from '../store/actions';
-import {DashboardIcon, LogoutIcon, WorkSessionsIcon} from '../svg/Icons';
+import {ContractsIcon, DashboardIcon, LogoutIcon, WorkSessionsIcon} from '../svg/Icons';
+import EventPool from '../utils/EventPool';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -17,6 +18,7 @@ const mapDispatchToProps = dispatch => ({
 const SideMenu = props => {
   const {navigation, token, setToken} = props;
   const handleLogout = () => {
+    EventPool.emit('logout');
     setToken(null);
     navigation.navigate('Home');
     navigation.closeDrawer();
@@ -37,6 +39,12 @@ const SideMenu = props => {
           <MenuElement>
             <WorkSessionsIcon />
             <Text>Work Sessions</Text>
+          </MenuElement>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Contracts')}>
+          <MenuElement>
+            <ContractsIcon />
+            <Text>Contracts</Text>
           </MenuElement>
         </TouchableOpacity>
       </ScrollView>

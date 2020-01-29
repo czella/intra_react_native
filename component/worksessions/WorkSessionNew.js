@@ -11,12 +11,12 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
-import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../svg/Icons';
-import InputElement from './InputElement';
-import EventPool from '../utils/EventPool';
+import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../../svg/Icons';
+import InputElement from '../InputElement';
+import EventPool from '../../utils/EventPool';
 
-import {createWorkSession} from '../queries/queries';
-import PickerTrigger from './PickerTrigger';
+import {createWorkSession} from '../../queries/queries';
+import PickerTrigger from '../PickerTrigger';
 import RNPickerSelect from 'react-native-picker-select';
 
 const dateToString = date => {

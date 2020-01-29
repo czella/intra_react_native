@@ -5,9 +5,9 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import WorkSession from './WorkSession';
-import {setSelectedWorkSession} from '../store/actions';
-import {useRole, ADMIN_ROLE} from '../hooks/useRole';
-import PickerTrigger from './PickerTrigger';
+import {setSelectedWorkSession} from '../../store/actions';
+import {useRole, ADMIN_ROLE} from '../../hooks/useRole';
+import PickerTrigger from '../PickerTrigger';
 
 const mapStateToProps = state => ({
   deviceWidth: state.nonCachedReducer.deviceWidth,

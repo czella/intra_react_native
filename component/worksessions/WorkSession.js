@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
-import {SmallRightArrowIcon} from '../svg/Icons';
+import {SmallRightArrowIcon} from '../../svg/Icons';
 
 const WorkSession = props => {
   const {displayedProperty, date, showLog, index} = props;

@@ -29,7 +29,7 @@ let deviceWidth = Dimensions.get('screen').width;
 let page = 0;
 
 let users = [];
-const WorkSessionsScreen = props => {
+const ContractsScreen = props => {
   const {navigation, token} = props;
   const [selectedUser, setSelectedUser] = useState({label: 'All', value: null});
   const [topExpandedSession, setTopExpandedSession] = useState(
@@ -222,12 +222,12 @@ const WorkSessionsScreen = props => {
   );
 };
 
-WorkSessionsScreen.proptypes = {
+ContractsScreen.proptypes = {
   navigation: PropTypes.object,
   token: PropTypes.string,
 };
 
-WorkSessionsScreen.defaultProps = {
+ContractsScreen.defaultProps = {
   navigation: {},
   token: '',
 };
@@ -271,4 +271,4 @@ const ButtonContainer = styled.View`
 export default connect(
   mapStateToProps,
   null,
-)(WorkSessionsScreen);
+)(ContractsScreen);
