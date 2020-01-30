@@ -16,10 +16,9 @@ import {useQuery} from '@apollo/react-hooks';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
-import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../../hooks/useRole';
 import {
   allDataForContract,
-  deleteWorkSession,
+  deleteWorkSession, editContract,
   editWorkSession,
 } from '../../queries/queries';
 import Picker from '../Picker';
@@ -31,28 +30,53 @@ const mapStateToProps = state => ({
 const ContractExpanded = props => {
   const {
     contract,
-    closeWorkSession,
-    saveWorkSession,
+    currencies,
+    users,
+    projects,
+    closeContract,
+    saveContract,
     deleteWorkSession,
-    onWorkSessionSave,
+    onContractSave,
     resetPageCount,
   } = props;
-  const role = useRole();
   const getUsersForPicker = users => {
     return users.map(user => {
       return {label: user.username, value: user.id};
     });
   };
-  console.log(contract, '.........................................');
+  const getProjectsForPicker = projects => {
+    return projects.map(project => {
+      return {label: project.name, value: project.id};
+    });
+  };
+  const getCurrenciesForPicker = currencies => {
+    return currencies.map(currency => {
+      return {label: currency.name, value: currency.id};
+    });
+  };
   const [position, setPosition] = useState(null);
   const [price, setPrice] = useState(null);
   const [user, setUser] = useState({label: null, value: null});
-  const [description, setDescription] = useState(null);
-  const [url, setUrl] = useState(null);
-  const [date, setDate] = useState(null);
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  // resetPageCount();
+  const [project, setProject] = useState({label: null, value: null});
+  const [currency, setCurrency] = useState({label: null, value: null});
+  const handleSave = () => {
+    resetPageCount();
+    saveContract(
+      contract.id,
+      position,
+      user.value,
+      project.value,
+      Number(price),
+      currency.value,
+    ).then(() => EventPool.emit('refreshWorkSessions'));
+    onContractSave();
+  };
+  const handleDelete = () => {
+    // deleteWorkSession(workSession.id).then(() =>
+    //   EventPool.emit('refreshWorkSessions'),
+    // );
+    // onWorkSessionSave();
+  };
   useEffect(() => {
     if (contract) {
       setPosition(contract.position);
@@ -61,71 +85,29 @@ const ContractExpanded = props => {
         label: contract.User.username,
         value: contract.User.id,
       });
-      // setDescription(workSession.description);
-      // setUrl(workSession.url);
-      // setDate(new Date(workSession.date ? workSession.date : null));
+      setProject({
+        label: contract.Project.name,
+        value: contract.Project.id,
+      });
+      setCurrency({
+        label: find(currencies, {id: contract.CurrencyId}).name,
+        value: contract.CurrencyId,
+      });
     } else {
       setPosition(null);
       setPrice(null);
       setUser({label: null, value: null});
-      // setDescription(null);
-      // setUrl(null);
-      // setDate(null);
+      setProject({label: null, value: null});
+      setCurrency({label: null, value: null});
     }
   }, [contract]);
-  const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
-    allDataForContract,
-    {
-      variables: {
-        userFilter: {},
-        currencyFilter: {},
-        projectFilter: {},
-      },
-      fetchPolicy: 'cache-and-network',
-      notifyOnNetworkStatusChange: true,
-    },
-  );
-  if (loading) {
-    return (
-      <LoaderContainer
-        style={{
-          width: 300,
-        }}>
-        <ActivityIndicator size="large" color="#7423B5" />
-      </LoaderContainer>
-    );
-  }
-  if (error) {
-    return <Text>`Error! ${error}`</Text>;
-  }
-  console.log(data, 'stuff');
-  const handleSave = () => {
-    // saveWorkSession(
-    //   workSession.id,
-    //   position,
-    //   description,
-    //   url,
-    //   dateToString(date),
-    //   Number(price),
-    //   user.id,
-    // ).then(() => EventPool.emit('refreshWorkSessions'));
-    // onWorkSessionSave();
-    // resetPageCount();
-  };
-  const handleDelete = () => {
-    // deleteWorkSession(workSession.id).then(() =>
-    //   EventPool.emit('refreshWorkSessions'),
-    // );
-    // onWorkSessionSave();
-  };
-
   if (!contract) {
     return null;
   }
   return (
     <Container>
       <NavigationButtonsContainer>
-        <TouchableOpacity onPress={closeWorkSession}>
+        <TouchableOpacity onPress={closeContract}>
           <BackArrowIcon />
         </TouchableOpacity>
         <TitleBar>Edit Contract</TitleBar>
@@ -148,15 +130,29 @@ const ContractExpanded = props => {
           <PickerContainer>
             <Picker
               title="User"
-              onValueChange={(itemValue, index) => {
+              onValueChange={itemValue => {
                 setUser({
-                  label: find(data.users, {id: itemValue}).username,
+                  label: find(users, {id: itemValue}).username,
                   value: itemValue,
                 });
               }}
               value={user.value}
-              items={getUsersForPicker(data.users)}
+              items={getUsersForPicker(users)}
               label={user.label}
+            />
+          </PickerContainer>
+          <PickerContainer>
+            <Picker
+              title="Project"
+              onValueChange={itemValue => {
+                setProject({
+                  label: find(projects, {id: itemValue}).name,
+                  value: itemValue,
+                });
+              }}
+              value={project.value}
+              items={getProjectsForPicker(projects)}
+              label={project.label}
             />
           </PickerContainer>
           <InputElement
@@ -165,37 +161,20 @@ const ContractExpanded = props => {
             onChange={setPrice}
             numeric={true}
           />
-          {/*<InputElement*/}
-          {/*placeholder={workSession.description}*/}
-          {/*label="Description"*/}
-          {/*onChange={setDescription}*/}
-          {/*/>*/}
-          {/*<InputElement*/}
-          {/*placeholder={workSession.url}*/}
-          {/*label="Url"*/}
-          {/*onChange={setUrl}*/}
-          {/*/>*/}
-          {/*<TouchableOpacity*/}
-          {/*onPress={() => {*/}
-          {/*setShowDatePicker(true);*/}
-          {/*}}>*/}
-          {/*<InputContainer*/}
-          {/*style={{*/}
-          {/*borderBottomWidth: 1,*/}
-          {/*borderRadius: 1,*/}
-          {/*borderBottomColor: 'lightgrey',*/}
-          {/*color: 'lightgrey',*/}
-          {/*background: 'red',*/}
-          {/*}}*/}
-          {/*pointerEvents="none">*/}
-          {/*<InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>*/}
-          {/*<TextInput*/}
-          {/*editable={false}*/}
-          {/*onChange={() => {}}*/}
-          {/*placeholder={dateToString(date)}*/}
-          {/*/>*/}
-          {/*</InputContainer>*/}
-          {/*</TouchableOpacity>*/}
+          <PickerContainer>
+            <Picker
+              title="Currency"
+              onValueChange={itemValue => {
+                setCurrency({
+                  label: find(currencies, {id: itemValue}).name,
+                  value: itemValue,
+                });
+              }}
+              value={currency.value}
+              items={getCurrenciesForPicker(currencies)}
+              label={currency.label}
+            />
+          </PickerContainer>
           <TouchableOpacity onPress={handleDelete}>
             <ButtonContainer stlye={{paddingTop: 10}}>
               <DeleteIcon />
@@ -213,19 +192,25 @@ const ContractExpanded = props => {
 
 ContractExpanded.propTypes = {
   workSession: PropTypes.object,
-  closeWorkSession: PropTypes.func,
-  saveWorkSession: PropTypes.func,
+  currencies: PropTypes.array,
+  users: PropTypes.array,
+  projects: PropTypes.array,
+  closeContract: PropTypes.func,
+  saveContract: PropTypes.func,
   deleteWorkSession: PropTypes.func,
-  onWorkSessionSave: PropTypes.func,
+  onContractSave: PropTypes.func,
   resetPageCount: PropTypes.func,
 };
 
 ContractExpanded.defaultProps = {
   workSession: null,
-  closeWorkSession: () => {},
-  saveWorkSession: () => {},
+  currencies: [],
+  users: [],
+  projects: [],
+  closeContract: () => {},
+  saveContract: () => {},
   deleteWorkSession: () => {},
-  onWorkSessionSave: () => {},
+  onContractSave: () => {},
   resetPageCount: () => {},
 };
 
@@ -233,14 +218,6 @@ const Container = styled.View`
   width: 100%;
   height: 100%;
 `;
-
-const LoaderContainer = styled.View`
-  margin: 10px;
-  padding-top: 120px;
-  height: 250;
-`;
-
-const Text = styled.Text``;
 
 const Background = styled.View`
   height: 100%;
@@ -250,12 +227,6 @@ const TitleBar = styled.Text`
   font-size: 25px;
   color: white;
   line-height: 50px;
-`;
-
-const PickerButton = styled.Text`
-  width: 50px;
-  font-size: 18px;
-  margin: auto;
 `;
 
 const Form = styled.View`
@@ -270,16 +241,6 @@ const NavigationButtonsContainer = styled.View`
   padding-left: 10px;
   justify-content: space-between;
 `;
-
-const InputContainer = styled.View`
-  margin-bottom: 10px;
-`;
-
-const DatePickerContainer = styled.View``;
-
-const InputLabel = styled.Text``;
-
-const TextInput = styled.TextInput``;
 
 const PickerContainer = styled.View`
   border-bottom-width: 1px;
@@ -299,11 +260,11 @@ const ButtonLabel = styled.Text`
   padding-left: 10px;
 `;
 
-const saveWorkSessionQuery = graphql(editWorkSession, {
+const saveContractQuery = graphql(editContract, {
   props: ({mutate}) => ({
-    saveWorkSession: (id, title, description, url, date, minutes, ContractId) =>
+    saveContract: (id, position, UserId, ProjectId, price, CurrencyId) =>
       mutate({
-        variables: {id, title, description, url, date, minutes, ContractId},
+        variables: {id, position, UserId, ProjectId, price, CurrencyId},
       }),
   }),
 });
@@ -317,7 +278,7 @@ const deleteWorkSessionQuery = graphql(deleteWorkSession, {
   }),
 });
 
-export default saveWorkSessionQuery(
+export default saveContractQuery(
   deleteWorkSessionQuery(
     connect(
       mapStateToProps,

@@ -50,6 +50,8 @@ const ContractsScreen = props => {
         sortField: 'ProjectId',
         sortOrder: 'ASC',
         currencyFilter: {},
+        userFilter: {},
+        projectFilter: {},
       },
       skip: !token,
       fetchPolicy: 'cache-and-network',
@@ -57,9 +59,9 @@ const ContractsScreen = props => {
     },
   );
   useEffect(() => {
-    const fetchSessions = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
+    const fetchContracts = () => refetch();
+    EventPool.addListener('refreshWorkSessions', fetchContracts);
+    return () => EventPool.removeListener('refreshWorkSessions', fetchContracts);
   }, []);
   if (!token) {
     return null;
@@ -90,6 +92,8 @@ const ContractsScreen = props => {
           sortField: 'ProjectId',
           sortOrder: 'ASC',
           currencyFilter: {},
+          userFilter: {},
+          projectFilter: {},
         },
         updateQuery: (prev, {fetchMoreResult}) => {
           if (!fetchMoreResult) {
@@ -117,7 +121,7 @@ const ContractsScreen = props => {
     Animated.timing(topNewContract, {toValue: 0, duration: 500}).start();
     Animated.timing(translateYNewContract, {toValue: 0, duration: 0}).start();
   };
-  const closeExpandedWorkSession = () => {
+  const closeExpandedContract = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
@@ -183,9 +187,12 @@ const ContractsScreen = props => {
             top: topExpandedContract,
           }}>
           <ContractExpanded
-            closeWorkSession={closeExpandedWorkSession}
+            closeContract={closeExpandedContract}
             onContractSave={onContractSave}
             resetPageCount={resetPageCount}
+            currencies={data ? data.currencies : []}
+            users={data ? data.users : []}
+            projects={data ? data.projects : []}
           />
         </AnimatedContractModal>
       )}

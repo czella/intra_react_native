@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Contract from './Contract';
 import {setSelectedContract} from '../../store/actions';
-import PickerTrigger from '../PickerTrigger';
 import {find} from 'lodash';
 import Picker from '../Picker';
 
@@ -76,7 +75,7 @@ const Contracts = props => {
         data={contracts}
         renderItem={({item, index}) => (
           <Contract
-            project={item.Project.name}
+            project={item.Project ? item.Project.name : ''}
             displayedProperty={getDisplayedProp(item)}
             index={index}
             showLog={showLog}
