@@ -8,6 +8,7 @@ import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../../store/actions';
 import {useRole, ADMIN_ROLE} from '../../hooks/useRole';
 import PickerTrigger from '../PickerTrigger';
+import Picker from '../Picker';
 
 const mapDispatchToProps = dispatch => ({
   setSelectedWorkSession: workSession =>
@@ -54,39 +55,48 @@ const WorkSessions = props => {
         <UserSelectContainer>
           <UserLabel>Selected user:</UserLabel>
           <UserPickerContainer>
-            <RNPickerSelect
+            {/*<RNPickerSelect*/}
+            {/*  onValueChange={(itemValue, index) => {*/}
+            {/*    setSelectedUser(users[index]);*/}
+            {/*  }}*/}
+            {/*  value={selectedUser.value}*/}
+            {/*  placeholder={{}}*/}
+            {/*  InputAccessoryView={() => {*/}
+            {/*    return null;*/}
+            {/*  }}*/}
+            {/*  useNativeAndroidPickerStyle={false}*/}
+            {/*  Icon={() => null}*/}
+            {/*  style={{*/}
+            {/*    inputAndroid: {*/}
+            {/*      height: 40,*/}
+            {/*      padding: 0,*/}
+            {/*      fontSize: 18,*/}
+            {/*    },*/}
+            {/*    inputIOS: {*/}
+            {/*      height: 40,*/}
+            {/*      fontSize: 18,*/}
+            {/*    },*/}
+            {/*    iconContainer: {*/}
+            {/*      height: 40,*/}
+            {/*      top: 15,*/}
+            {/*      right: 15,*/}
+            {/*    },*/}
+            {/*  }}*/}
+            {/*  items={users}>*/}
+            {/*  <PickerTrigger*/}
+            {/*    label={selectedUser.label}*/}
+            {/*    labelStyle={{fontSize: 18}}*/}
+            {/*  />*/}
+            {/*</RNPickerSelect>*/}
+            <Picker
               onValueChange={(itemValue, index) => {
                 setSelectedUser(users[index]);
               }}
               value={selectedUser.value}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 18,
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
-              items={users}>
-              <PickerTrigger
-                label={selectedUser.label}
-                labelStyle={{fontSize: 18}}
-              />
-            </RNPickerSelect>
+              items={users}
+              label={selectedUser.label}
+              labelStyle={{fontSize: 18}}
+            />
           </UserPickerContainer>
         </UserSelectContainer>
       )}

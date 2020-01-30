@@ -8,10 +8,10 @@ import Contract from './Contract';
 import {setSelectedContract} from '../../store/actions';
 import PickerTrigger from '../PickerTrigger';
 import {find} from 'lodash';
+import Picker from '../Picker';
 
 const mapDispatchToProps = dispatch => ({
-  setSelectedContract: contract =>
-    dispatch(setSelectedContract(contract)),
+  setSelectedContract: contract => dispatch(setSelectedContract(contract)),
 });
 
 const properties = [
@@ -50,7 +50,9 @@ const Contracts = props => {
       case 'Username':
         return item.User.username;
       case 'Price':
-        return `${item.price} ${find(currencies, {id: item.CurrencyId}).name} / hour`;
+        return `${item.price} ${
+          find(currencies, {id: item.CurrencyId}).name
+        } / hour`;
       default:
         return item.position;
     }
@@ -60,45 +62,26 @@ const Contracts = props => {
       <TableHeader>
         <Project>Project</Project>
         <PropertyPickerContainer>
-          <RNPickerSelect
+          <Picker
             onValueChange={(itemValue, index) => {
               setDisplayedProperty(properties[index]);
             }}
             value={displayedProperty.value}
-            placeholder={{}}
-            InputAccessoryView={() => {
-              return null;
-            }}
-            useNativeAndroidPickerStyle={false}
-            Icon={() => null}
-            style={{
-              inputAndroid: {
-                height: 40,
-                padding: 0,
-                fontSize: 18,
-              },
-              inputIOS: {
-                height: 40,
-                fontSize: 18,
-              },
-              iconContainer: {
-                height: 40,
-                top: 15,
-                right: 15,
-              },
-            }}
-            items={properties}>
-            <PickerTrigger
-              label={displayedProperty.label}
-              labelStyle={{fontSize: 18}}
-            />
-          </RNPickerSelect>
+            items={properties}
+            label={displayedProperty.label}
+            labelStyle={{fontSize: 18}}
+          />
         </PropertyPickerContainer>
       </TableHeader>
       <FlatList
         data={contracts}
         renderItem={({item, index}) => (
-          <Contract project={item.Project.name} displayedProperty={getDisplayedProp(item)} index={index} showLog={showLog}/>
+          <Contract
+            project={item.Project.name}
+            displayedProperty={getDisplayedProp(item)}
+            index={index}
+            showLog={showLog}
+          />
         )}
         keyExtractor={item => item.id}
         ListFooterComponent={renderFooter}

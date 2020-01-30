@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Platform, ActivityIndicator,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
 import InputElement from '../InputElement';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
 import {useQuery} from '@apollo/react-hooks';
@@ -17,10 +17,14 @@ import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
 import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../../hooks/useRole';
-import {allDataForContract, deleteWorkSession, editWorkSession} from '../../queries/queries';
+import {
+  allDataForContract,
+  deleteWorkSession,
+  editWorkSession,
+} from '../../queries/queries';
 import RNPickerSelect from 'react-native-picker-select';
 import PickerTrigger from '../PickerTrigger';
-
+import Picker from '../Picker';
 
 const mapStateToProps = state => ({
   contract: state.nonCachedReducer.selectedContract,
@@ -36,33 +40,37 @@ const ContractExpanded = props => {
     resetPageCount,
   } = props;
   const role = useRole();
+  const getUsersForPicker = users => {
+    return users.map(user => {
+      return {label: user.username, value: user.id};
+    });
+  };
+  console.log(contract, '.........................................');
   const [position, setPosition] = useState(null);
   const [price, setPrice] = useState(null);
-  const [user, setUser] = useState({label: null, id: null});
+  const [user, setUser] = useState({label: null, value: null});
   const [description, setDescription] = useState(null);
   const [url, setUrl] = useState(null);
   const [date, setDate] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
   // resetPageCount();
   useEffect(() => {
     if (contract) {
       setPosition(contract.position);
       setPrice(`${contract.price}`);
-      // setUser({
-      //   label: createSessionLabel(
-      //     find(workSession.contracts, {id: workSession.ContractId}),
-      //   ),
-      //   id: workSession.ContractId,
-      // });
+      setUser({
+        label: contract.User.username,
+        value: contract.User.id,
+      });
       // setDescription(workSession.description);
       // setUrl(workSession.url);
       // setDate(new Date(workSession.date ? workSession.date : null));
     } else {
       setPosition(null);
       setPrice(null);
+      setUser({label: null, value: null});
       // setDescription(null);
-      // setUser({label: null, id: null});
       // setUrl(null);
       // setDate(null);
     }
@@ -111,7 +119,6 @@ const ContractExpanded = props => {
     //   EventPool.emit('refreshWorkSessions'),
     // );
     // onWorkSessionSave();
-
   };
 
   if (!contract) {
@@ -134,69 +141,27 @@ const ContractExpanded = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
-          {/*{[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (*/}
-            {/*<InputElement*/}
-              {/*editable={false}*/}
-              {/*placeholder={*/}
-                {/*find(workSession.contracts, {id: workSession.ContractId}).User*/}
-                  {/*.username*/}
-              {/*}*/}
-              {/*label="Username"*/}
-            {/*/>*/}
-          {/*)}*/}
-          <InputElement
-            editable={false}
-            placeholder={contract.id}
-            label="Id"
-          />
+          <InputElement editable={false} placeholder={contract.id} label="Id" />
           <InputElement
             placeholder={contract.position}
             label="Position"
             onChange={setPosition}
           />
-          {/*<PickerContainer>*/}
-            {/*<InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>*/}
-            {/*<RNPickerSelect*/}
-              {/*onValueChange={(itemValue, index) => {*/}
-                {/*setUser({*/}
-                  {/*label: createSessionLabel(workSession.contracts[index]),*/}
-                  {/*id: itemValue,*/}
-                {/*});*/}
-              {/*}}*/}
-              {/*value={user.id}*/}
-              {/*placeholder={{}}*/}
-              {/*InputAccessoryView={() => {*/}
-                {/*return null;*/}
-              {/*}}*/}
-              {/*useNativeAndroidPickerStyle={false}*/}
-              {/*Icon={() => null}*/}
-              {/*style={{*/}
-                {/*inputAndroidContainer: {*/}
-                  {/*textAlign: 'left',*/}
-                {/*},*/}
-                {/*inputAndroid: {*/}
-                  {/*height: 40,*/}
-                  {/*padding: 0,*/}
-                  {/*fontSize: 15,*/}
-                  {/*width: '100%',*/}
-                {/*},*/}
-                {/*inputIOS: {*/}
-                  {/*height: 40,*/}
-                  {/*fontSize: 18,*/}
-                {/*},*/}
-                {/*iconContainer: {*/}
-                  {/*height: 40,*/}
-                  {/*top: 15,*/}
-                  {/*right: 15,*/}
-                {/*},*/}
-              {/*}}*/}
-              {/*items={workSession.contracts.map(contract => ({*/}
-                {/*label: createSessionLabel(contract),*/}
-                {/*value: contract.id,*/}
-              {/*}))}>*/}
-              {/*<PickerTrigger label={user.label} />*/}
-            {/*</RNPickerSelect>*/}
-          {/*</PickerContainer>*/}
+          <PickerContainer>
+            <Picker
+              hasTitle={true}
+              title="User"
+              onValueChange={(itemValue, index) => {
+                setUser({
+                  label: find(data.users, {id: itemValue}).username,
+                  value: itemValue,
+                });
+              }}
+              value={user.value}
+              items={getUsersForPicker(data.users)}
+              label={user.label}
+            />
+          </PickerContainer>
           <InputElement
             placeholder={`${contract.price}`}
             label="Price"
@@ -322,6 +287,7 @@ const TextInput = styled.TextInput``;
 const PickerContainer = styled.View`
   border-bottom-width: 1px;
   border-bottom-color: lightgrey;
+  margin-bottom: 8px;
 `;
 
 const ButtonContainer = styled.View`

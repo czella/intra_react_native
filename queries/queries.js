@@ -171,8 +171,21 @@ export const createWorkSession = gql`
 `;
 
 export const allContracts = gql`
-  query allContracts($page: Int, $perPage: Int, $sortField: String, $sortOrder: String, $filter: ContractFilter, $currencyFilter: CurrencyFilter) {
-    items: allContracts(page: $page, perPage: $perPage, sortField: $sortField, sortOrder: $sortOrder, filter: $filter) {
+  query allContracts(
+    $page: Int
+    $perPage: Int
+    $sortField: String
+    $sortOrder: String
+    $filter: ContractFilter
+    $currencyFilter: CurrencyFilter
+  ) {
+    items: allContracts(
+      page: $page
+      perPage: $perPage
+      sortField: $sortField
+      sortOrder: $sortOrder
+      filter: $filter
+    ) {
       id
       position
       UserId
@@ -196,9 +209,9 @@ export const allContracts = gql`
       __typename
     }
     currencies: allCurrencies(filter: $currencyFilter) {
-    id
-    name
-    __typename
+      id
+      name
+      __typename
     }
     totalCurrency: _allCurrenciesMeta(filter: $currencyFilter) {
       count
@@ -208,7 +221,11 @@ export const allContracts = gql`
 `;
 
 export const allDataForContract = gql`
-  query allDataForContract($userFilter: UserFilter, $projectFilter: ProjectFilter, $currencyFilter: CurrencyFilter) {
+  query allDataForContract(
+    $userFilter: UserFilter
+    $projectFilter: ProjectFilter
+    $currencyFilter: CurrencyFilter
+  ) {
     users: allUsers(filter: $userFilter) {
       id
       username
@@ -232,9 +249,9 @@ export const allDataForContract = gql`
       __typename
     }
     currencies: allCurrencies(filter: $currencyFilter) {
-    id
-    name
-    __typename
+      id
+      name
+      __typename
     }
     totalCurrency: _allCurrenciesMeta(filter: $currencyFilter) {
       count
