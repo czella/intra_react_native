@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
 import {graphql} from 'react-apollo';
 import PropTypes from 'prop-types';
-import {loginUser} from '../queries/queries';
+import {loginUser} from '../../queries/queries';
 
 const Login = props => {
   const {login, setToken} = props;
@@ -11,7 +11,9 @@ const Login = props => {
   const [password, setPassword] = useState();
 
   const handleLogin = (email, password) => {
-    login(email, password).then(({data}) => setToken(data.login));
+    login(email, password).then(({data}) => {
+      setToken(data.login)
+    });
   };
 
   return (
@@ -35,7 +37,7 @@ const Login = props => {
           <ButtonText>Log in</ButtonText>
         </Button>
       </TouchableOpacity>
-      <Image source={require('../assets/logo.png')} />
+      <Image source={require('../../assets/logo.png')} />
     </Container>
   );
 };
@@ -55,6 +57,12 @@ const Container = styled.View`
   align-items: center;
   background-color: #651fff;
   flex: 1;
+`;
+
+const LoaderContainer = styled.View`
+  margin: 10px;
+  padding-top: 120px;
+  height: 250;
 `;
 
 const TextInput = styled.TextInput`

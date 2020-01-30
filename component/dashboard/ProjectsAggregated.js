@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
-import {monthlyProjectAggregated} from '../queries/queries';
-import {dateToMysqlString} from '../utils/DateHelpers';
+import {monthlyProjectAggregated} from '../../queries/queries';
+import {dateToMysqlString} from '../../utils/DateHelpers';
 import {ActivityIndicator} from 'react-native';
-import {roundToTwoDecimals} from '../utils/MathHelpers';
+import {roundToTwoDecimals} from '../../utils/MathHelpers';
 import ProjectAggregated from './ProjectAggregated';
-import EventPool from '../utils/EventPool';
+import EventPool from '../../utils/EventPool';
 
 const ProjectsAggregated = props => {
   const {selectedMonth} = props;

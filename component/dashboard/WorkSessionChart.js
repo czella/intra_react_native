@@ -4,10 +4,10 @@ import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
-import {workSessionDataHelper} from '../services/WorkSessionChartService';
-import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
-import EventPool from '../utils/EventPool';
-import {allStatsDailyUserWorkSessions} from '../queries/queries';
+import {workSessionDataHelper} from '../../services/WorkSessionChartService';
+import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../../svg/Icons';
+import EventPool from '../../utils/EventPool';
+import {allStatsDailyUserWorkSessions} from '../../queries/queries';
 import {
   dateToMysqlString,
   getTodaysUTCDate,
@@ -15,7 +15,7 @@ import {
   getFirstDayOfWeek,
   getLastDayOfWeek,
   getTodaysMonthWeekNumber,
-} from '../utils/DateHelpers';
+} from '../../utils/DateHelpers';
 
 let convertedData;
 let line;

@@ -2,7 +2,7 @@ const initialState = {
   deviceHeight: 0,
   deviceWidth: 0,
   selectedWorkSession: null,
-  workSessionsEdited: false,
+  selectedContract: null,
 };
 
 const nonCachedReducer = (state = initialState, action) => {
@@ -11,6 +11,11 @@ const nonCachedReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedWorkSession: action.workSession,
+      };
+    case 'SET_SELECTED_CONTRACT':
+      return {
+        ...state,
+        selectedContract: action.contract,
       };
     default: {
       return state;

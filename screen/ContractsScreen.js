@@ -11,15 +11,13 @@ import {
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
 import MenuBar from '../component/MenuBar';
-import WorkSessions from '../component/worksessions/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
-import WorkSessionExpanded from '../component/worksessions/WorkSessionExpanded';
 import EventPool from '../utils/EventPool';
-import WorkSessionNew from '../component/worksessions/WorkSessionNew';
-import {allWorkSessions} from '../queries/queries';
+import {allContracts, allWorkSessions} from '../queries/queries';
+import Contracts from '../component/contracts/Contracts';
+import ContractExpanded from '../component/contracts/ContractExpanded';
 
 const mapStateToProps = state => ({
-  workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
   token: state.cachedReducer.token,
 });
 
@@ -28,31 +26,30 @@ let deviceWidth = Dimensions.get('screen').width;
 
 let page = 0;
 
-let users = [];
-const WorkSessionsScreen = props => {
+const ContractsScreen = props => {
   const {navigation, token} = props;
-  const [selectedUser, setSelectedUser] = useState({label: 'All', value: null});
-  const [topExpandedSession, setTopExpandedSession] = useState(
+  const [topExpandedContract, setTopExpandedContract] = useState(
     new Animated.Value(deviceHeight + 500),
   );
-  const [topNewSession, setTopNewSession] = useState(
+  const [topNewContract, setTopNewContract] = useState(
     new Animated.Value(deviceHeight + 500),
   );
-  const [translateYExpandedSession, setTranslateYExpandedSession] = useState(
+  const [translateYExpandedContract, setTranslateYExpandedContract] = useState(
     new Animated.Value(0),
   );
-  const [translateYNewSession, setTranslateYNewSession] = useState(
+  const [translateYNewContract, setTranslateYNewContract] = useState(
     new Animated.Value(0),
   );
   const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
-    allWorkSessions,
+    allContracts,
     {
       variables: {
         page: 0,
-        filter: {UserId: selectedUser.value},
+        filter: {},
         perPage: 20,
-        sortField: 'date',
-        sortOrder: 'DESC',
+        sortField: 'ProjectId',
+        sortOrder: 'ASC',
+        currencyFilter: {},
       },
       skip: !token,
       fetchPolicy: 'cache-and-network',
@@ -82,15 +79,7 @@ const WorkSessionsScreen = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
-  if (data) {
-    users = [
-      {label: 'All', value: null},
-      ...data.users.map(user => {
-        return {label: user.username, value: user.id};
-      }),
-    ];
-  }
-  const fetchMoreSessions = () => {
+  const fetchMoreContracts = () => {
     if (data.items.length < data.total.count) {
       page++;
       fetchMore({
@@ -98,8 +87,9 @@ const WorkSessionsScreen = props => {
           page: page,
           filter: {},
           perPage: 20,
-          sortField: 'date',
-          sortOrder: 'DESC',
+          sortField: 'ProjectId',
+          sortOrder: 'ASC',
+          currencyFilter: {},
         },
         updateQuery: (prev, {fetchMoreResult}) => {
           if (!fetchMoreResult) {
@@ -116,56 +106,56 @@ const WorkSessionsScreen = props => {
   const resetPageCount = () => {
     page = 0;
   };
-  const expandWorkSession = () => {
-    Animated.timing(topExpandedSession, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateYExpandedSession, {
+  const expandContract = () => {
+    Animated.timing(topExpandedContract, {toValue: 0, duration: 500}).start();
+    Animated.timing(translateYExpandedContract, {
       toValue: 0,
       duration: 0,
     }).start();
   };
-  const newWorkSession = () => {
-    Animated.timing(topNewSession, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateYNewSession, {toValue: 0, duration: 0}).start();
+  const newContract = () => {
+    Animated.timing(topNewContract, {toValue: 0, duration: 500}).start();
+    Animated.timing(translateYNewContract, {toValue: 0, duration: 0}).start();
   };
   const closeExpandedWorkSession = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(topExpandedSession, {
+        Animated.timing(topExpandedContract, {
           toValue: deviceHeight,
           duration: 0,
         }).start();
       }, 500);
-      Animated.timing(translateYExpandedSession, {
+      Animated.timing(translateYExpandedContract, {
         toValue: deviceHeight,
         duration: 500,
       }).start();
     });
   };
-  const closeNewWorkSession = () => {
+  const closeNewContract = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(topNewSession, {
+        Animated.timing(topNewContract, {
           toValue: deviceHeight,
           duration: 0,
         }).start();
       }, 500);
-      Animated.timing(translateYNewSession, {
+      Animated.timing(translateYNewContract, {
         toValue: deviceHeight,
         duration: 500,
       }).start();
     });
   };
-  const onWorkSessionSave = () => {
+  const onContractSave = () => {
     Keyboard.dismiss();
-    setTopExpandedSession(new Animated.Value(deviceHeight + 500));
-    setTranslateYExpandedSession(new Animated.Value(0));
+    setTopExpandedContract(new Animated.Value(deviceHeight + 500));
+    setTranslateYExpandedContract(new Animated.Value(0));
   };
-  const onWorkSessionCreate = () => {
+  const onContractCreate = () => {
     Keyboard.dismiss();
-    setTopNewSession(new Animated.Value(deviceHeight + 500));
-    setTranslateYNewSession(new Animated.Value(0));
+    setTopNewContract(new Animated.Value(deviceHeight + 500));
+    setTranslateYNewContract(new Animated.Value(0));
   };
   const onLayout = event => {
     deviceHeight = event.nativeEvent.layout.height;
@@ -173,61 +163,57 @@ const WorkSessionsScreen = props => {
   };
   return (
     <Container onLayout={event => onLayout(event)}>
-      <MenuBar title="Work Sessions" navigation={navigation} />
-      <WorkSessions
-        onExpandWorkSession={expandWorkSession}
-        navigation={navigation}
-        workSessions={data ? data.items : []}
-        contracts={data ? data.contracts : []}
-        fetchMoreSessions={fetchMoreSessions}
+      <MenuBar title="Contracts" navigation={navigation} />
+      <Contracts
+        onExpandContract={expandContract}
+        contracts={data ? data.items : []}
+        fetchMoreContracts={fetchMoreContracts}
         totalCount={data ? data.total.count : 0}
-        users={users}
-        setSelectedUser={setSelectedUser}
-        selectedUser={selectedUser}
+        currencies={data ? data.currencies : []}
       />
       <ButtonContainer>
-        <TouchableOpacity onPress={newWorkSession}>
+        <TouchableOpacity onPress={newContract}>
           <AddButtonIcon />
         </TouchableOpacity>
       </ButtonContainer>
       {!loading && (
-        <AnimatedWorkSessionModal
+        <AnimatedContractModal
           style={{
-            transform: [{translateY: translateYExpandedSession}],
-            top: topExpandedSession,
+            transform: [{translateY: translateYExpandedContract}],
+            top: topExpandedContract,
           }}>
-          <WorkSessionExpanded
+          <ContractExpanded
             closeWorkSession={closeExpandedWorkSession}
-            onWorkSessionSave={onWorkSessionSave}
+            onContractSave={onContractSave}
             resetPageCount={resetPageCount}
           />
-        </AnimatedWorkSessionModal>
+        </AnimatedContractModal>
       )}
-      {!loading && (
-        <AnimatedWorkSessionModal
-          style={{
-            transform: [{translateY: translateYNewSession}],
-            top: topNewSession,
-          }}>
-          <WorkSessionNew
-            lastWorkSession={data ? data.items[0] : null}
-            contracts={data ? data.contracts : []}
-            closeWorkSession={closeNewWorkSession}
-            onWorkSessionCreate={onWorkSessionCreate}
-            resetPageCount={resetPageCount}
-          />
-        </AnimatedWorkSessionModal>
-      )}
+      {/*{!loading && (*/}
+        {/*<AnimatedContractModal*/}
+          {/*style={{*/}
+            {/*transform: [{translateY: translateYNewContract}],*/}
+            {/*top: topNewContract,*/}
+          {/*}}>*/}
+          {/*<WorkSessionNew*/}
+            {/*lastWorkSession={data ? data.items[0] : null}*/}
+            {/*contracts={data ? data.contracts : []}*/}
+            {/*closeWorkSession={closeNewContract}*/}
+            {/*onContractCreate={onContractCreate}*/}
+            {/*resetPageCount={resetPageCount}*/}
+          {/*/>*/}
+        {/*</AnimatedContractModal>*/}
+      {/*)}*/}
     </Container>
   );
 };
 
-WorkSessionsScreen.proptypes = {
+ContractsScreen.proptypes = {
   navigation: PropTypes.object,
   token: PropTypes.string,
 };
 
-WorkSessionsScreen.defaultProps = {
+ContractsScreen.defaultProps = {
   navigation: {},
   token: '',
 };
@@ -251,7 +237,7 @@ const WorkSessionModal = styled.View`
   z-index: 20;
 `;
 
-const AnimatedWorkSessionModal = Animated.createAnimatedComponent(
+const AnimatedContractModal = Animated.createAnimatedComponent(
   WorkSessionModal,
 );
 
@@ -271,4 +257,4 @@ const ButtonContainer = styled.View`
 export default connect(
   mapStateToProps,
   null,
-)(WorkSessionsScreen);
+)(ContractsScreen);

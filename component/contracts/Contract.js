@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
-import {SmallRightArrowIcon} from '../svg/Icons';
+import {SmallRightArrowIcon} from '../../svg/Icons';
 
-const WorkSession = props => {
-  const {displayedProperty, date, showLog, index} = props;
+const Contract = props => {
+  const {project, displayedProperty, showLog, index} = props;
   return (
     <TouchableOpacity onPress={() => showLog(index)}>
       <Container>
-        <Date>{date}</Date>
+        <Project numberOfLines={1}>{project}</Project>
         <DisplayedProperty numberOfLines={1}>
           {displayedProperty}
         </DisplayedProperty>
@@ -21,16 +21,16 @@ const WorkSession = props => {
   );
 };
 
-WorkSession.propTypes = {
+Contract.propTypes = {
+  project: PropTypes.string,
   displayedProperty: PropTypes.string,
-  date: PropTypes.string,
   showLog: PropTypes.func,
   index: PropTypes.number,
 };
 
-WorkSession.defaultProps = {
+Contract.defaultProps = {
+  project: '',
   displayedProperty: '',
-  date: '',
   showLog: () => {},
   index: 0,
 };
@@ -55,13 +55,13 @@ const IconContainer = styled.View`
 
 const DisplayedProperty = styled.Text`
   line-height: 60px;
-  padding-left: 20px;
   flex: 1;
+  padding-left: 15px;
 `;
 
-const Date = styled.Text`
+const Project = styled.Text`
   line-height: 60px;
-  width: 80px;
+  flex: 0.8;
 `;
 
-export default WorkSession;
+export default Contract;

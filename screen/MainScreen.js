@@ -1,18 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {ScrollView} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import {setToken} from '../store/actions';
-import Login from '../component/Login';
+import Login from '../component/dashboard/Login';
 import MenuBar from '../component/MenuBar';
-import WorkSessionChart from '../component/WorkSessionChart';
+import WorkSessionChart from '../component/dashboard/WorkSessionChart';
 import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
-import WorkSessionsAggregated from '../component/WorkSessionsAggregated';
+import WorkSessionsAggregated from '../component/dashboard/WorkSessionsAggregated';
 import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
-import ProjectsAggregated from '../component/ProjectsAggregated';
+import ProjectsAggregated from '../component/dashboard/ProjectsAggregated';
+import EventPool from '../utils/EventPool';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -32,6 +33,13 @@ const MainScreen = props => {
   );
 
   const role = useRole();
+  useEffect(() => {
+    const resetState = () => {
+      console.log('logging out');
+    };
+    EventPool.addListener('logout', resetState);
+    return () => EventPool.removeListener('logout', resetState);
+  }, []);
   return (
     <Container>
       {token && (
