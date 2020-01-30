@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {FlatList, ActivityIndicator} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import RNPickerSelect from 'react-native-picker-select';
 import Contract from './Contract';
 import {setSelectedContract} from '../../store/actions';
 import PickerTrigger from '../PickerTrigger';

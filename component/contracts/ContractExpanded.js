@@ -22,8 +22,6 @@ import {
   deleteWorkSession,
   editWorkSession,
 } from '../../queries/queries';
-import RNPickerSelect from 'react-native-picker-select';
-import PickerTrigger from '../PickerTrigger';
 import Picker from '../Picker';
 
 const mapStateToProps = state => ({
@@ -149,7 +147,6 @@ const ContractExpanded = props => {
           />
           <PickerContainer>
             <Picker
-              hasTitle={true}
               title="User"
               onValueChange={(itemValue, index) => {
                 setUser({

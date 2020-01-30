@@ -14,6 +14,7 @@ import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
 import ProjectsAggregated from '../component/dashboard/ProjectsAggregated';
 import EventPool from '../utils/EventPool';
+import Picker from '../component/Picker';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -46,33 +47,11 @@ const MainScreen = props => {
         <DashboardContainer>
           <MenuBar navigation={navigation} title="Dashboard" />
           <MonthPickerContainer>
-            <RNPickerSelect
-              onValueChange={(itemValue) => {
+            <Picker
+              onValueChange={itemValue => {
                 setSelectedMonth(itemValue);
               }}
               value={selectedMonth}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 18,
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
               items={dateFilters.map(date => ({
                 label: date.label,
                 value: {
@@ -80,12 +59,10 @@ const MainScreen = props => {
                   monthIndex: date.monthIndex,
                   year: date.year,
                 },
-              }))}>
-              <PickerTrigger
-                label={selectedMonth.label}
-                labelStyle={{fontSize: 18}}
-              />
-            </RNPickerSelect>
+              }))}
+              label={selectedMonth.label}
+              labelStyle={{fontSize: 18}}
+            />
           </MonthPickerContainer>
           <ScrollView style={{height: '100%'}}>
             <WorkSessionChart selectedMonth={selectedMonth} />

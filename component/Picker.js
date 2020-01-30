@@ -5,20 +5,10 @@ import PickerTrigger from './PickerTrigger';
 import PropTypes from 'prop-types';
 
 const Picker = props => {
-  const {
-    hasTitle,
-    title,
-    onValueChange,
-    value,
-    items,
-    label,
-    labelStyle,
-  } = props;
+  const {title, onValueChange, value, items, label, labelStyle} = props;
   return (
     <Container>
-      {hasTitle && (
-        <InputLabel style={{color: 'lightgrey'}}>{title}</InputLabel>
-      )}
+      {title && <InputLabel style={{color: 'lightgrey'}}>{title}</InputLabel>}
       <RNPickerSelect
         onValueChange={(itemValue, index) => onValueChange(itemValue, index)}
         value={value}
@@ -56,7 +46,6 @@ const Picker = props => {
 };
 
 Picker.propTypes = {
-  hasTitle: PropTypes.bool,
   title: PropTypes.string,
   onValueChange: PropTypes.func,
   value: PropTypes.any,
@@ -66,8 +55,7 @@ Picker.propTypes = {
 };
 
 Picker.defaultProps = {
-  hasTitle: false,
-  title: '',
+  title: null,
   onValueChange: () => {},
   value: null,
   items: [],
@@ -75,9 +63,7 @@ Picker.defaultProps = {
   labelStyle: null,
 };
 
-const Container = styled.View`
-  flex: 1;
-`;
+const Container = styled.View``;
 
 const InputLabel = styled.Text``;
 

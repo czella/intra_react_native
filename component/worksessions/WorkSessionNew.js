@@ -16,8 +16,7 @@ import InputElement from '../InputElement';
 import EventPool from '../../utils/EventPool';
 
 import {createWorkSession} from '../../queries/queries';
-import PickerTrigger from '../PickerTrigger';
-import RNPickerSelect from 'react-native-picker-select';
+import Picker from '../Picker';
 
 const dateToString = date => {
   if (date) {
@@ -67,7 +66,7 @@ const WorkSessionNew = props => {
   };
 
   const handleDate = date => {
-    if (Platform.OS === 'android' ) {
+    if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
     if (date) {
@@ -141,13 +140,13 @@ const WorkSessionNew = props => {
                 borderBottomColor: 'lightgrey',
                 color: 'lightgrey',
               }}
-              pointerEvents='none'>
-                <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
-                <TextInput
-                  editable={false}
-                  onChange={() => {}}
-                  placeholder={dateToString(date)}
-                />
+              pointerEvents="none">
+              <InputLabel style={{color: 'lightgrey'}}>Date</InputLabel>
+              <TextInput
+                editable={false}
+                onChange={() => {}}
+                placeholder={dateToString(date)}
+              />
             </InputContainer>
           </TouchableOpacity>
           <InputElement
@@ -157,8 +156,8 @@ const WorkSessionNew = props => {
             numeric={true}
           />
           <PickerContainer>
-            <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-            <RNPickerSelect
+            <Picker
+              title="Contract"
               onValueChange={(itemValue, index) => {
                 setContract({
                   label: createSessionLabel(contracts[index]),
@@ -166,38 +165,12 @@ const WorkSessionNew = props => {
                 });
               }}
               value={contract.id}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroidContainer: {
-                  textAlign: 'left',
-                },
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 15,
-                  width: '100%',
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
               items={contracts.map(contract => ({
                 label: createSessionLabel(contract),
                 value: contract.id,
-              }))}>
-              <PickerTrigger label={contract.label} />
-            </RNPickerSelect>
+              }))}
+              label={contract.label}
+            />
           </PickerContainer>
           <TouchableOpacity onPress={clearFields}>
             <ButtonContainer stlye={{paddingTop: 10}}>
@@ -216,7 +189,11 @@ const WorkSessionNew = props => {
                 handleDate(date);
               }}
             />
-           {Platform.OS === 'ios' && <TouchableOpacity onPress={() => setShowDatePicker(false)}><PickerButton>Done</PickerButton></TouchableOpacity>}
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                <PickerButton>Done</PickerButton>
+              </TouchableOpacity>
+            )}
           </DatePickerContainer>
         )}
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -299,8 +276,7 @@ const InputContainer = styled.View`
 
 const InputLabel = styled.Text``;
 
-const TextInput = styled.TextInput`
-`;
+const TextInput = styled.TextInput``;
 
 const PickerContainer = styled.View`
   border-bottom-width: 1px;

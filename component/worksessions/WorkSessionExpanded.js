@@ -17,8 +17,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
 import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../../hooks/useRole';
 import {deleteWorkSession, editWorkSession} from '../../queries/queries';
-import RNPickerSelect from 'react-native-picker-select';
-import PickerTrigger from '../PickerTrigger';
+import Picker from '../Picker';
 
 const dateToString = date => {
   if (date) {
@@ -183,8 +182,7 @@ const WorkSessionExpanded = props => {
             numeric={true}
           />
           <PickerContainer>
-            <InputLabel style={{color: 'lightgrey'}}>Contract</InputLabel>
-            <RNPickerSelect
+            <Picker
               onValueChange={(itemValue, index) => {
                 setContract({
                   label: createSessionLabel(workSession.contracts[index]),
@@ -192,38 +190,13 @@ const WorkSessionExpanded = props => {
                 });
               }}
               value={contract.id}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroidContainer: {
-                  textAlign: 'left',
-                },
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 15,
-                  width: '100%',
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
+              title="Contract"
               items={workSession.contracts.map(contract => ({
                 label: createSessionLabel(contract),
                 value: contract.id,
-              }))}>
-              <PickerTrigger label={contract.label} />
-            </RNPickerSelect>
+              }))}
+              label={contract.label}
+            />
           </PickerContainer>
           <TouchableOpacity onPress={handleDelete}>
             <ButtonContainer stlye={{paddingTop: 10}}>
