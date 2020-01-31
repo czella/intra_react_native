@@ -57,13 +57,13 @@ const WorkSessionExpanded = props => {
       dateToString(date),
       Number(minutes),
       contract.id,
-    ).then(() => EventPool.emit('refreshWorkSessions'));
+    ).then(() => EventPool.emit('workSessionsUpdated'));
     onWorkSessionSave();
   };
   const handleDelete = () => {
     resetPageCount();
     deleteWorkSession(workSession.id).then(() =>
-      EventPool.emit('refreshWorkSessions'),
+      EventPool.emit('workSessionsUpdated'),
     );
     onWorkSessionSave();
   };
@@ -76,9 +76,9 @@ const WorkSessionExpanded = props => {
     }
   };
   const createSessionLabel = contract => {
-    return `${contract.Project.name} - ${contract.position} - ${
-      contract.User.username
-    }`;
+    return `${contract.Project ? contract.Project.name : ''} - ${
+      contract.position
+    } - ${contract.User ? contract.User.username : ''}`;
   };
 
   useEffect(() => {

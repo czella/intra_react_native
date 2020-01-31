@@ -65,15 +65,15 @@ const MainScreen = props => {
             />
           </MonthPickerContainer>
           <ScrollView style={{height: '100%'}}>
-            <WorkSessionChart selectedMonth={selectedMonth} />
+            <WorkSessionChart selectedMonth={selectedMonth} navigation={navigation} />
             {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
               <MonthlyAggregatesContainer>
                 <Text>Monthly Aggregates</Text>
-                <WorkSessionsAggregated selectedMonth={selectedMonth} />
+                <WorkSessionsAggregated selectedMonth={selectedMonth} navigation={navigation}/>
               </MonthlyAggregatesContainer>
             )}
             {role === ADMIN_ROLE && (
-              <ProjectsAggregated selectedMonth={selectedMonth} />
+              <ProjectsAggregated selectedMonth={selectedMonth} navigation={navigation} />
             )}
           </ScrollView>
         </DashboardContainer>

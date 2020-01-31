@@ -16,13 +16,15 @@ import {
   getLastDayOfWeek,
   getTodaysMonthWeekNumber,
 } from '../../utils/DateHelpers';
+import { useFocus } from '../../hooks/useFocus';
 
 let convertedData;
 let line;
 
 const WorkSessionChart = props => {
-  const {selectedMonth} = props;
+  const {selectedMonth, navigation} = props;
   const [currentWeek, setCurrentWeek] = useState(1);
+  const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
   const weekCount = getWeekCount(selectedMonth.year, selectedMonth.monthIndex);
   const startDate = getFirstDayOfWeek(
     selectedMonth.year,
@@ -34,9 +36,13 @@ const WorkSessionChart = props => {
     selectedMonth.monthIndex,
     currentWeek,
   );
+  endDate.setDate(endDate.getDate() + 1);
   useEffect(() => {
     const currentDate = getTodaysUTCDate();
-    if (selectedMonth.monthIndex === currentDate.getMonth() && selectedMonth.year === currentDate.getFullYear()) {
+    if (
+      selectedMonth.monthIndex === currentDate.getMonth() &&
+      selectedMonth.year === currentDate.getFullYear()
+    ) {
       setCurrentWeek(getTodaysMonthWeekNumber());
     } else {
       setCurrentWeek(1);
@@ -50,15 +56,26 @@ const WorkSessionChart = props => {
         startDate: dateToMysqlString(startDate),
         endDate: dateToMysqlString(endDate),
       },
+      fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: true,
     },
   );
-
+  const hasFocus = useFocus(navigation);
+  if (hasFocus && shouldRefetchOnFocus) {
+    setShouldRefetchOnFocus(false);
+    refetch();
+  }
   useEffect(() => {
-    const fetchSessions = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, [refetch]);
+    const fetchSessions = () => {
+      if (navigation.isFocused()) {
+        refetch();
+      } else {
+        setShouldRefetchOnFocus(true);
+      }
+    };
+    EventPool.addListener('workSessionsUpdated', fetchSessions);
+    return () => EventPool.removeListener('workSessionsUpdated', fetchSessions);
+  }, [navigation, refetch]);
 
   if (loading) {
     return (
@@ -70,7 +87,9 @@ const WorkSessionChart = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
+  console.log(dateToMysqlString(endDate));
   convertedData = workSessionDataHelper(data, startDate, endDate);
+  console.log(convertedData.data, 'lllllllllllll');
   line = {
     id: 1,
     labels: convertedData.labels,
@@ -143,10 +162,12 @@ const WorkSessionChart = props => {
 
 WorkSessionChart.propTypes = {
   selectedMonth: PropTypes.object,
+  navigation: PropTypes.object,
 };
 
 WorkSessionChart.defaultProps = {
   selectedMonth: {},
+  navigation: {},
 };
 
 const Container = styled.View`

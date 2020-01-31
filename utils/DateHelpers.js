@@ -91,7 +91,7 @@ export const getLastDayOfWeek = (year, month, week) => {
   const lastDayOfWeek = new Date(
     year,
     month,
-    firstOfMonthDate.getDate() + delay + distanceFromSunday + 1,
+    firstOfMonthDate.getDate() + delay + distanceFromSunday,
   );
   if (lastDayOfWeek.getMonth() !== month) {
     return new Date(year, month + 1, 0);

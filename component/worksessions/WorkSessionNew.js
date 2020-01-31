@@ -34,9 +34,9 @@ const WorkSessionNew = props => {
     resetPageCount,
   } = props;
   const createSessionLabel = contract => {
-    return `${contract.Project.name} - ${contract.position} - ${
-      contract.User.username
-    }`;
+    return `${contract.Project ? contract.Project.name : ''} - ${
+      contract.position
+    } - ${contract.User ? contract.User.username : ''}`;
   };
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
@@ -58,7 +58,7 @@ const WorkSessionNew = props => {
         dateToString(date),
         Number(minutes),
         contract.id,
-      ).then(() => EventPool.emit('refreshWorkSessions'));
+      ).then(() => EventPool.emit('workSessionsUpdated'));
       onWorkSessionCreate();
     } else {
       console.log('Form is not completed!');

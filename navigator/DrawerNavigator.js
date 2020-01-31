@@ -18,7 +18,7 @@ const DrawerNavigator = createDrawerNavigator(
     },
     Contracts: {
       screen: ContractsScreen,
-    }
+    },
   },
   {
     contentComponent: SideMenu,

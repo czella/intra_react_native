@@ -12,15 +12,10 @@ import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
 import InputElement from '../InputElement';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
-import {useQuery} from '@apollo/react-hooks';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
-import {
-  allDataForContract,
-  deleteWorkSession, editContract,
-  editWorkSession,
-} from '../../queries/queries';
+import {deleteContract, editContract} from '../../queries/queries';
 import Picker from '../Picker';
 
 const mapStateToProps = state => ({
@@ -35,7 +30,7 @@ const ContractExpanded = props => {
     projects,
     closeContract,
     saveContract,
-    deleteWorkSession,
+    deleteContract,
     onContractSave,
     resetPageCount,
   } = props;
@@ -68,14 +63,12 @@ const ContractExpanded = props => {
       project.value,
       Number(price),
       currency.value,
-    ).then(() => EventPool.emit('refreshWorkSessions'));
+    ).then(() => EventPool.emit('contractsUpdated'));
     onContractSave();
   };
   const handleDelete = () => {
-    // deleteWorkSession(workSession.id).then(() =>
-    //   EventPool.emit('refreshWorkSessions'),
-    // );
-    // onWorkSessionSave();
+    deleteContract(contract.id).then(() => EventPool.emit('contractsUpdated'));
+    onContractSave();
   };
   useEffect(() => {
     if (contract) {
@@ -100,7 +93,7 @@ const ContractExpanded = props => {
       setProject({label: null, value: null});
       setCurrency({label: null, value: null});
     }
-  }, [contract]);
+  }, [contract, currencies]);
   if (!contract) {
     return null;
   }
@@ -269,9 +262,9 @@ const saveContractQuery = graphql(editContract, {
   }),
 });
 
-const deleteWorkSessionQuery = graphql(deleteWorkSession, {
+const deleteContractQuery = graphql(deleteContract, {
   props: ({mutate}) => ({
-    deleteWorkSession: id =>
+    deleteContract: id =>
       mutate({
         variables: {id},
       }),
@@ -279,7 +272,7 @@ const deleteWorkSessionQuery = graphql(deleteWorkSession, {
 });
 
 export default saveContractQuery(
-  deleteWorkSessionQuery(
+  deleteContractQuery(
     connect(
       mapStateToProps,
       null,

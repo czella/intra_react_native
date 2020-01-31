@@ -16,6 +16,7 @@ import EventPool from '../utils/EventPool';
 import {allContracts, allWorkSessions} from '../queries/queries';
 import Contracts from '../component/contracts/Contracts';
 import ContractExpanded from '../component/contracts/ContractExpanded';
+import { useFocus } from '../hooks/useFocus';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -28,6 +29,7 @@ let page = 0;
 
 const ContractsScreen = props => {
   const {navigation, token} = props;
+  const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
   const [topExpandedContract, setTopExpandedContract] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -54,14 +56,25 @@ const ContractsScreen = props => {
         projectFilter: {},
       },
       skip: !token,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: true,
     },
   );
+  const hasFocus = useFocus(navigation);
+  if (hasFocus && shouldRefetchOnFocus) {
+    setShouldRefetchOnFocus(false);
+    refetch();
+  }
   useEffect(() => {
-    const fetchContracts = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchContracts);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchContracts);
+    const fetchContracts = () => {
+      if (navigation.isFocused()) {
+        refetch();
+      } else {
+        setShouldRefetchOnFocus(true);
+      }
+    };
+    EventPool.addListener('contractsUpdated', fetchContracts);
+    return () => EventPool.removeListener('contractsUpdated', fetchContracts);
   }, []);
   if (!token) {
     return null;

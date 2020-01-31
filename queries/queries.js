@@ -309,3 +309,12 @@ export const editContract = gql`
     }
   }
 `;
+
+export const deleteContract = gql`
+  mutation deleteContract($id: ID!) {
+    data: deleteContract(id: $id) {
+      id
+      __typename
+    }
+  }
+`;

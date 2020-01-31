@@ -17,6 +17,7 @@ import WorkSessionExpanded from '../component/worksessions/WorkSessionExpanded';
 import EventPool from '../utils/EventPool';
 import WorkSessionNew from '../component/worksessions/WorkSessionNew';
 import {allWorkSessions} from '../queries/queries';
+import {useFocus} from '../hooks/useFocus';
 
 const mapStateToProps = state => ({
   workSessionsEdited: state.nonCachedReducer.workSessionsEdited,
@@ -32,6 +33,7 @@ let users = [];
 const WorkSessionsScreen = props => {
   const {navigation, token} = props;
   const [selectedUser, setSelectedUser] = useState({label: 'All', value: null});
+  const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
   const [topExpandedSession, setTopExpandedSession] = useState(
     new Animated.Value(deviceHeight + 500),
   );
@@ -55,15 +57,30 @@ const WorkSessionsScreen = props => {
         sortOrder: 'DESC',
       },
       skip: !token,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: true,
     },
   );
+  const hasFocus = useFocus(navigation);
+  if (hasFocus && shouldRefetchOnFocus) {
+    setShouldRefetchOnFocus(false);
+    refetch();
+  }
   useEffect(() => {
-    const fetchSessions = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, []);
+    const fetchSessions = () => {
+      if (navigation.isFocused()) {
+        refetch();
+      } else {
+        setShouldRefetchOnFocus(true);
+      }
+    };
+    EventPool.addListener('workSessionsUpdated', fetchSessions);
+    EventPool.addListener('contractsUpdated', fetchSessions);
+    return () => {
+      EventPool.removeListener('workSessionsUpdated', fetchSessions);
+      EventPool.removeListener('contractsUpdated', fetchSessions);
+    };
+  }, [navigation, refetch]);
   if (!token) {
     return null;
   }
