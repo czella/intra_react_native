@@ -34,6 +34,7 @@ const WorkSessionChart = props => {
     selectedMonth.monthIndex,
     currentWeek,
   );
+  endDate.setDate(endDate.getDate() + 1);
   useEffect(() => {
     const currentDate = getTodaysUTCDate();
     if (selectedMonth.monthIndex === currentDate.getMonth() && selectedMonth.year === currentDate.getFullYear()) {
