@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import {roundToTwoDecimals} from '../utils/MathHelpers';
+import {roundToTwoDecimals} from '../../utils/MathHelpers';
 import {Row, Rows, Table} from 'react-native-table-component';
 
 const ProjectAggregated = props => {

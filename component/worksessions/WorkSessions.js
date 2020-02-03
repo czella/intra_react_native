@@ -3,15 +3,10 @@ import styled from 'styled-components';
 import {FlatList, ActivityIndicator} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import RNPickerSelect from 'react-native-picker-select';
 import WorkSession from './WorkSession';
-import {setSelectedWorkSession} from '../store/actions';
-import {useRole, ADMIN_ROLE} from '../hooks/useRole';
-import PickerTrigger from './PickerTrigger';
-
-const mapStateToProps = state => ({
-  deviceWidth: state.nonCachedReducer.deviceWidth,
-});
+import {setSelectedWorkSession} from '../../store/actions';
+import {useRole, ADMIN_ROLE, hasPermission} from '../../hooks/useRole';
+import Picker from '../Picker';
 
 const mapDispatchToProps = dispatch => ({
   setSelectedWorkSession: workSession =>
@@ -26,7 +21,6 @@ const properties = [
 
 const WorkSessions = props => {
   const {
-    deviceWidth,
     setSelectedWorkSession,
     onExpandWorkSession,
     workSessions,
@@ -55,82 +49,34 @@ const WorkSessions = props => {
   };
   return (
     <Container>
-      {role === ADMIN_ROLE && (
+      {hasPermission([ADMIN_ROLE], role) && (
         <UserSelectContainer>
           <UserLabel>Selected user:</UserLabel>
           <UserPickerContainer>
-            <RNPickerSelect
+            <Picker
               onValueChange={(itemValue, index) => {
                 setSelectedUser(users[index]);
               }}
               value={selectedUser.value}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 18,
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
-              items={users}>
-              <PickerTrigger
-                label={selectedUser.label}
-                labelStyle={{fontSize: 18}}
-              />
-            </RNPickerSelect>
+              items={users}
+              label={selectedUser.label}
+              labelStyle={{fontSize: 18}}
+            />
           </UserPickerContainer>
         </UserSelectContainer>
       )}
       <TableHeader>
         <Date>Date</Date>
         <PropertyPickerContainer>
-          <RNPickerSelect
+          <Picker
             onValueChange={(itemValue, index) => {
               setDisplayedProperty(properties[index]);
             }}
             value={displayedProperty.value}
-            placeholder={{}}
-            InputAccessoryView={() => {
-              return null;
-            }}
-            useNativeAndroidPickerStyle={false}
-            Icon={() => null}
-            style={{
-              inputAndroid: {
-                height: 40,
-                padding: 0,
-                fontSize: 18,
-              },
-              inputIOS: {
-                height: 40,
-                fontSize: 18,
-              },
-              iconContainer: {
-                height: 40,
-                top: 15,
-                right: 15,
-              },
-            }}
-            items={properties}>
-            <PickerTrigger
-              label={displayedProperty.label}
-              labelStyle={{fontSize: 18}}
-            />
-          </RNPickerSelect>
+            items={properties}
+            label={displayedProperty.label}
+            labelStyle={{fontSize: 18}}
+          />
         </PropertyPickerContainer>
       </TableHeader>
       <FlatList
@@ -140,7 +86,6 @@ const WorkSessions = props => {
             key={item.id}
             displayedProperty={item[displayedProperty.value]}
             date={item.date}
-            deviceWidth={deviceWidth}
             showLog={showLog}
             contracts={contracts}
             index={index}
@@ -157,8 +102,6 @@ const WorkSessions = props => {
 };
 
 WorkSessions.propTypes = {
-  deviceHeight: PropTypes.number,
-  deviceWidth: PropTypes.number,
   setSelectedWorkSession: PropTypes.func,
   workSessions: PropTypes.array,
   contracts: PropTypes.array,
@@ -170,8 +113,6 @@ WorkSessions.propTypes = {
 };
 
 WorkSessions.defaultProps = {
-  deviceHeight: 0,
-  deviceWidth: 0,
   setSelectedWorkSession: () => {},
   workSessions: [],
   contracts: [],
@@ -231,6 +172,6 @@ const PropertyPickerContainer = styled.View`
 `;
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(WorkSessions);

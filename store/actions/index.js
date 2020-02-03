@@ -7,3 +7,7 @@ export const setSelectedWorkSession = workSession => ({
   type: 'SET_SELECTED_WORK_SESSION',
   workSession,
 });
+export const setSelectedContract = contract => ({
+  type: 'SET_SELECTED_CONTRACT',
+  contract,
+});

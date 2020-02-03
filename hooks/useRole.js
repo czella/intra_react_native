@@ -12,4 +12,8 @@ export const useRole = () => {
 
 export const ADMIN_ROLE = 'admin';
 export const DEVELOPER_ROLE = 'developer';
-export const PROJECT_OWNER = 'projectOwner';
+export const PROJECT_OWNER_ROLE = 'projectOwner';
+
+export const hasPermission = (permissions, role) => {
+  return permissions.indexOf(role) !== -1;
+};

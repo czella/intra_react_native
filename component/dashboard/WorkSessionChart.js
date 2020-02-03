@@ -4,10 +4,10 @@ import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
 import {TouchableOpacity, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
-import {workSessionDataHelper} from '../services/WorkSessionChartService';
-import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../svg/Icons';
-import EventPool from '../utils/EventPool';
-import {allStatsDailyUserWorkSessions} from '../queries/queries';
+import {workSessionDataHelper} from '../../services/WorkSessionChartService';
+import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../../svg/Icons';
+import EventPool from '../../utils/EventPool';
+import {allStatsDailyUserWorkSessions} from '../../queries/queries';
 import {
   dateToMysqlString,
   getTodaysUTCDate,
@@ -15,14 +15,16 @@ import {
   getFirstDayOfWeek,
   getLastDayOfWeek,
   getTodaysMonthWeekNumber,
-} from '../utils/DateHelpers';
+} from '../../utils/DateHelpers';
+import { useFocus } from '../../hooks/useFocus';
 
 let convertedData;
 let line;
 
 const WorkSessionChart = props => {
-  const {selectedMonth} = props;
+  const {selectedMonth, navigation} = props;
   const [currentWeek, setCurrentWeek] = useState(1);
+  const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
   const weekCount = getWeekCount(selectedMonth.year, selectedMonth.monthIndex);
   const startDate = getFirstDayOfWeek(
     selectedMonth.year,
@@ -37,7 +39,10 @@ const WorkSessionChart = props => {
   endDate.setDate(endDate.getDate() + 1);
   useEffect(() => {
     const currentDate = getTodaysUTCDate();
-    if (selectedMonth.monthIndex === currentDate.getMonth() && selectedMonth.year === currentDate.getFullYear()) {
+    if (
+      selectedMonth.monthIndex === currentDate.getMonth() &&
+      selectedMonth.year === currentDate.getFullYear()
+    ) {
       setCurrentWeek(getTodaysMonthWeekNumber());
     } else {
       setCurrentWeek(1);
@@ -51,15 +56,26 @@ const WorkSessionChart = props => {
         startDate: dateToMysqlString(startDate),
         endDate: dateToMysqlString(endDate),
       },
+      fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: true,
     },
   );
-
+  const hasFocus = useFocus(navigation);
+  if (hasFocus && shouldRefetchOnFocus) {
+    setShouldRefetchOnFocus(false);
+    refetch();
+  }
   useEffect(() => {
-    const fetchSessions = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, [refetch]);
+    const fetchSessions = () => {
+      if (navigation.isFocused()) {
+        refetch();
+      } else {
+        setShouldRefetchOnFocus(true);
+      }
+    };
+    EventPool.addListener('workSessionsUpdated', fetchSessions);
+    return () => EventPool.removeListener('workSessionsUpdated', fetchSessions);
+  }, [navigation, refetch]);
 
   if (loading) {
     return (
@@ -144,10 +160,12 @@ const WorkSessionChart = props => {
 
 WorkSessionChart.propTypes = {
   selectedMonth: PropTypes.object,
+  navigation: PropTypes.object,
 };
 
 WorkSessionChart.defaultProps = {
   selectedMonth: {},
+  navigation: {},
 };
 
 const Container = styled.View`

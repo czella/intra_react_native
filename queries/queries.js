@@ -169,3 +169,186 @@ export const createWorkSession = gql`
     }
   }
 `;
+
+export const allContracts = gql`
+  query allContracts(
+    $page: Int
+    $perPage: Int
+    $sortField: String
+    $sortOrder: String
+    $filter: ContractFilter
+    $currencyFilter: CurrencyFilter
+    $userFilter: UserFilter
+    $projectFilter: ProjectFilter
+  ) {
+    items: allContracts(
+      page: $page
+      perPage: $perPage
+      sortField: $sortField
+      sortOrder: $sortOrder
+      filter: $filter
+    ) {
+      id
+      position
+      UserId
+      ProjectId
+      price
+      CurrencyId
+      Project {
+        id
+        name
+        __typename
+      }
+      User {
+        id
+        username
+        __typename
+      }
+      __typename
+    }
+    total: _allContractsMeta(page: $page, perPage: $perPage, filter: $filter) {
+      count
+      __typename
+    }
+    currencies: allCurrencies(filter: $currencyFilter) {
+      id
+      name
+      __typename
+    }
+    totalCurrency: _allCurrenciesMeta(filter: $currencyFilter) {
+      count
+      __typename
+    }
+    users: allUsers(filter: $userFilter) {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
+    usersTotal: _allUsersMeta(filter: $userFilter) {
+      count
+      __typename
+    }
+    projects: allProjects(filter: $projectFilter) {
+      id
+      name
+      isActive
+      __typename
+    }
+    projectsTotal: _allProjectsMeta(filter: $projectFilter) {
+      count
+      __typename
+    }
+  }
+`;
+
+export const allDataForContract = gql`
+  query allDataForContract(
+    $userFilter: UserFilter
+    $projectFilter: ProjectFilter
+  ) {
+    users: allUsers(filter: $userFilter) {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
+    usersTotal: _allUsersMeta(filter: $userFilter) {
+      count
+      __typename
+    }
+    projects: allProjects(filter: $projectFilter) {
+      id
+      name
+      isActive
+      __typename
+    }
+    projectsTotal: _allProjectsMeta(filter: $projectFilter) {
+      count
+      __typename
+    }
+  }
+`;
+
+export const editContract = gql`
+  mutation updateContract(
+    $id: ID!
+    $position: String!
+    $UserId: ID!
+    $ProjectId: ID!
+    $price: Float!
+    $CurrencyId: ID!
+  ) {
+    data: updateContract(
+      id: $id
+      position: $position
+      UserId: $UserId
+      ProjectId: $ProjectId
+      price: $price
+      CurrencyId: $CurrencyId
+    ) {
+      id
+      position
+      UserId
+      ProjectId
+      price
+      CurrencyId
+      Project {
+        id
+        __typename
+      }
+      User {
+        id
+        __typename
+      }
+      __typename
+    }
+  }
+`;
+
+export const deleteContract = gql`
+  mutation deleteContract($id: ID!) {
+    data: deleteContract(id: $id) {
+      id
+      __typename
+    }
+  }
+`;
+
+export const createContract = gql`
+  mutation createContract(
+    $position: String!
+    $UserId: ID!
+    $ProjectId: ID!
+    $price: Float!
+    $CurrencyId: ID!
+  ) {
+    data: createContract(
+      position: $position
+      UserId: $UserId
+      ProjectId: $ProjectId
+      price: $price
+      CurrencyId: $CurrencyId
+    ) {
+      id
+      position
+      UserId
+      ProjectId
+      price
+      CurrencyId
+      Project {
+        id
+        __typename
+      }
+      User {
+        id
+        __typename
+      }
+      __typename
+    }
+  }
+`;

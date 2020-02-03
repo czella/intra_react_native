@@ -6,6 +6,7 @@ import SideMenu from '../component/SideMenu';
 import {createAppContainer} from 'react-navigation';
 import MainScreen from '../screen/MainScreen';
 import WorksSessionsScreen from '../screen/WorkSessionsScreen';
+import ContractsScreen from '../screen/ContractsScreen';
 
 const DrawerNavigator = createDrawerNavigator(
   {
@@ -14,6 +15,9 @@ const DrawerNavigator = createDrawerNavigator(
     },
     WorkSessions: {
       screen: WorksSessionsScreen,
+    },
+    Contracts: {
+      screen: ContractsScreen,
     },
   },
   {

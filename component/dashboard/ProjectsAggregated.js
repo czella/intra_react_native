@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
-import {monthlyProjectAggregated} from '../queries/queries';
-import {dateToMysqlString} from '../utils/DateHelpers';
+import {monthlyProjectAggregated} from '../../queries/queries';
+import {dateToMysqlString} from '../../utils/DateHelpers';
 import {ActivityIndicator} from 'react-native';
-import {roundToTwoDecimals} from '../utils/MathHelpers';
+import {roundToTwoDecimals} from '../../utils/MathHelpers';
 import ProjectAggregated from './ProjectAggregated';
-import EventPool from '../utils/EventPool';
+import EventPool from '../../utils/EventPool';
+import {useFocus} from '../../hooks/useFocus';
 
 const ProjectsAggregated = props => {
-  const {selectedMonth} = props;
+  const {selectedMonth, navigation} = props;
+  const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
   const {loading, data, error, refetch} = useQuery(monthlyProjectAggregated, {
     variables: {
       startDate: dateToMysqlString(
@@ -20,13 +22,29 @@ const ProjectsAggregated = props => {
         new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 1),
       ),
     },
+    fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
   });
+  const hasFocus = useFocus(navigation);
+  if (hasFocus && shouldRefetchOnFocus) {
+    setShouldRefetchOnFocus(false);
+    refetch();
+  }
   useEffect(() => {
-    const fetchSessions = () => refetch();
-    EventPool.addListener('refreshWorkSessions', fetchSessions);
-    return () => EventPool.removeListener('refreshWorkSessions', fetchSessions);
-  }, [refetch]);
+    const fetchSessions = () => {
+      if (navigation.isFocused()) {
+        refetch();
+      } else {
+        setShouldRefetchOnFocus(true);
+      }
+    };
+    EventPool.addListener('workSessionsUpdated', fetchSessions);
+    EventPool.addListener('contractsUpdated', fetchSessions);
+    return () => {
+      EventPool.removeListener('workSessionsUpdated', fetchSessions);
+      EventPool.removeListener('contractsUpdated', fetchSessions);
+    };
+  }, [navigation, refetch]);
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
@@ -63,6 +81,7 @@ const ProjectsAggregated = props => {
     <Container>
       {Object.keys(projects).map(key => (
         <ProjectAggregated
+          key={key}
           projectName={key}
           projectData={projects[key].data}
           sumRows={projects[key].sumRows}
@@ -74,10 +93,12 @@ const ProjectsAggregated = props => {
 
 ProjectsAggregated.propTypes = {
   selectedMonth: PropTypes.object,
+  navigation: PropTypes.object,
 };
 
 ProjectsAggregated.defaultProps = {
   selectedMonth: {},
+  navigation: {},
 };
 
 const Container = styled.View`

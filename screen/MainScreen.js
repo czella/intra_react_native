@@ -1,18 +1,25 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {ScrollView} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import {setToken} from '../store/actions';
-import Login from '../component/Login';
+import Login from '../component/dashboard/Login';
 import MenuBar from '../component/MenuBar';
-import WorkSessionChart from '../component/WorkSessionChart';
-import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
-import WorkSessionsAggregated from '../component/WorkSessionsAggregated';
+import WorkSessionChart from '../component/dashboard/WorkSessionChart';
+import {
+  useRole,
+  ADMIN_ROLE,
+  PROJECT_OWNER_ROLE,
+  hasPermission,
+} from '../hooks/useRole';
+import WorkSessionsAggregated from '../component/dashboard/WorkSessionsAggregated';
 import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
-import ProjectsAggregated from '../component/ProjectsAggregated';
+import ProjectsAggregated from '../component/dashboard/ProjectsAggregated';
+import EventPool from '../utils/EventPool';
+import Picker from '../component/Picker';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -32,39 +39,24 @@ const MainScreen = props => {
   );
 
   const role = useRole();
+  useEffect(() => {
+    const resetState = () => {
+      console.log('logging out');
+    };
+    EventPool.addListener('logout', resetState);
+    return () => EventPool.removeListener('logout', resetState);
+  }, []);
   return (
     <Container>
       {token && (
         <DashboardContainer>
           <MenuBar navigation={navigation} title="Dashboard" />
           <MonthPickerContainer>
-            <RNPickerSelect
-              onValueChange={(itemValue) => {
+            <Picker
+              onValueChange={itemValue => {
                 setSelectedMonth(itemValue);
               }}
               value={selectedMonth}
-              placeholder={{}}
-              InputAccessoryView={() => {
-                return null;
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => null}
-              style={{
-                inputAndroid: {
-                  height: 40,
-                  padding: 0,
-                  fontSize: 18,
-                },
-                inputIOS: {
-                  height: 40,
-                  fontSize: 18,
-                },
-                iconContainer: {
-                  height: 40,
-                  top: 15,
-                  right: 15,
-                },
-              }}
               items={dateFilters.map(date => ({
                 label: date.label,
                 value: {
@@ -72,23 +64,30 @@ const MainScreen = props => {
                   monthIndex: date.monthIndex,
                   year: date.year,
                 },
-              }))}>
-              <PickerTrigger
-                label={selectedMonth.label}
-                labelStyle={{fontSize: 18}}
-              />
-            </RNPickerSelect>
+              }))}
+              label={selectedMonth.label}
+              labelStyle={{fontSize: 18}}
+            />
           </MonthPickerContainer>
           <ScrollView style={{height: '100%'}}>
-            <WorkSessionChart selectedMonth={selectedMonth} />
-            {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
+            <WorkSessionChart
+              selectedMonth={selectedMonth}
+              navigation={navigation}
+            />
+            {hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role) && (
               <MonthlyAggregatesContainer>
                 <Text>Monthly Aggregates</Text>
-                <WorkSessionsAggregated selectedMonth={selectedMonth} />
+                <WorkSessionsAggregated
+                  selectedMonth={selectedMonth}
+                  navigation={navigation}
+                />
               </MonthlyAggregatesContainer>
             )}
-            {role === ADMIN_ROLE && (
-              <ProjectsAggregated selectedMonth={selectedMonth} />
+            {hasPermission([ADMIN_ROLE], role) && (
+              <ProjectsAggregated
+                selectedMonth={selectedMonth}
+                navigation={navigation}
+              />
             )}
           </ScrollView>
         </DashboardContainer>
