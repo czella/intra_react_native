@@ -4,8 +4,19 @@ import styled from 'styled-components';
 import {TouchableOpacity, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {setToken} from '../store/actions';
-import {ContractsIcon, DashboardIcon, LogoutIcon, WorkSessionsIcon} from '../svg/Icons';
+import {
+  ContractsIcon,
+  DashboardIcon,
+  LogoutIcon,
+  WorkSessionsIcon,
+} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
+import {
+  ADMIN_ROLE,
+  PROJECT_OWNER_ROLE,
+  hasPermission,
+  useRole,
+} from '../hooks/useRole';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -23,6 +34,7 @@ const SideMenu = props => {
     navigation.navigate('Home');
     navigation.closeDrawer();
   };
+  const role = useRole();
   if (!token) {
     return null;
   }
@@ -41,12 +53,14 @@ const SideMenu = props => {
             <Text>Work Sessions</Text>
           </MenuElement>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Contracts')}>
-          <MenuElement>
-            <ContractsIcon />
-            <Text>Contracts</Text>
-          </MenuElement>
-        </TouchableOpacity>
+        {hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role) && (
+          <TouchableOpacity onPress={() => navigation.navigate('Contracts')}>
+            <MenuElement>
+              <ContractsIcon />
+              <Text>Contracts</Text>
+            </MenuElement>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       <FooterContainer>

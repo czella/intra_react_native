@@ -8,7 +8,12 @@ import {setToken} from '../store/actions';
 import Login from '../component/dashboard/Login';
 import MenuBar from '../component/MenuBar';
 import WorkSessionChart from '../component/dashboard/WorkSessionChart';
-import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../hooks/useRole';
+import {
+  useRole,
+  ADMIN_ROLE,
+  PROJECT_OWNER_ROLE,
+  hasPermission,
+} from '../hooks/useRole';
 import WorkSessionsAggregated from '../component/dashboard/WorkSessionsAggregated';
 import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
@@ -65,15 +70,24 @@ const MainScreen = props => {
             />
           </MonthPickerContainer>
           <ScrollView style={{height: '100%'}}>
-            <WorkSessionChart selectedMonth={selectedMonth} navigation={navigation} />
-            {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
+            <WorkSessionChart
+              selectedMonth={selectedMonth}
+              navigation={navigation}
+            />
+            {hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role) && (
               <MonthlyAggregatesContainer>
                 <Text>Monthly Aggregates</Text>
-                <WorkSessionsAggregated selectedMonth={selectedMonth} navigation={navigation}/>
+                <WorkSessionsAggregated
+                  selectedMonth={selectedMonth}
+                  navigation={navigation}
+                />
               </MonthlyAggregatesContainer>
             )}
-            {role === ADMIN_ROLE && (
-              <ProjectsAggregated selectedMonth={selectedMonth} navigation={navigation} />
+            {hasPermission([ADMIN_ROLE], role) && (
+              <ProjectsAggregated
+                selectedMonth={selectedMonth}
+                navigation={navigation}
+              />
             )}
           </ScrollView>
         </DashboardContainer>

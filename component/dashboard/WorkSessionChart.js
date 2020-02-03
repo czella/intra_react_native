@@ -87,9 +87,7 @@ const WorkSessionChart = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
-  console.log(dateToMysqlString(endDate));
   convertedData = workSessionDataHelper(data, startDate, endDate);
-  console.log(convertedData.data, 'lllllllllllll');
   line = {
     id: 1,
     labels: convertedData.labels,

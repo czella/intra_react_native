@@ -318,3 +318,37 @@ export const deleteContract = gql`
     }
   }
 `;
+
+export const createContract = gql`
+  mutation createContract(
+    $position: String!
+    $UserId: ID!
+    $ProjectId: ID!
+    $price: Float!
+    $CurrencyId: ID!
+  ) {
+    data: createContract(
+      position: $position
+      UserId: $UserId
+      ProjectId: $ProjectId
+      price: $price
+      CurrencyId: $CurrencyId
+    ) {
+      id
+      position
+      UserId
+      ProjectId
+      price
+      CurrencyId
+      Project {
+        id
+        __typename
+      }
+      User {
+        id
+        __typename
+      }
+      __typename
+    }
+  }
+`;

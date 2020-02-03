@@ -5,8 +5,6 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Platform,
-  ActivityIndicator,
 } from 'react-native';
 import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
 import InputElement from '../InputElement';
@@ -17,6 +15,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
 import {deleteContract, editContract} from '../../queries/queries';
 import Picker from '../Picker';
+import {ADMIN_ROLE, hasPermission, useRole} from '../../hooks/useRole';
 
 const mapStateToProps = state => ({
   contract: state.nonCachedReducer.selectedContract,
@@ -34,21 +33,6 @@ const ContractExpanded = props => {
     onContractSave,
     resetPageCount,
   } = props;
-  const getUsersForPicker = users => {
-    return users.map(user => {
-      return {label: user.username, value: user.id};
-    });
-  };
-  const getProjectsForPicker = projects => {
-    return projects.map(project => {
-      return {label: project.name, value: project.id};
-    });
-  };
-  const getCurrenciesForPicker = currencies => {
-    return currencies.map(currency => {
-      return {label: currency.name, value: currency.id};
-    });
-  };
   const [position, setPosition] = useState(null);
   const [price, setPrice] = useState(null);
   const [user, setUser] = useState({label: null, value: null});
@@ -83,7 +67,7 @@ const ContractExpanded = props => {
         value: contract.Project.id,
       });
       setCurrency({
-        label: find(currencies, {id: contract.CurrencyId}).name,
+        label: find(currencies, {value: contract.CurrencyId}).label,
         value: contract.CurrencyId,
       });
     } else {
@@ -94,17 +78,26 @@ const ContractExpanded = props => {
       setCurrency({label: null, value: null});
     }
   }, [contract, currencies]);
+  const role = useRole();
   if (!contract) {
     return null;
   }
+  const isDisabled = !hasPermission([ADMIN_ROLE], role);
   return (
     <Container>
       <NavigationButtonsContainer>
         <TouchableOpacity onPress={closeContract}>
           <BackArrowIcon />
         </TouchableOpacity>
-        <TitleBar>Edit Contract</TitleBar>
-        <TouchableOpacity onPress={handleSave}>
+        <TitleBar>
+          {isDisabled ? 'Contract' : 'Edit Contract'}
+        </TitleBar>
+        <TouchableOpacity
+          style={{
+            opacity: isDisabled ? 0 : 1,
+          }}
+          disabled={isDisabled}
+          onPress={handleSave}>
           <SaveIcon />
         </TouchableOpacity>
       </NavigationButtonsContainer>
@@ -116,6 +109,7 @@ const ContractExpanded = props => {
         <Form>
           <InputElement editable={false} placeholder={contract.id} label="Id" />
           <InputElement
+            editable={!isDisabled}
             placeholder={contract.position}
             label="Position"
             onChange={setPosition}
@@ -123,32 +117,35 @@ const ContractExpanded = props => {
           <PickerContainer>
             <Picker
               title="User"
+              editable={!isDisabled}
               onValueChange={itemValue => {
                 setUser({
-                  label: find(users, {id: itemValue}).username,
+                  label: find(users, {value: itemValue}).label,
                   value: itemValue,
                 });
               }}
               value={user.value}
-              items={getUsersForPicker(users)}
+              items={users}
               label={user.label}
             />
           </PickerContainer>
           <PickerContainer>
             <Picker
               title="Project"
+              editable={!isDisabled}
               onValueChange={itemValue => {
                 setProject({
-                  label: find(projects, {id: itemValue}).name,
+                  label: find(projects, {value: itemValue}).label,
                   value: itemValue,
                 });
               }}
               value={project.value}
-              items={getProjectsForPicker(projects)}
+              items={projects}
               label={project.label}
             />
           </PickerContainer>
           <InputElement
+            editable={!isDisabled}
             placeholder={`${contract.price}`}
             label="Price"
             onChange={setPrice}
@@ -157,23 +154,26 @@ const ContractExpanded = props => {
           <PickerContainer>
             <Picker
               title="Currency"
+              editable={!isDisabled}
               onValueChange={itemValue => {
                 setCurrency({
-                  label: find(currencies, {id: itemValue}).name,
+                  label: find(currencies, {value: itemValue}).label,
                   value: itemValue,
                 });
               }}
               value={currency.value}
-              items={getCurrenciesForPicker(currencies)}
+              items={currencies}
               label={currency.label}
             />
           </PickerContainer>
-          <TouchableOpacity onPress={handleDelete}>
-            <ButtonContainer stlye={{paddingTop: 10}}>
-              <DeleteIcon />
-              <ButtonLabel>Delete session</ButtonLabel>
-            </ButtonContainer>
-          </TouchableOpacity>
+          {!isDisabled && (
+            <TouchableOpacity onPress={handleDelete}>
+              <ButtonContainer stlye={{paddingTop: 10}}>
+                <DeleteIcon />
+                <ButtonLabel>Delete session</ButtonLabel>
+              </ButtonContainer>
+            </TouchableOpacity>
+          )}
         </Form>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <Background />

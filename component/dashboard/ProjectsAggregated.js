@@ -81,6 +81,7 @@ const ProjectsAggregated = props => {
     <Container>
       {Object.keys(projects).map(key => (
         <ProjectAggregated
+          key={key}
           projectName={key}
           projectData={projects[key].data}
           sumRows={projects[key].sumRows}

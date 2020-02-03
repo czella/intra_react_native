@@ -15,7 +15,7 @@ import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
-import {useRole, ADMIN_ROLE, PROJECT_OWNER} from '../../hooks/useRole';
+import { useRole, ADMIN_ROLE, PROJECT_OWNER_ROLE, hasPermission } from '../../hooks/useRole';
 import {deleteWorkSession, editWorkSession} from '../../queries/queries';
 import Picker from '../Picker';
 
@@ -124,7 +124,7 @@ const WorkSessionExpanded = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
-          {[ADMIN_ROLE, PROJECT_OWNER].indexOf(role) !== -1 && (
+          {hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role) && (
             <InputElement
               editable={false}
               placeholder={

@@ -16,7 +16,14 @@ import EventPool from '../utils/EventPool';
 import {allContracts, allWorkSessions} from '../queries/queries';
 import Contracts from '../component/contracts/Contracts';
 import ContractExpanded from '../component/contracts/ContractExpanded';
-import { useFocus } from '../hooks/useFocus';
+import {useFocus} from '../hooks/useFocus';
+import ContractNew from '../component/contracts/ContractNew';
+import {
+  ADMIN_ROLE,
+  PROJECT_OWNER_ROLE,
+  hasPermission,
+  useRole,
+} from '../hooks/useRole';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -42,6 +49,7 @@ const ContractsScreen = props => {
   const [translateYNewContract, setTranslateYNewContract] = useState(
     new Animated.Value(0),
   );
+  const role = useRole();
   const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
     allContracts,
     {
@@ -75,8 +83,8 @@ const ContractsScreen = props => {
     };
     EventPool.addListener('contractsUpdated', fetchContracts);
     return () => EventPool.removeListener('contractsUpdated', fetchContracts);
-  }, []);
-  if (!token) {
+  }, [navigation, refetch]);
+  if (!token || !hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role)) {
     return null;
   }
   if (loading) {
@@ -178,6 +186,22 @@ const ContractsScreen = props => {
     deviceHeight = event.nativeEvent.layout.height;
     deviceWidth = event.nativeEvent.layout.width;
   };
+  const getUsersForPicker = users => {
+    return users.map(user => {
+      return {label: user.username, value: user.id};
+    });
+  };
+  const getProjectsForPicker = projects => {
+    return projects.map(project => {
+      return {label: project.name, value: project.id};
+    });
+  };
+  const getCurrenciesForPicker = currencies => {
+    console.log(currencies);
+    return currencies.map(currency => {
+      return {label: currency.name, value: currency.id};
+    });
+  };
   return (
     <Container onLayout={event => onLayout(event)}>
       <MenuBar title="Contracts" navigation={navigation} />
@@ -188,11 +212,13 @@ const ContractsScreen = props => {
         totalCount={data ? data.total.count : 0}
         currencies={data ? data.currencies : []}
       />
-      <ButtonContainer>
-        <TouchableOpacity onPress={newContract}>
-          <AddButtonIcon />
-        </TouchableOpacity>
-      </ButtonContainer>
+      {hasPermission([ADMIN_ROLE], role) && (
+        <ButtonContainer>
+          <TouchableOpacity onPress={newContract}>
+            <AddButtonIcon />
+          </TouchableOpacity>
+        </ButtonContainer>
+      )}
       {!loading && (
         <AnimatedContractModal
           style={{
@@ -203,27 +229,28 @@ const ContractsScreen = props => {
             closeContract={closeExpandedContract}
             onContractSave={onContractSave}
             resetPageCount={resetPageCount}
-            currencies={data ? data.currencies : []}
-            users={data ? data.users : []}
-            projects={data ? data.projects : []}
+            currencies={data ? getCurrenciesForPicker(data.currencies) : []}
+            users={data ? getUsersForPicker(data.users) : []}
+            projects={data ? getProjectsForPicker(data.projects) : []}
           />
         </AnimatedContractModal>
       )}
-      {/*{!loading && (*/}
-        {/*<AnimatedContractModal*/}
-          {/*style={{*/}
-            {/*transform: [{translateY: translateYNewContract}],*/}
-            {/*top: topNewContract,*/}
-          {/*}}>*/}
-          {/*<WorkSessionNew*/}
-            {/*lastWorkSession={data ? data.items[0] : null}*/}
-            {/*contracts={data ? data.contracts : []}*/}
-            {/*closeWorkSession={closeNewContract}*/}
-            {/*onContractCreate={onContractCreate}*/}
-            {/*resetPageCount={resetPageCount}*/}
-          {/*/>*/}
-        {/*</AnimatedContractModal>*/}
-      {/*)}*/}
+      {!loading && hasPermission([ADMIN_ROLE], role) && (
+        <AnimatedContractModal
+          style={{
+            transform: [{translateY: translateYNewContract}],
+            top: topNewContract,
+          }}>
+          <ContractNew
+            closeContract={closeNewContract}
+            onContractCreate={onContractCreate}
+            resetPageCount={resetPageCount}
+            currencies={data ? getCurrenciesForPicker(data.currencies) : []}
+            users={data ? getUsersForPicker(data.users) : []}
+            projects={data ? getProjectsForPicker(data.projects) : []}
+          />
+        </AnimatedContractModal>
+      )}
     </Container>
   );
 };

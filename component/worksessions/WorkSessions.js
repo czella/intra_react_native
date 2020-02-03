@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../../store/actions';
-import {useRole, ADMIN_ROLE} from '../../hooks/useRole';
+import {useRole, ADMIN_ROLE, hasPermission} from '../../hooks/useRole';
 import Picker from '../Picker';
 
 const mapDispatchToProps = dispatch => ({
@@ -49,7 +49,7 @@ const WorkSessions = props => {
   };
   return (
     <Container>
-      {role === ADMIN_ROLE && (
+      {hasPermission([ADMIN_ROLE], role) && (
         <UserSelectContainer>
           <UserLabel>Selected user:</UserLabel>
           <UserPickerContainer>
