@@ -7,17 +7,21 @@ import {createAppContainer} from 'react-navigation';
 import MainScreen from '../screen/MainScreen';
 import WorksSessionsScreen from '../screen/WorkSessionsScreen';
 import ContractsScreen from '../screen/ContractsScreen';
+import UsersScreen from '../screen/UsersScreen';
 
 const DrawerNavigator = createDrawerNavigator(
   {
     Home: {
       screen: MainScreen,
     },
-    WorkSessions: {
-      screen: WorksSessionsScreen,
+    Users: {
+      screen: UsersScreen,
     },
     Contracts: {
       screen: ContractsScreen,
+    },
+    WorkSessions: {
+      screen: WorksSessionsScreen,
     },
   },
   {
