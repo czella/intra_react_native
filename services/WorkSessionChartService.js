@@ -5,6 +5,7 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
 
   const selectedLines = [];
   const labels = [];
+  const userLabels = [];
   const monthNames = [
     'Jan',
     'Feb',
@@ -26,7 +27,8 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
     currentDate < endDate;
     currentDate.setDate(currentDate.getDate() + 1)
   ) {
-    const day = `${currentDate.getDate()}. (${dayNames[currentDate.getDay()]})`;
+    // const day = `${currentDate.getDate()}. (${dayNames[currentDate.getDay()]})`;
+    const day = currentDate.getDate();
     labels.push(day);
   }
   for (const entry of data.allStatsDailyUserWorkSessions) {
@@ -72,12 +74,17 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
   };
   const dataset = [];
   for (const userId in users) {
+    console.log(users);
     const color = getColor();
     const userData = {
       strokeWidth: 2, // optional
-      color: (opacity = 1) => `rgba(${color}, ${opacity})`,
+      color: (opacity = 1) => `rgba(${color}, 0.75)`,
       data: [],
     };
+    userLabels.push({
+      name: users[userId].username,
+      color: `rgba(${color}, 0.75)`,
+    });
     for (
       const currentDate = new Date(startDate.getTime());
       currentDate < endDate;
@@ -112,5 +119,5 @@ export const workSessionDataHelper = (data, startDate, endDate) => {
     };
     dataset.push(userData);
   }
-  return {dataset: dataset, labels: labels};
+  return {dataset: dataset, labels: labels, userLabels: userLabels};
 };

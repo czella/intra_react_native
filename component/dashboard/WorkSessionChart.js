@@ -2,52 +2,23 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {useQuery} from '@apollo/react-hooks';
 import {LineChart} from 'react-native-chart-kit';
-import {TouchableOpacity, ActivityIndicator} from 'react-native';
+import {ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 import {workSessionDataHelper} from '../../services/WorkSessionChartService';
-import {LeftArrowIcon, RightArrowIcon, RefreshIcon} from '../../svg/Icons';
 import EventPool from '../../utils/EventPool';
 import {allStatsDailyUserWorkSessions} from '../../queries/queries';
-import {
-  dateToMysqlString,
-  getTodaysUTCDate,
-  getWeekCount,
-  getFirstDayOfWeek,
-  getLastDayOfWeek,
-  getTodaysMonthWeekNumber,
-} from '../../utils/DateHelpers';
-import { useFocus } from '../../hooks/useFocus';
+import {dateToMysqlString} from '../../utils/DateHelpers';
+import {useFocus} from '../../hooks/useFocus';
+import {UserCircle} from '../../svg/Icons';
 
 let convertedData;
 let line;
 
 const WorkSessionChart = props => {
   const {selectedMonth, navigation} = props;
-  const [currentWeek, setCurrentWeek] = useState(1);
   const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
-  const weekCount = getWeekCount(selectedMonth.year, selectedMonth.monthIndex);
-  const startDate = getFirstDayOfWeek(
-    selectedMonth.year,
-    selectedMonth.monthIndex,
-    currentWeek,
-  );
-  const endDate = getLastDayOfWeek(
-    selectedMonth.year,
-    selectedMonth.monthIndex,
-    currentWeek,
-  );
-  endDate.setDate(endDate.getDate() + 1);
-  useEffect(() => {
-    const currentDate = getTodaysUTCDate();
-    if (
-      selectedMonth.monthIndex === currentDate.getMonth() &&
-      selectedMonth.year === currentDate.getFullYear()
-    ) {
-      setCurrentWeek(getTodaysMonthWeekNumber());
-    } else {
-      setCurrentWeek(1);
-    }
-  }, [selectedMonth]);
+  const startDate = new Date(selectedMonth.year, selectedMonth.monthIndex, 1);
+  const endDate = new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 1);
   const [chartDimensions, setChartDimensions] = useState({height: 0, width: 0});
   const {loading, data, error, refetch} = useQuery(
     allStatsDailyUserWorkSessions,
@@ -77,6 +48,23 @@ const WorkSessionChart = props => {
     return () => EventPool.removeListener('workSessionsUpdated', fetchSessions);
   }, [navigation, refetch]);
 
+  const getHiddenIndices = () => {
+    const lastDayOfMonth = new Date(
+      selectedMonth.year,
+      selectedMonth.monthIndex + 1,
+      0,
+    ).getDate();
+    const hiddenIndices = [];
+    for (let i = 1; i < lastDayOfMonth; i++) {
+      if (i === 14 || i === lastDayOfMonth - 1) {
+        continue;
+      } else {
+        hiddenIndices.push(i);
+      }
+    }
+    return hiddenIndices;
+  };
+
   if (loading) {
     return (
       <LoaderContainer>
@@ -88,6 +76,7 @@ const WorkSessionChart = props => {
     return <Text>`Error! ${error}`</Text>;
   }
   convertedData = workSessionDataHelper(data, startDate, endDate);
+  getHiddenIndices();
   line = {
     id: 1,
     labels: convertedData.labels,
@@ -107,15 +96,23 @@ const WorkSessionChart = props => {
           width={chartDimensions.width} // from react-native
           height={250}
           yAxisSuffix={' h'}
+          hidePointsAtIndex={getHiddenIndices()}
+          withDots={false}
+          withShadow={false}
+          withInnerLines={false}
+          withOuterLines={true}
           chartConfig={{
-            backgroundColor: '#DCDCDC',
-            backgroundGradientFrom: '#E6E6FA',
-            backgroundGradientTo: '#D8BFD8',
+            backgroundColor: '#ffffff',
+            backgroundGradientFrom: '#ffffff',
+            backgroundGradientTo: '#ffffff',
             decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            style: {
-              borderRadius: 16,
+            propsForBackgroundLines: {
+              fill: 'black',
+              strokeWidth: 1,
+              strokeDasharray: 10000,
+              stroke: 'grey',
             },
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           }}
           bezier
           style={{
@@ -123,37 +120,14 @@ const WorkSessionChart = props => {
           }}
         />
       </ChartContainer>
-      <ButtonsRow>
-        <TouchableOpacity
-          onPress={() => setCurrentWeek(currentWeek - 1)}
-          disabled={currentWeek === 1}>
-          <ButtonContainer>
-            <LeftArrowIcon color={currentWeek !== 1 ? '#651FFF' : '#eeeeee'} />
-            <Text style={{opacity: currentWeek !== 1 ? 1 : 0.5}}>
-              Previous week
-            </Text>
-          </ButtonContainer>
-        </TouchableOpacity>
-        <DateContainer>
-          <TouchableOpacity onPress={() => refetch()}>
-            <ButtonContainer>
-              <RefreshIcon />
-            </ButtonContainer>
-          </TouchableOpacity>
-        </DateContainer>
-        <TouchableOpacity
-          onPress={() => setCurrentWeek(currentWeek + 1)}
-          disabled={currentWeek === weekCount}>
-          <ButtonContainer>
-            <Text style={{opacity: currentWeek !== weekCount ? 1 : 0.5}}>
-              Next week
-            </Text>
-            <RightArrowIcon
-              color={currentWeek !== weekCount ? '#651FFF' : '#eeeeee'}
-            />
-          </ButtonContainer>
-        </TouchableOpacity>
-      </ButtonsRow>
+      <UserRowContainer>
+        {convertedData.userLabels.map(user => (
+          <UserContainer>
+            <Text>{user.name}</Text>
+            <UserCircle color={user.color} />
+          </UserContainer>
+        ))}
+      </UserRowContainer>
     </Container>
   );
 };
@@ -169,8 +143,9 @@ WorkSessionChart.defaultProps = {
 };
 
 const Container = styled.View`
-  padding: 10px;
+  margin-top: 10px;
   flex: 1;
+  padding-right: 15px;
 `;
 
 const ChartContainer = styled.View`
@@ -185,29 +160,21 @@ const LoaderContainer = styled.View`
   height: 250;
 `;
 
-const ButtonsRow = styled.View`
-  display: flex;
+const UserRowContainer = styled.View`
+  flex: 1
   flex-direction: row;
-  justify-content: space-between;
-  max-height: 60px;
-  height: 20%;
-  padding-top: 30px;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  margin-top: 25px;
 `;
 
-const ButtonContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
-
-const DateContainer = styled.View`
+const UserContainer = styled.View`
   flex-direction: row;
 `;
 
-const Text = styled.Text``;
-
-const ButtonTextContainer = styled.View`
-  flex-direction: column;
-  align-items: center;
+const Text = styled.Text`
+  margin-right: 3px;
+  margin-left: 10px;
 `;
 
 export default WorkSessionChart;

@@ -17,6 +17,15 @@ export const ContractsIcon = () => (
   </Svg>
 );
 
+export const UserCircle = props => {
+  const {color} = props;
+  return (
+    <Svg height="20" width="20">
+      <Circle cx="10" cy="10" r="5" stroke={color} fill={color} />
+    </Svg>
+  );
+}
+
 export const LeftArrowIcon = props => {
   const {color} = props;
   return (
