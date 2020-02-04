@@ -7,7 +7,7 @@ import {setToken} from '../store/actions';
 import {
   ContractsIcon,
   DashboardIcon,
-  LogoutIcon,
+  LogoutIcon, UsersIcon,
   WorkSessionsIcon,
 } from '../svg/Icons';
 import EventPool from '../utils/EventPool';
@@ -47,10 +47,10 @@ const SideMenu = props => {
             <Text>Dashboard</Text>
           </MenuElement>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Users')}>
           <MenuElement>
-            <WorkSessionsIcon />
-            <Text>Work Sessions</Text>
+            <UsersIcon />
+            <Text>Users</Text>
           </MenuElement>
         </TouchableOpacity>
         {hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role) && (
@@ -61,6 +61,12 @@ const SideMenu = props => {
             </MenuElement>
           </TouchableOpacity>
         )}
+        <TouchableOpacity onPress={() => navigation.navigate('WorkSessions')}>
+          <MenuElement>
+            <WorkSessionsIcon />
+            <Text>Work Sessions</Text>
+          </MenuElement>
+        </TouchableOpacity>
       </ScrollView>
 
       <FooterContainer>
