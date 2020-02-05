@@ -5,7 +5,6 @@ import { UserCircle } from '../../svg/Icons';
 
 const UserRow = props => {
   const {users} = props;
-  console.log(users);
   return (
     <UserRowContainer>
       {users.map(user => (

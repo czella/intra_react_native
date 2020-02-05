@@ -3,7 +3,15 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 
 const InputElement = props => {
-  const {editable, placeholder, label, onChange, value, numeric} = props;
+  const {
+    editable,
+    placeholder,
+    label,
+    onChange,
+    value,
+    numeric,
+    isPassword,
+  } = props;
   const [color, setColor] = useState('lightgrey');
   return (
     <InputContainer
@@ -15,7 +23,8 @@ const InputElement = props => {
       }}>
       <InputLabel style={{color: color}}>{label}</InputLabel>
       <TextInput
-        multiline={true}
+        secureTextEntry={isPassword}
+        multiline={!isPassword}
         editable={editable}
         onChangeText={input => onChange(input)}
         placeholder={placeholder}
@@ -35,6 +44,7 @@ InputElement.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.string,
   numeric: PropTypes.bool,
+  isPassword: PropTypes.bool,
 };
 
 InputElement.defaultProps = {
@@ -44,6 +54,7 @@ InputElement.defaultProps = {
   onChange: () => {},
   value: null,
   numeric: false,
+  isPassword: false,
 };
 
 const InputContainer = styled.View`

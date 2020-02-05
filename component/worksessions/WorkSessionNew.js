@@ -12,11 +12,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../../svg/Icons';
-import InputElement from '../InputElement';
+import InputElement from '../util/InputElement';
 import EventPool from '../../utils/EventPool';
 
 import {createWorkSession} from '../../queries/queries';
-import Picker from '../Picker';
+import Picker from '../util/Picker';
 
 const dateToString = date => {
   if (date) {

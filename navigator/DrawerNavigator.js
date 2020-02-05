@@ -2,7 +2,7 @@ import React from 'react';
 import {Dimensions} from 'react-native';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 
-import SideMenu from '../component/SideMenu';
+import SideMenu from '../component/menu/SideMenu';
 import {createAppContainer} from 'react-navigation';
 import MainScreen from '../screen/MainScreen';
 import WorksSessionsScreen from '../screen/WorkSessionsScreen';

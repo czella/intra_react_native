@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
-import InputElement from '../InputElement';
+import InputElement from '../util/InputElement';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
@@ -17,7 +17,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
 import { useRole, ADMIN_ROLE, PROJECT_OWNER_ROLE, hasPermission } from '../../hooks/useRole';
 import {deleteWorkSession, editWorkSession} from '../../queries/queries';
-import Picker from '../Picker';
+import Picker from '../util/Picker';
 
 const dateToString = date => {
   if (date) {

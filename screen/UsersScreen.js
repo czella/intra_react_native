@@ -10,20 +10,18 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
-import MenuBar from '../component/MenuBar';
-import {AddButtonIcon} from '../svg/Icons';
+import MenuBar from '../component/menu/MenuBar';
 import EventPool from '../utils/EventPool';
-import {allContracts, allWorkSessions} from '../queries/queries';
-import Contracts from '../component/contracts/Contracts';
-import ContractExpanded from '../component/contracts/ContractExpanded';
+import {allUsers} from '../queries/queries';
 import {useFocus} from '../hooks/useFocus';
-import ContractNew from '../component/contracts/ContractNew';
 import {
   ADMIN_ROLE,
   PROJECT_OWNER_ROLE,
   hasPermission,
   useRole,
 } from '../hooks/useRole';
+import Users from '../component/users/Users';
+import UserExpanded from '../component/users/UserExpanded';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -37,31 +35,28 @@ let page = 0;
 const UsersScreen = props => {
   const {navigation, token} = props;
   const [shouldRefetchOnFocus, setShouldRefetchOnFocus] = useState(false);
-  const [topExpandedContract, setTopExpandedContract] = useState(
+  const [topExpandedUser, setTopExpandedUser] = useState(
     new Animated.Value(deviceHeight + 500),
   );
   const [topNewContract, setTopNewContract] = useState(
     new Animated.Value(deviceHeight + 500),
   );
-  const [translateYExpandedContract, setTranslateYExpandedContract] = useState(
+  const [translateYExpandedUser, setTranslateYExpandedUser] = useState(
     new Animated.Value(0),
   );
-  const [translateYNewContract, setTranslateYNewContract] = useState(
+  const [translateYNewUser, setTranslateYNewUser] = useState(
     new Animated.Value(0),
   );
   const role = useRole();
   const {loading, data, error, refetch, fetchMore, networkStatus} = useQuery(
-    allContracts,
+    allUsers,
     {
       variables: {
-        page: 0,
+        page: page,
         filter: {},
         perPage: 20,
-        sortField: 'ProjectId',
-        sortOrder: 'ASC',
-        currencyFilter: {},
-        userFilter: {},
-        projectFilter: {},
+        sortField: 'id',
+        sortOrder: 'DESC',
       },
       skip: !token,
       fetchPolicy: 'no-cache',
@@ -81,10 +76,10 @@ const UsersScreen = props => {
         setShouldRefetchOnFocus(true);
       }
     };
-    EventPool.addListener('contractsUpdated', fetchContracts);
-    return () => EventPool.removeListener('contractsUpdated', fetchContracts);
+    EventPool.addListener('usersUpdated', fetchContracts);
+    return () => EventPool.removeListener('usersUpdated', fetchContracts);
   }, [navigation, refetch]);
-  if (!token || !hasPermission([ADMIN_ROLE, PROJECT_OWNER_ROLE], role)) {
+  if (!token) {
     return null;
   }
   if (loading) {
@@ -102,7 +97,7 @@ const UsersScreen = props => {
   if (error) {
     return <Text>`Error! ${error}`</Text>;
   }
-  const fetchMoreContracts = () => {
+  const fetchMoreUsers = () => {
     if (data.items.length < data.total.count) {
       page++;
       fetchMore({
@@ -110,11 +105,8 @@ const UsersScreen = props => {
           page: page,
           filter: {},
           perPage: 20,
-          sortField: 'ProjectId',
-          sortOrder: 'ASC',
-          currencyFilter: {},
-          userFilter: {},
-          projectFilter: {},
+          sortField: 'id',
+          sortOrder: 'DESC',
         },
         updateQuery: (prev, {fetchMoreResult}) => {
           if (!fetchMoreResult) {
@@ -131,33 +123,33 @@ const UsersScreen = props => {
   const resetPageCount = () => {
     page = 0;
   };
-  const expandContract = () => {
-    Animated.timing(topExpandedContract, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateYExpandedContract, {
+  const expandUser = () => {
+    Animated.timing(topExpandedUser, {toValue: 0, duration: 500}).start();
+    Animated.timing(translateYExpandedUser, {
       toValue: 0,
       duration: 0,
     }).start();
   };
-  const newContract = () => {
+  const newUser = () => {
     Animated.timing(topNewContract, {toValue: 0, duration: 500}).start();
-    Animated.timing(translateYNewContract, {toValue: 0, duration: 0}).start();
+    Animated.timing(translateYNewUser, {toValue: 0, duration: 0}).start();
   };
-  const closeExpandedContract = () => {
+  const closeExpandedUser = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
-        Animated.timing(topExpandedContract, {
+        Animated.timing(topExpandedUser, {
           toValue: deviceHeight,
           duration: 0,
         }).start();
       }, 500);
-      Animated.timing(translateYExpandedContract, {
+      Animated.timing(translateYExpandedUser, {
         toValue: deviceHeight,
         duration: 500,
       }).start();
     });
   };
-  const closeNewContract = () => {
+  const closeNewUser = () => {
     return new Promise(() => {
       Keyboard.dismiss();
       setTimeout(() => {
@@ -166,91 +158,71 @@ const UsersScreen = props => {
           duration: 0,
         }).start();
       }, 500);
-      Animated.timing(translateYNewContract, {
+      Animated.timing(translateYNewUser, {
         toValue: deviceHeight,
         duration: 500,
       }).start();
     });
   };
-  const onContractSave = () => {
+  const onUserSave = () => {
     Keyboard.dismiss();
-    setTopExpandedContract(new Animated.Value(deviceHeight + 500));
-    setTranslateYExpandedContract(new Animated.Value(0));
+    setTopExpandedUser(new Animated.Value(deviceHeight + 500));
+    setTranslateYExpandedUser(new Animated.Value(0));
   };
-  const onContractCreate = () => {
+  const onUserCreate = () => {
     Keyboard.dismiss();
     setTopNewContract(new Animated.Value(deviceHeight + 500));
-    setTranslateYNewContract(new Animated.Value(0));
+    setTranslateYNewUser(new Animated.Value(0));
   };
   const onLayout = event => {
     deviceHeight = event.nativeEvent.layout.height;
     deviceWidth = event.nativeEvent.layout.width;
   };
-  const getUsersForPicker = users => {
-    return users.map(user => {
-      return {label: user.username, value: user.id};
-    });
-  };
-  const getProjectsForPicker = projects => {
-    return projects.map(project => {
-      return {label: project.name, value: project.id};
-    });
-  };
-  const getCurrenciesForPicker = currencies => {
-    console.log(currencies);
-    return currencies.map(currency => {
-      return {label: currency.name, value: currency.id};
-    });
-  };
   return (
     <Container onLayout={event => onLayout(event)}>
       <MenuBar title="Users" navigation={navigation} />
-      <Contracts
-        onExpandContract={expandContract}
-        contracts={data ? data.items : []}
-        fetchMoreContracts={fetchMoreContracts}
+      <Users
+        onExpandUser={expandUser}
+        users={data ? data.items : []}
+        fetchMoreUsers={fetchMoreUsers}
         totalCount={data ? data.total.count : 0}
-        currencies={data ? data.currencies : []}
       />
-      {hasPermission([ADMIN_ROLE], role) && (
-        <ButtonContainer>
-          <TouchableOpacity onPress={newContract}>
-            <AddButtonIcon />
-          </TouchableOpacity>
-        </ButtonContainer>
-      )}
+      {/*{hasPermission([ADMIN_ROLE], role) && (*/}
+      {/*  <ButtonContainer>*/}
+      {/*    <TouchableOpacity onPress={newUser}>*/}
+      {/*      <AddButtonIcon />*/}
+      {/*    </TouchableOpacity>*/}
+      {/*  </ButtonContainer>*/}
+      {/*)}*/}
       {!loading && (
         <AnimatedContractModal
           style={{
-            transform: [{translateY: translateYExpandedContract}],
-            top: topExpandedContract,
+            transform: [{translateY: translateYExpandedUser}],
+            top: topExpandedUser,
           }}>
-          <ContractExpanded
-            closeContract={closeExpandedContract}
-            onContractSave={onContractSave}
+          <UserExpanded
+            closeUser={closeExpandedUser}
+            onUserSave={onUserSave}
             resetPageCount={resetPageCount}
-            currencies={data ? getCurrenciesForPicker(data.currencies) : []}
-            users={data ? getUsersForPicker(data.users) : []}
-            projects={data ? getProjectsForPicker(data.projects) : []}
           />
         </AnimatedContractModal>
       )}
-      {!loading && hasPermission([ADMIN_ROLE], role) && (
-        <AnimatedContractModal
-          style={{
-            transform: [{translateY: translateYNewContract}],
-            top: topNewContract,
-          }}>
-          <ContractNew
-            closeContract={closeNewContract}
-            onContractCreate={onContractCreate}
-            resetPageCount={resetPageCount}
-            currencies={data ? getCurrenciesForPicker(data.currencies) : []}
-            users={data ? getUsersForPicker(data.users) : []}
-            projects={data ? getProjectsForPicker(data.projects) : []}
-          />
-        </AnimatedContractModal>
-      )}
+      {/*{!loading && hasPermission([ADMIN_ROLE], role) && (*/}
+      {/*  <AnimatedContractModal*/}
+      {/*    style={{*/}
+      {/*      transform: [{translateY: translateYNewUser}],*/}
+      {/*      top: topNewContract,*/}
+      {/*    }}>*/}
+      {/*    <ContractNew*/}
+      {/*      closeUser={closeNewUser}*/}
+      {/*      onUserCreate={onUserCreate}*/}
+      {/*      resetPageCount={resetPageCount}*/}
+      {/*      currencies={data ? getCurrenciesForPicker(data.currencies) : []}*/}
+      {/*      users={data ? getUsersForPicker(data.users) : []}*/}
+      {/*      projects={data ? getProjectsForPicker(data.projects) : []}*/}
+      {/*    />*/}
+      {/*  </AnimatedContractModal>*/}
+      {/*)}*/}
     </Container>
   );
 };

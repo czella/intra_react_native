@@ -14,84 +14,79 @@ import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
 import {deleteContract, editContract} from '../../queries/queries';
-import Picker from '../util/Picker';
 import {ADMIN_ROLE, hasPermission, useRole} from '../../hooks/useRole';
+import {useUserId} from '../../hooks/useUserId';
+import Picker from '../util/Picker';
+import Switch from '../util/Switch';
 
 const mapStateToProps = state => ({
-  contract: state.nonCachedReducer.selectedContract,
+  user: state.nonCachedReducer.selectedUser,
+  userRoles: state.nonCachedReducer.userRoles,
 });
 
-const ContractExpanded = props => {
+const UserExpanded = props => {
   const {
-    contract,
-    currencies,
-    users,
-    projects,
-    closeContract,
-    saveContract,
-    deleteContract,
-    onContractSave,
+    user,
+    userRoles,
+    closeUser,
+    saveUser,
+    deleteUser,
+    onUserSave,
     resetPageCount,
   } = props;
-  const [position, setPosition] = useState(null);
-  const [price, setPrice] = useState(null);
-  const [user, setUser] = useState({label: null, value: null});
-  const [project, setProject] = useState({label: null, value: null});
-  const [currency, setCurrency] = useState({label: null, value: null});
+  const [username, setUsername] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [role, setRole] = useState({label: null, value: null});
+  const [isActive, setIsActive] = useState(null);
   const handleSave = () => {
     resetPageCount();
-    saveContract(
+    saveUser(
       contract.id,
-      position,
+      username,
       user.value,
       project.value,
-      Number(price),
+      Number(email),
       currency.value,
     ).then(() => EventPool.emit('contractsUpdated'));
-    onContractSave();
+    onUserSave();
   };
   const handleDelete = () => {
-    deleteContract(contract.id).then(() => EventPool.emit('contractsUpdated'));
-    onContractSave();
+    deleteUser(contract.id).then(() => EventPool.emit('contractsUpdated'));
+    onUserSave();
   };
+  const userId = useUserId();
   useEffect(() => {
-    if (contract) {
-      setPosition(contract.position);
-      setPrice(`${contract.price}`);
-      setUser({
-        label: contract.User.username,
-        value: contract.User.id,
+    if (user) {
+      setUsername(user.username);
+      setEmail(user.email);
+      setRole({
+        label: user.role,
+        value: user.role,
       });
-      setProject({
-        label: contract.Project.name,
-        value: contract.Project.id,
-      });
-      setCurrency({
-        label: find(currencies, {value: contract.CurrencyId}).label,
-        value: contract.CurrencyId,
-      });
+      setIsActive(user.isActive);
     } else {
-      setPosition(null);
-      setPrice(null);
-      setUser({label: null, value: null});
-      setProject({label: null, value: null});
-      setCurrency({label: null, value: null});
+      setUsername(null);
+      setEmail(null);
+      setRole({label: null, value: null});
+      setPassword(null);
+      setIsActive(null);
     }
-  }, [contract, currencies]);
-  const role = useRole();
-  if (!contract) {
+  }, [user]);
+  const userRole = useRole();
+  if (!user) {
     return null;
   }
-  const isDisabled = !hasPermission([ADMIN_ROLE], role);
+  const hasAdminPermission = hasPermission([ADMIN_ROLE], userRole);
+  const editingOwnUser = Number(user.id) === Number(userId);
+  const isDisabled = !hasAdminPermission && !editingOwnUser;
   return (
     <Container>
       <NavigationButtonsContainer>
-        <TouchableOpacity onPress={closeContract}>
+        <TouchableOpacity onPress={closeUser}>
           <BackArrowIcon />
         </TouchableOpacity>
-        <TitleBar>
-          {isDisabled ? 'Contract' : 'Edit Contract'}
-        </TitleBar>
+        <TitleBar>{isDisabled ? 'User' : 'Edit User'}</TitleBar>
         <TouchableOpacity
           style={{
             opacity: isDisabled ? 0 : 1,
@@ -107,72 +102,45 @@ const ContractExpanded = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
-          <InputElement editable={false} placeholder={contract.id} label="Id" />
+          <InputElement editable={false} placeholder={user.id} label="Id" />
           <InputElement
             editable={!isDisabled}
-            placeholder={contract.position}
-            label="Position"
-            onChange={setPosition}
+            placeholder={user.username}
+            label="Username"
+            onChange={setUsername}
           />
-          <PickerContainer>
-            <Picker
-              title="User"
-              editable={!isDisabled}
-              onValueChange={itemValue => {
-                setUser({
-                  label: find(users, {value: itemValue}).label,
-                  value: itemValue,
-                });
-              }}
-              value={user.value}
-              items={users}
-              label={user.label}
-            />
-          </PickerContainer>
-          <PickerContainer>
-            <Picker
-              title="Project"
-              editable={!isDisabled}
-              onValueChange={itemValue => {
-                setProject({
-                  label: find(projects, {value: itemValue}).label,
-                  value: itemValue,
-                });
-              }}
-              value={project.value}
-              items={projects}
-              label={project.label}
-            />
-          </PickerContainer>
           <InputElement
             editable={!isDisabled}
-            placeholder={`${contract.price}`}
-            label="Price"
-            onChange={setPrice}
+            placeholder={user.email}
+            label="Email"
+            onChange={setEmail}
             numeric={true}
           />
+          {!isDisabled && (
+            <InputElement
+              editable={!isDisabled}
+              label="Password"
+              onChange={setPassword}
+              isPassword={true}
+            />
+          )}
           <PickerContainer>
             <Picker
-              title="Currency"
-              editable={!isDisabled}
+              title="Role"
+              editable={hasAdminPermission}
               onValueChange={itemValue => {
-                setCurrency({
-                  label: find(currencies, {value: itemValue}).label,
+                setRole({
+                  label: find(userRoles, {value: itemValue}).label,
                   value: itemValue,
                 });
               }}
-              value={currency.value}
-              items={currencies}
-              label={currency.label}
+              value={role.value}
+              items={userRoles}
+              label={role.label}
             />
           </PickerContainer>
-          {!isDisabled && (
-            <TouchableOpacity onPress={handleDelete}>
-              <ButtonContainer stlye={{paddingTop: 10}}>
-                <DeleteIcon />
-                <ButtonLabel>Delete session</ButtonLabel>
-              </ButtonContainer>
-            </TouchableOpacity>
+          {hasAdminPermission && (
+            <Switch value={isActive} setValue={setIsActive} label="is active" />
           )}
         </Form>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -183,27 +151,27 @@ const ContractExpanded = props => {
   );
 };
 
-ContractExpanded.propTypes = {
-  contract: PropTypes.object,
+UserExpanded.propTypes = {
+  user: PropTypes.object,
   currencies: PropTypes.array,
-  users: PropTypes.array,
+  userRoles: PropTypes.array,
   projects: PropTypes.array,
-  closeContract: PropTypes.func,
-  saveContract: PropTypes.func,
+  closeUser: PropTypes.func,
+  saveUser: PropTypes.func,
   deleteWorkSession: PropTypes.func,
-  onContractSave: PropTypes.func,
+  onUserSave: PropTypes.func,
   resetPageCount: PropTypes.func,
 };
 
-ContractExpanded.defaultProps = {
-  contract: null,
+UserExpanded.defaultProps = {
+  user: null,
   currencies: [],
-  users: [],
+  userRoles: [],
   projects: [],
-  closeContract: () => {},
-  saveContract: () => {},
+  closeUser: () => {},
+  saveUser: () => {},
   deleteWorkSession: () => {},
-  onContractSave: () => {},
+  onUserSave: () => {},
   resetPageCount: () => {},
 };
 
@@ -276,6 +244,6 @@ export default saveContractQuery(
     connect(
       mapStateToProps,
       null,
-    )(ContractExpanded),
+    )(UserExpanded),
   ),
 );

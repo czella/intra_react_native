@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
-import MenuBar from '../component/MenuBar';
+import MenuBar from '../component/menu/MenuBar';
 import {AddButtonIcon} from '../svg/Icons';
 import EventPool from '../utils/EventPool';
 import {allContracts, allWorkSessions} from '../queries/queries';
@@ -197,7 +197,6 @@ const ContractsScreen = props => {
     });
   };
   const getCurrenciesForPicker = currencies => {
-    console.log(currencies);
     return currencies.map(currency => {
       return {label: currency.name, value: currency.id};
     });

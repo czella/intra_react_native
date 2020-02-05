@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
 import {SmallRightArrowIcon} from '../../svg/Icons';
 
-const Contract = props => {
-  const {project, displayedProperty, showContract, index} = props;
+const User = props => {
+  const {name, displayedProperty, showUser, index} = props;
   return (
-    <TouchableOpacity onPress={() => showContract(index)}>
+    <TouchableOpacity onPress={() => showUser(index)}>
       <Container>
-        <Project numberOfLines={1}>{project}</Project>
+        <Name numberOfLines={1}>{name}</Name>
         <DisplayedProperty numberOfLines={1}>
           {displayedProperty}
         </DisplayedProperty>
@@ -21,17 +21,17 @@ const Contract = props => {
   );
 };
 
-Contract.propTypes = {
-  project: PropTypes.string,
+User.propTypes = {
+  name: PropTypes.string,
   displayedProperty: PropTypes.string,
-  showContract: PropTypes.func,
+  showUser: PropTypes.func,
   index: PropTypes.number,
 };
 
-Contract.defaultProps = {
-  project: '',
+User.defaultProps = {
+  name: '',
   displayedProperty: '',
-  showContract: () => {},
+  showUser: () => {},
   index: 0,
 };
 
@@ -59,9 +59,9 @@ const DisplayedProperty = styled.Text`
   padding-left: 15px;
 `;
 
-const Project = styled.Text`
+const Name = styled.Text`
   line-height: 60px;
   flex: 0.8;
 `;
 
-export default Contract;
+export default User;

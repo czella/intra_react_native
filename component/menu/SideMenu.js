@@ -3,20 +3,20 @@ import React from 'react';
 import styled from 'styled-components';
 import {TouchableOpacity, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
-import {setToken} from '../store/actions';
+import {setToken} from '../../store/actions';
 import {
   ContractsIcon,
   DashboardIcon,
   LogoutIcon, UsersIcon,
   WorkSessionsIcon,
-} from '../svg/Icons';
-import EventPool from '../utils/EventPool';
+} from '../../svg/Icons';
+import EventPool from '../../utils/EventPool';
 import {
   ADMIN_ROLE,
   PROJECT_OWNER_ROLE,
   hasPermission,
   useRole,
-} from '../hooks/useRole';
+} from '../../hooks/useRole';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,

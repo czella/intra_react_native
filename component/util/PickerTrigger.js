@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import {SmallDownArrowIcon} from '../svg/Icons';
+import {SmallDownArrowIcon} from '../../svg/Icons';
 
 const PickerTrigger = props => {
   const {label, labelStyle} = props;

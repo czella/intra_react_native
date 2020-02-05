@@ -352,3 +352,32 @@ export const createContract = gql`
     }
   }
 `;
+
+export const allUsers = gql`
+  query allUsers(
+    $page: Int
+    $perPage: Int
+    $sortField: String
+    $sortOrder: String
+    $filter: UserFilter
+  ) {
+    items: allUsers(
+      page: $page
+      perPage: $perPage
+      sortField: $sortField
+      sortOrder: $sortOrder
+      filter: $filter
+    ) {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
+    total: _allUsersMeta(page: $page, perPage: $perPage, filter: $filter) {
+      count
+      __typename
+    }
+  }
+`;

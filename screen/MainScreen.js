@@ -6,7 +6,7 @@ import {ScrollView} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import {setToken} from '../store/actions';
 import Login from '../component/dashboard/Login';
-import MenuBar from '../component/MenuBar';
+import MenuBar from '../component/menu/MenuBar';
 import WorkSessionChart from '../component/dashboard/WorkSessionChart';
 import {
   useRole,
@@ -15,11 +15,10 @@ import {
   hasPermission,
 } from '../hooks/useRole';
 import WorkSessionsAggregated from '../component/dashboard/WorkSessionsAggregated';
-import PickerTrigger from '../component/PickerTrigger';
 import {getDateFilters} from '../utils/DateHelpers';
 import ProjectsAggregated from '../component/dashboard/ProjectsAggregated';
 import EventPool from '../utils/EventPool';
-import Picker from '../component/Picker';
+import Picker from '../component/util/Picker';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -30,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const MainScreen = props => {
-  const {token, setToken, navigation} = props;
+  const {token, setToken, navigation, userRoles} = props;
   const now = new Date();
   const nextMonthFirstDay = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const dateFilters = getDateFilters(new Date('2018-06-01'), nextMonthFirstDay);

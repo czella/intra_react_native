@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {useQuery} from '@apollo/react-hooks';
-import MenuBar from '../component/MenuBar';
+import MenuBar from '../component/menu/MenuBar';
 import WorkSessions from '../component/worksessions/WorkSessions';
 import {AddButtonIcon} from '../svg/Icons';
 import WorkSessionExpanded from '../component/worksessions/WorkSessionExpanded';

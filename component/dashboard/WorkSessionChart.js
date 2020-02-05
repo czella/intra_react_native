@@ -122,7 +122,7 @@ const WorkSessionChart = props => {
       </ChartContainer>
       <UserRowContainer>
         {convertedData.userLabels.map(user => (
-          <UserContainer>
+          <UserContainer key={user.name}>
             <Text>{user.name}</Text>
             <UserCircle color={user.color} />
           </UserContainer>

@@ -3,32 +3,29 @@ import styled from 'styled-components';
 import {FlatList, ActivityIndicator} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import Contract from './Contract';
-import {setSelectedContract} from '../../store/actions';
-import {find} from 'lodash';
+import {setSelectedUser} from '../../store/actions';
 import Picker from '../util/Picker';
+import User from './User';
 
 const mapDispatchToProps = dispatch => ({
-  setSelectedContract: contract => dispatch(setSelectedContract(contract)),
+  setSelectedUser: user => dispatch(setSelectedUser(user)),
 });
 
 const properties = [
-  {label: 'Position', value: 'position'},
-  {label: 'Username', value: 'username'},
-  {label: 'Price', value: 'price'},
+  {label: 'Email', value: 'email'},
+  {label: 'Role', value: 'role'},
 ];
-const Contracts = props => {
+const Users = props => {
   const {
-    setSelectedContract,
-    onExpandContract,
-    contracts,
-    fetchMoreContracts,
+    setSelectedUser,
+    onExpandUser,
+    users,
+    fetchMoreUsers,
     totalCount,
-    currencies,
   } = props;
   const [displayedProperty, setDisplayedProperty] = useState(properties[0]);
   const renderFooter = () => {
-    if (contracts.length < totalCount) {
+    if (users.length < totalCount) {
       return (
         <LoaderContainer style={{paddingVertical: 45}}>
           <ActivityIndicator size="large" color="#7423B5" />
@@ -37,28 +34,14 @@ const Contracts = props => {
     }
     return null;
   };
-  const showContract = index => {
-    setSelectedContract(contracts[index]);
-    onExpandContract();
-  };
-  const getDisplayedProp = item => {
-    switch (displayedProperty.label) {
-      case 'Position':
-        return item.position;
-      case 'Username':
-        return item.User.username;
-      case 'Price':
-        return `${item.price} ${
-          find(currencies, {id: item.CurrencyId}).name
-        } / hour`;
-      default:
-        return item.position;
-    }
+  const showUser = index => {
+    setSelectedUser(users[index]);
+    onExpandUser();
   };
   return (
     <Container>
       <TableHeader>
-        <Project>Project</Project>
+        <Project>Name</Project>
         <PropertyPickerContainer>
           <Picker
             onValueChange={(itemValue, index) => {
@@ -72,18 +55,18 @@ const Contracts = props => {
         </PropertyPickerContainer>
       </TableHeader>
       <FlatList
-        data={contracts}
+        data={users}
         renderItem={({item, index}) => (
-          <Contract
-            project={item.Project ? item.Project.name : ''}
-            displayedProperty={getDisplayedProp(item)}
+          <User
+            name={item ? item.username : ''}
+            displayedProperty={item[displayedProperty.value]}
             index={index}
-            showContract={showContract}
+            showUser={showUser}
           />
         )}
         keyExtractor={item => item.id}
         ListFooterComponent={renderFooter}
-        onEndReached={fetchMoreContracts}
+        onEndReached={fetchMoreUsers}
         onEndReachedThreshold={0.5}
         initialNumToRender={20}
       />
@@ -91,21 +74,23 @@ const Contracts = props => {
   );
 };
 
-Contracts.propTypes = {
-  setSelectedContract: PropTypes.func,
-  onExpandContract: PropTypes.func,
-  contracts: PropTypes.array,
+Users.propTypes = {
+  setSelectedUser: PropTypes.func,
+  onExpandUser: PropTypes.func,
+  users: PropTypes.array,
+  userRoles: PropTypes.array,
   currencies: PropTypes.array,
-  fetchMoreContracts: PropTypes.func,
+  fetchMoreUsers: PropTypes.func,
   totalCount: PropTypes.number,
 };
 
-Contracts.defaultProps = {
-  setSelectedContract: () => {},
-  onExpandContract: () => {},
-  contracts: [],
+Users.defaultProps = {
+  setSelectedUser: () => {},
+  onExpandUser: () => {},
+  users: [],
+  userRoles: [],
   currencies: [],
-  fetchMoreContracts: () => {},
+  fetchMoreUsers: () => {},
   totalCount: 0,
 };
 
@@ -139,4 +124,4 @@ const PropertyPickerContainer = styled.View`
 export default connect(
   null,
   mapDispatchToProps,
-)(Contracts);
+)(Users);

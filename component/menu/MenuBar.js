@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {TouchableOpacity} from 'react-native';
-import {HamburgerMenuIcon} from '../svg/Icons';
+import {HamburgerMenuIcon} from '../../svg/Icons';
 
 const MenuBar = props => {
   const {navigation, title} = props;
@@ -18,7 +18,7 @@ const MenuBar = props => {
       </TitleContainer>
       <ImageContainer>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Image source={require('../assets/logo_no_text.png')} />
+          <Image source={require('../../assets/logo_no_text.png')} />
         </TouchableOpacity>
       </ImageContainer>
     </Container>

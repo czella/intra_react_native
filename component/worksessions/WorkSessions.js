@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import WorkSession from './WorkSession';
 import {setSelectedWorkSession} from '../../store/actions';
 import {useRole, ADMIN_ROLE, hasPermission} from '../../hooks/useRole';
-import Picker from '../Picker';
+import Picker from '../util/Picker';
 
 const mapDispatchToProps = dispatch => ({
   setSelectedWorkSession: workSession =>
