@@ -23,6 +23,7 @@ import {
 import Users from '../component/users/Users';
 import UserExpanded from '../component/users/UserExpanded';
 import { AddButtonIcon } from '../svg/Icons';
+import UserNew from '../component/users/UserNew';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -208,22 +209,19 @@ const UsersScreen = props => {
           />
         </AnimatedContractModal>
       )}
-      {/*{!loading && hasPermission([ADMIN_ROLE], role) && (*/}
-      {/*  <AnimatedContractModal*/}
-      {/*    style={{*/}
-      {/*      transform: [{translateY: translateYNewUser}],*/}
-      {/*      top: topNewContract,*/}
-      {/*    }}>*/}
-      {/*    <ContractNew*/}
-      {/*      closeUser={closeNewUser}*/}
-      {/*      onUserCreate={onUserCreate}*/}
-      {/*      resetPageCount={resetPageCount}*/}
-      {/*      currencies={data ? getCurrenciesForPicker(data.currencies) : []}*/}
-      {/*      users={data ? getUsersForPicker(data.users) : []}*/}
-      {/*      projects={data ? getProjectsForPicker(data.projects) : []}*/}
-      {/*    />*/}
-      {/*  </AnimatedContractModal>*/}
-      {/*)}*/}
+      {!loading && hasPermission([ADMIN_ROLE], role) && (
+        <AnimatedContractModal
+          style={{
+            transform: [{translateY: translateYNewUser}],
+            top: topNewContract,
+          }}>
+          <UserNew
+            closeUser={closeNewUser}
+            onUserCreate={onUserCreate}
+            resetPageCount={resetPageCount}
+          />
+        </AnimatedContractModal>
+      )}
     </Container>
   );
 };

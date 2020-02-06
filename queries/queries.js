@@ -417,3 +417,28 @@ export const deleteUser = gql`
     }
   }
 `;
+
+export const createUser = gql`
+  mutation createUser(
+    $username: String!
+    $email: String!
+    $password: String!
+    $role: String!
+    $isActive: Boolean!
+  ) {
+    data: createUser(
+      username: $username
+      email: $email
+      password: $password
+      role: $role
+      isActive: $isActive
+    ) {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
+  }
+`;

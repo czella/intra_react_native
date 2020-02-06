@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import {connect} from 'react-redux';
 import {
   TouchableOpacity,
   Keyboard,
@@ -9,19 +10,17 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
-import {
-  BackArrowIcon,
-  CancelIcon,
-  CopyIcon,
-  DeleteIcon,
-  SaveIcon,
-} from '../../svg/Icons';
+import {BackArrowIcon, CancelIcon, SaveIcon} from '../../svg/Icons';
 import InputElement, {EMAIL_KEYBOARD} from '../util/InputElement';
 import EventPool from '../../utils/EventPool';
 
-import {createContract} from '../../queries/queries';
+import {createUser} from '../../queries/queries';
 import Picker from '../util/Picker';
 import Switch from '../util/Switch';
+
+const mapStateToProps = state => ({
+  userRoles: state.nonCachedReducer.userRoles,
+});
 
 const UserNew = props => {
   const {
@@ -37,17 +36,13 @@ const UserNew = props => {
   const [role, setRole] = useState(
     userRoles ? userRoles[1] : {label: null, value: null},
   );
-  const [isActive, setIsActive] = useState(null);
+  const [isActive, setIsActive] = useState(false);
   const handleSave = () => {
-    if (username && role.value && project.value && email && currency.value) {
+    if (username && role.value && email && isActive !== null) {
       resetPageCount();
-      createUser(
-        username,
-        role.value,
-        project.value,
-        Number(email),
-        currency.value,
-      ).then(() => EventPool.emit('usersUpdated'));
+      createUser(username, email, password, role.value, isActive).then(() =>
+        EventPool.emit('usersUpdated'),
+      );
       onUserCreate();
     } else {
       console.log('Form is not completed!');
@@ -79,12 +74,22 @@ const UserNew = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
-          <InputElement label="Username" onChange={setUsername} />
-          <InputElement label="Email" onChange={setEmail} keyBoardType={EMAIL_KEYBOARD}/>
+          <InputElement
+            label="Username"
+            onChange={setUsername}
+            value={username}
+          />
+          <InputElement
+            label="Email"
+            onChange={setEmail}
+            keyBoardType={EMAIL_KEYBOARD}
+            value={email}
+          />
           <InputElement
             label="Password"
             onChange={setPassword}
             isPassword={true}
+            value={password}
           />
           <PickerContainer>
             <Picker
@@ -117,20 +122,15 @@ const UserNew = props => {
 };
 
 UserNew.propTypes = {
-  currencies: PropTypes.array,
-  users: PropTypes.array,
-  projects: PropTypes.array,
+  userRoles: PropTypes.array,
   closeUser: PropTypes.func,
   createUser: PropTypes.func,
   onUserCreate: PropTypes.func,
   resetPageCount: PropTypes.func,
-  saveContract: PropTypes.func,
 };
 
 UserNew.defaultProps = {
-  currencies: [],
-  users: [],
-  projects: [],
+  userRoles: [],
   closeUser: () => {},
   createUser: () => {},
   onUserCreate: () => {},
@@ -142,18 +142,10 @@ const Container = styled.View`
   height: 100%;
 `;
 
-const DatePickerContainer = styled.View``;
-
 const ButtonContainer = styled.View`
   flex-direction: row;
   margin-bottom: 10px;
   margin-top: 20px;
-`;
-
-const PickerButton = styled.Text`
-  width: 50px;
-  font-size: 18px;
-  margin: auto;
 `;
 
 const Background = styled.View`
@@ -185,25 +177,22 @@ const NavigationButtonsContainer = styled.View`
   justify-content: space-between;
 `;
 
-const InputContainer = styled.View`
-  margin-bottom: 10px;
-`;
-
-const InputLabel = styled.Text``;
-
-const TextInput = styled.TextInput``;
-
 const PickerContainer = styled.View`
   border-bottom-width: 1px;
   border-bottom-color: lightgrey;
   margin-bottom: 8px;
 `;
 
-export default graphql(createContract, {
+export default graphql(createUser, {
   props: ({mutate}) => ({
-    createContract: (position, UserId, ProjectId, price, CurrencyId) =>
+    createUser: (username, email, password, role, isActive) =>
       mutate({
-        variables: {position, UserId, ProjectId, price, CurrencyId},
+        variables: {username, email, password, role, isActive},
       }),
   }),
-})(UserNew);
+})(
+  connect(
+    mapStateToProps,
+    null,
+  )(UserNew),
+);

@@ -171,18 +171,10 @@ const Container = styled.View`
   height: 100%;
 `;
 
-const DatePickerContainer = styled.View``;
-
 const ButtonContainer = styled.View`
   flex-direction: row;
   margin-bottom: 10px;
   margin-top: 20px;
-`;
-
-const PickerButton = styled.Text`
-  width: 50px;
-  font-size: 18px;
-  margin: auto;
 `;
 
 const Background = styled.View`
@@ -213,14 +205,6 @@ const NavigationButtonsContainer = styled.View`
   padding-left: 10px;
   justify-content: space-between;
 `;
-
-const InputContainer = styled.View`
-  margin-bottom: 10px;
-`;
-
-const InputLabel = styled.Text``;
-
-const TextInput = styled.TextInput``;
 
 const PickerContainer = styled.View`
   border-bottom-width: 1px;
