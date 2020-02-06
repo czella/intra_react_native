@@ -13,7 +13,7 @@ import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EventPool from '../../utils/EventPool';
-import {deleteContract, editContract} from '../../queries/queries';
+import { deleteContract, deleteUser, editContract, editUser } from '../../queries/queries';
 import {ADMIN_ROLE, hasPermission, useRole} from '../../hooks/useRole';
 import {useUserId} from '../../hooks/useUserId';
 import Picker from '../util/Picker';
@@ -42,17 +42,17 @@ const UserExpanded = props => {
   const handleSave = () => {
     resetPageCount();
     saveUser(
-      contract.id,
+      user.id,
       username,
-      user.value,
-      project.value,
-      Number(email),
-      currency.value,
-    ).then(() => EventPool.emit('contractsUpdated'));
+      email,
+      role.value,
+      isActive,
+      password,
+    ).then(() => EventPool.emit('usersUpdated'));
     onUserSave();
   };
   const handleDelete = () => {
-    deleteUser(contract.id).then(() => EventPool.emit('contractsUpdated'));
+    deleteUser(user.id).then(() => EventPool.emit('usersUpdated'));
     onUserSave();
   };
   const userId = useUserId();
@@ -142,6 +142,14 @@ const UserExpanded = props => {
           {hasAdminPermission && (
             <Switch value={isActive} setValue={setIsActive} label="is active" />
           )}
+          {hasAdminPermission && (
+            <TouchableOpacity onPress={handleDelete}>
+              <ButtonContainer stlye={{paddingTop: 10}}>
+                <DeleteIcon />
+                <ButtonLabel>Delete user</ButtonLabel>
+              </ButtonContainer>
+            </TouchableOpacity>
+          )}
         </Form>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <Background />
@@ -221,26 +229,26 @@ const ButtonLabel = styled.Text`
   padding-left: 10px;
 `;
 
-const saveContractQuery = graphql(editContract, {
+const saveUserQuery = graphql(editUser, {
   props: ({mutate}) => ({
-    saveContract: (id, position, UserId, ProjectId, price, CurrencyId) =>
+    saveUser: (id, username, email, role, isActive, password) =>
       mutate({
-        variables: {id, position, UserId, ProjectId, price, CurrencyId},
+        variables: {id, username, email, role, isActive, password},
       }),
   }),
 });
 
-const deleteContractQuery = graphql(deleteContract, {
+const deleteUserQuery = graphql(deleteUser, {
   props: ({mutate}) => ({
-    deleteContract: id =>
+    deleteUser: id =>
       mutate({
         variables: {id},
       }),
   }),
 });
 
-export default saveContractQuery(
-  deleteContractQuery(
+export default saveUserQuery(
+  deleteUserQuery(
     connect(
       mapStateToProps,
       null,

@@ -381,3 +381,39 @@ export const allUsers = gql`
     }
   }
 `;
+
+export const editUser = gql`
+  mutation updateUser(
+    $id: ID!
+    $username: String!
+    $email: String!
+    $role: String!
+    $isActive: Boolean!
+    $password: String
+  ) {
+    data: updateUser(
+      id: $id
+      username: $username
+      email: $email
+      role: $role
+      isActive: $isActive
+      password: $password
+    ) {
+      id
+      username
+      email
+      role
+      isActive
+      __typename
+    }
+  }
+`;
+
+export const deleteUser = gql`
+  mutation deleteUser($id: ID!) {
+    data: deleteUser(id: $id) {
+      id
+      __typename
+    }
+  }
+`;

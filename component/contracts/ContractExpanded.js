@@ -170,7 +170,7 @@ const ContractExpanded = props => {
             <TouchableOpacity onPress={handleDelete}>
               <ButtonContainer stlye={{paddingTop: 10}}>
                 <DeleteIcon />
-                <ButtonLabel>Delete session</ButtonLabel>
+                <ButtonLabel>Delete contract</ButtonLabel>
               </ButtonContainer>
             </TouchableOpacity>
           )}
