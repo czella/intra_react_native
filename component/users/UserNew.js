@@ -9,62 +9,63 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
-import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../../svg/Icons';
-import InputElement, {NUMERIC_KEYBOARD} from '../util/InputElement';
+import {
+  BackArrowIcon,
+  CancelIcon,
+  CopyIcon,
+  DeleteIcon,
+  SaveIcon,
+} from '../../svg/Icons';
+import InputElement, {EMAIL_KEYBOARD} from '../util/InputElement';
 import EventPool from '../../utils/EventPool';
 
 import {createContract} from '../../queries/queries';
 import Picker from '../util/Picker';
+import Switch from '../util/Switch';
 
-const ContractNew = props => {
+const UserNew = props => {
   const {
-    currencies,
-    users,
-    projects,
-    closeContract,
-    createContract,
-    onContractCreate,
+    userRoles,
+    closeUser,
+    createUser,
+    onUserCreate,
     resetPageCount,
   } = props;
-  const [position, setPosition] = useState(null);
-  const [price, setPrice] = useState(null);
-  const [user, setUser] = useState(
-    users ? users[0] : {label: null, value: null},
+  const [username, setUsername] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [role, setRole] = useState(
+    userRoles ? userRoles[1] : {label: null, value: null},
   );
-  const [project, setProject] = useState(
-    projects ? projects[0] : {label: null, value: null},
-  );
-  const [currency, setCurrency] = useState(
-    currencies ? currencies[0] : {label: null, value: null},
-  );
+  const [isActive, setIsActive] = useState(null);
   const handleSave = () => {
-    if (position && user.value && project.value && price && currency.value) {
+    if (username && role.value && project.value && email && currency.value) {
       resetPageCount();
-      createContract(
-        position,
-        user.value,
+      createUser(
+        username,
+        role.value,
         project.value,
-        Number(price),
+        Number(email),
         currency.value,
-      ).then(() => EventPool.emit('contractsUpdated'));
-      onContractCreate();
+      ).then(() => EventPool.emit('usersUpdated'));
+      onUserCreate();
     } else {
       console.log('Form is not completed!');
     }
   };
 
   const clearFields = () => {
-    setPosition(null);
-    setPrice(null);
-    setUser(users ? users[0] : {label: null, value: null});
-    setProject(projects ? projects[0] : {label: null, value: null});
-    setCurrency(currencies ? currencies[0] : {label: null, value: null});
+    setUsername(null);
+    setEmail(null);
+    setRole(userRoles ? userRoles[1] : {label: null, value: null});
+    setPassword(null);
+    setIsActive(null);
   };
 
   return (
     <Container>
       <NavigationButtonsContainer>
-        <TouchableOpacity onPress={closeContract}>
+        <TouchableOpacity onPress={closeUser}>
           <BackArrowIcon />
         </TouchableOpacity>
         <TitleBar>New Contract</TitleBar>
@@ -78,58 +79,28 @@ const ContractNew = props => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 50}}>
         <Form>
+          <InputElement label="Username" onChange={setUsername} />
+          <InputElement label="Email" onChange={setEmail} keyBoardType={EMAIL_KEYBOARD}/>
           <InputElement
-            label="Position"
-            onChange={setPosition}
-            value={position}
+            label="Password"
+            onChange={setPassword}
+            isPassword={true}
           />
           <PickerContainer>
             <Picker
-              title="User"
+              title="Role"
               onValueChange={itemValue => {
-                setUser({
-                  label: find(users, {value: itemValue}).label,
+                setRole({
+                  label: find(userRoles, {value: itemValue}).label,
                   value: itemValue,
                 });
               }}
-              value={user.value}
-              items={users}
-              label={user.label}
+              value={role.value}
+              items={userRoles}
+              label={role.label}
             />
           </PickerContainer>
-          <PickerContainer>
-            <Picker
-              title="Project"
-              onValueChange={itemValue => {
-                setProject({
-                  label: find(projects, {value: itemValue}).label,
-                  value: itemValue,
-                });
-              }}
-              value={project.value}
-              items={projects}
-              label={project.label}
-            />
-          </PickerContainer>
-          <InputElement
-            label="Price"
-            onChange={setPrice}
-            keyBoardType={NUMERIC_KEYBOARD}
-          />
-          <PickerContainer>
-            <Picker
-              title="Currency"
-              onValueChange={itemValue => {
-                setCurrency({
-                  label: find(currencies, {value: itemValue}).label,
-                  value: itemValue,
-                });
-              }}
-              value={currency.value}
-              items={currencies}
-              label={currency.label}
-            />
-          </PickerContainer>
+          <Switch value={isActive} setValue={setIsActive} label="is active" />
           <TouchableOpacity onPress={clearFields}>
             <ButtonContainer stlye={{paddingTop: 10}}>
               <CancelIcon />
@@ -145,24 +116,24 @@ const ContractNew = props => {
   );
 };
 
-ContractNew.propTypes = {
+UserNew.propTypes = {
   currencies: PropTypes.array,
   users: PropTypes.array,
   projects: PropTypes.array,
-  closeContract: PropTypes.func,
-  createContract: PropTypes.func,
-  onContractCreate: PropTypes.func,
+  closeUser: PropTypes.func,
+  createUser: PropTypes.func,
+  onUserCreate: PropTypes.func,
   resetPageCount: PropTypes.func,
   saveContract: PropTypes.func,
 };
 
-ContractNew.defaultProps = {
+UserNew.defaultProps = {
   currencies: [],
   users: [],
   projects: [],
-  closeContract: () => {},
-  createContract: () => {},
-  onContractCreate: () => {},
+  closeUser: () => {},
+  createUser: () => {},
+  onUserCreate: () => {},
   resetPageCount: () => {},
 };
 
@@ -235,4 +206,4 @@ export default graphql(createContract, {
         variables: {position, UserId, ProjectId, price, CurrencyId},
       }),
   }),
-})(ContractNew);
+})(UserNew);

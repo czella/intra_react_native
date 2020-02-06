@@ -6,12 +6,12 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
-import InputElement from '../util/InputElement';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
+import InputElement, {EMAIL_KEYBOARD} from '../util/InputElement';
 import EventPool from '../../utils/EventPool';
 import { deleteContract, deleteUser, editContract, editUser } from '../../queries/queries';
 import {ADMIN_ROLE, hasPermission, useRole} from '../../hooks/useRole';
@@ -114,7 +114,7 @@ const UserExpanded = props => {
             placeholder={user.email}
             label="Email"
             onChange={setEmail}
-            numeric={true}
+            keyBoardType={EMAIL_KEYBOARD}
           />
           {!isDisabled && (
             <InputElement

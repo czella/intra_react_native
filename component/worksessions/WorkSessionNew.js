@@ -12,7 +12,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
 import {BackArrowIcon, CancelIcon, CopyIcon, SaveIcon} from '../../svg/Icons';
-import InputElement from '../util/InputElement';
+import InputElement, {NUMERIC_KEYBOARD} from '../util/InputElement';
 import EventPool from '../../utils/EventPool';
 
 import {createWorkSession} from '../../queries/queries';
@@ -153,7 +153,7 @@ const WorkSessionNew = props => {
             label="Minutes"
             onChange={setMinutes}
             value={minutes}
-            numeric={true}
+            keyBoardType={NUMERIC_KEYBOARD}
           />
           <PickerContainer>
             <Picker

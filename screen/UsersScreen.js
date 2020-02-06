@@ -22,6 +22,7 @@ import {
 } from '../hooks/useRole';
 import Users from '../component/users/Users';
 import UserExpanded from '../component/users/UserExpanded';
+import { AddButtonIcon } from '../svg/Icons';
 
 const mapStateToProps = state => ({
   token: state.cachedReducer.token,
@@ -187,13 +188,13 @@ const UsersScreen = props => {
         fetchMoreUsers={fetchMoreUsers}
         totalCount={data ? data.total.count : 0}
       />
-      {/*{hasPermission([ADMIN_ROLE], role) && (*/}
-      {/*  <ButtonContainer>*/}
-      {/*    <TouchableOpacity onPress={newUser}>*/}
-      {/*      <AddButtonIcon />*/}
-      {/*    </TouchableOpacity>*/}
-      {/*  </ButtonContainer>*/}
-      {/*)}*/}
+      {hasPermission([ADMIN_ROLE], role) && (
+        <ButtonContainer>
+          <TouchableOpacity onPress={newUser}>
+            <AddButtonIcon />
+          </TouchableOpacity>
+        </ButtonContainer>
+      )}
       {!loading && (
         <AnimatedContractModal
           style={{

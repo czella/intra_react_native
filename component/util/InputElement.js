@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 
+export const EMAIL_KEYBOARD = 'email-address';
+export const NUMERIC_KEYBOARD = 'numeric';
+
 const InputElement = props => {
   const {
     editable,
@@ -9,8 +12,8 @@ const InputElement = props => {
     label,
     onChange,
     value,
-    numeric,
     isPassword,
+    keyBoardType,
   } = props;
   const [color, setColor] = useState('lightgrey');
   return (
@@ -23,6 +26,7 @@ const InputElement = props => {
       }}>
       <InputLabel style={{color: color}}>{label}</InputLabel>
       <TextInput
+        keyboardType={keyBoardType || 'default'}
         secureTextEntry={isPassword}
         multiline={!isPassword}
         editable={editable}
@@ -31,7 +35,6 @@ const InputElement = props => {
         onFocus={() => setColor('blue')}
         onBlur={() => setColor('lightgrey')}
         value={value}
-        keyboardType={numeric ? 'numeric' : 'default'}
       />
     </InputContainer>
   );
@@ -43,8 +46,8 @@ InputElement.propTypes = {
   label: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string,
-  numeric: PropTypes.bool,
   isPassword: PropTypes.bool,
+  keyBoardType: PropTypes.string,
 };
 
 InputElement.defaultProps = {
@@ -53,8 +56,8 @@ InputElement.defaultProps = {
   label: '',
   onChange: () => {},
   value: null,
-  numeric: false,
   isPassword: false,
+  keyBoardType: null,
 };
 
 const InputContainer = styled.View`

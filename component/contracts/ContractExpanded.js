@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import {BackArrowIcon, DeleteIcon, SaveIcon} from '../../svg/Icons';
-import InputElement from '../util/InputElement';
+import InputElement, {NUMERIC_KEYBOARD} from '../util/InputElement';
 import {connect} from 'react-redux';
 import {graphql} from 'react-apollo';
 import {find} from 'lodash';
@@ -149,7 +149,7 @@ const ContractExpanded = props => {
             placeholder={`${contract.price}`}
             label="Price"
             onChange={setPrice}
-            numeric={true}
+            keyBoardType={NUMERIC_KEYBOARD}
           />
           <PickerContainer>
             <Picker
